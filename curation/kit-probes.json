@@ -1,0 +1,23 @@
+{
+  "schema": "gocar.kit-probes.v1",
+  "note": "The kit-rebase compile probes (docs/04-user-docs/12-alias-shim-compiled-both-real-kits.md, T-24) — the only places the configurator (UC-10) may offer an alias-shim bundle.",
+  "probes": [
+    {
+      "kit": "gpui-kit",
+      "kit_version": "0.6.0",
+      "binds": "gpui-pre ^0.3.1 (via index rename to `gpui`)",
+      "target": "gpui-unofficial 1.19.0-pre",
+      "outcome": "compiled through the alias shim (exit 0, one engine) — doc-11's open risk closed",
+      "evidence": "docs/04-user-docs/12-alias-shim-compiled-both-real-kits.md"
+    },
+    {
+      "kit": "gpuikit",
+      "kit_version": "0.9.0",
+      "binds": "gpui-unofficial ^1.14.2 (caret resolves 1.18.1; no pre twin)",
+      "target": "gpui-pre 0.3.3",
+      "outcome": "blocked for the untouched kit — one re-signature deep (`Window::blur()` -> `Window::blur(cx)`); the no-shim control on registry uno 1.19.0-pre fails the same way, so the alias is exonerated",
+      "caveat": "re-pointing needs the one source line `blur` -> `blur(cx)` (compiled against real registry gpui-pre 0.3.3, exit 0); no engine-side compat shim is expressible",
+      "evidence": "docs/04-user-docs/12-alias-shim-compiled-both-real-kits.md"
+    }
+  ]
+}

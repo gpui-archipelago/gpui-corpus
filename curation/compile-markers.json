@@ -1,0 +1,36 @@
+{
+  "schema": "gocar.compile-markers.v1",
+  "note": "The provider/version/toolchain rows the real-fork studies actually compiled (`new -> lock -> build --locked`, zero hand edits), each naming the doc that records the probe (docs/04-user-docs/07-real-fork-compile-case-study.md). Adding a newer version means compiling it first: the marker-completeness test refuses unverified rows.",
+  "markers": {
+    "gpui": {
+      "vers": "0.2.2",
+      "toolchain": "1.95.0",
+      "evidence": "docs/04-user-docs/07-real-fork-compile-case-study.md"
+    },
+    "gpui-ce": {
+      "vers": "0.2.2",
+      "toolchain": "1.95.0",
+      "evidence": "docs/04-user-docs/07-real-fork-compile-case-study.md"
+    },
+    "gpui-unofficial": {
+      "vers": "1.18.1",
+      "toolchain": "1.95.0",
+      "evidence": "docs/04-user-docs/07-real-fork-compile-case-study.md"
+    },
+    "gpui-pre": {
+      "vers": "0.3.3",
+      "toolchain": "1.95.0",
+      "evidence": "docs/04-user-docs/07-real-fork-compile-case-study.md"
+    },
+    "kael": {
+      "vers": "0.4.1",
+      "toolchain": "1.97.1",
+      "evidence": "docs/04-user-docs/07-real-fork-compile-case-study.md"
+    },
+    "gpui-box": {
+      "vers": "0.1.1",
+      "toolchain": "1.97.1",
+      "evidence": "docs/04-user-docs/07-real-fork-compile-case-study.md"
+    }
+  }
+}

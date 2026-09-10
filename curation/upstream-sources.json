@@ -1,0 +1,12 @@
+{
+  "schema": "gocar.upstream-sources.v1",
+  "note": "Curated upstream-source maps (T-45): for forks whose published bytes republish an upstream repo's crate under their own package name, which git repo/tree to permalink a measured declaration to, beside the docs.rs anchor the release already carries. Curated data with provenance — the repo/tree/layout is not in the published coordinate. A fork with no entry (an independent fork, or a republish whose versions name no concrete upstream tag) stays on its docs.rs anchor. The legacy `gpui` 0.2.x row predates zed's `crates/gpui` layout (tree unverifiable); kael / gpui-ce / gpui-box have their own independent repos, and `gpui-pre` versions are snapshots (not zed release tags) — all stay on docs.rs until a curated ref list is verified (see T-45).",
+  "sources": {
+    "gpui-unofficial": {
+      "repo": "zed-industries/zed",
+      "tree": "crates/gpui/src",
+      "tag": "v",
+      "note": "fork republishes zed's crates/gpui; each fork version carries the zed git tag v<vers> (1.18.1 == v1.18.1, 1.12.0 == v1.12.0, prerelease 1.19.0-pre == v1.19.0-pre), curated 2026-09-09"
+    }
+  }
+}

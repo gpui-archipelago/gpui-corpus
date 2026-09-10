@@ -1,0 +1,19 @@
+{
+  "schema": "gocar.binding-notes.v1",
+  "note": "Curated reasons the docs record for why a specific (provider, version) scaffold was never compile-probed (T-31, UC-10). Attached to the binding entries of exactly those rows; every other non-marker row already gets the generic \"not compile-probed here\" note client-side. Text is docs-grounded (never derived) — STATUS.md limitation 12's own record. A note matches a row when its provider matches and either the row's version is listed in `versions` or `below` bounds it; the first matching note wins.",
+  "notes": [
+    {
+      "provider": "gpui-unofficial",
+      "below": "1.12.0",
+      "note": "early-era unofficial release (0.230.x–1.11.x, pre-extraction-era source): never compile-probed. The mirror companion exists in the crates.io index and the binding unit below follows the dataset's provider-level mapping, but this row's launch-shape era is not compile-checked (docs/07; STATUS.md limitation 12)."
+    },
+    {
+      "provider": "kael",
+      "versions": [
+        "0.1.1",
+        "0.2.0"
+      ],
+      "note": "environment-blocked in the docs/07 matrix: kael 0.1.1/0.2.0-era manifests carry a mandatory Linux `wry` dependency — an app bound here needs the webkit2gtk system stack. Not a dataset contradiction; the era template below is kael's pre-split `Application::new()` shape (docs/07, T-20 window edge 4)."
+    }
+  ]
+}
