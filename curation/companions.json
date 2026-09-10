@@ -1,0 +1,43 @@
+{
+  "schema": "gocar.companions.v1",
+  "companions": {
+    "gpui-ce": {
+      "package": "gpui_ce_platform",
+      "pin": {
+        "fixed": "0.1.0"
+      },
+      "features": [
+        "x11",
+        "wayland"
+      ],
+      "note": "single 0.1.0 release for the lineage requiring gpui-ce ^0.2.2 (crates.io index, 2026-09-06) — NOT a version mirror; the yanked 0.3.2/0.3.3 rows bind the same companion. Compile-verified by T-20 (2026-09-07: gpui-ce 0.2.2 + this companion built the scaffold app under rustc 1.95; docs/04-user-docs/07)."
+    },
+    "gpui-unofficial": {
+      "package": "gpui-platform-gpui-unofficial",
+      "pin": "mirror",
+      "features": [
+        "x11",
+        "wayland"
+      ],
+      "note": "version-for-version mirror of all 44 gpui-unofficial releases incl. prereleases (crates.io index, 2026-09-06); each companion pins its fork release with a caret requirement, so the app's =N fork pin unifies the graph. Launch shape compile-verified in the real-fork case study (docs/04-user-docs/07, unofficial 1.16.1)."
+    },
+    "gpui-pre": {
+      "package": "gpui-pre-platform",
+      "pin": "mirror",
+      "features": [
+        "x11",
+        "wayland"
+      ],
+      "note": "version-for-version mirror of gpui-pre 0.3.x (4/4, crates.io index, 2026-09-06); unlike the other mirrors its fork dependency is hard (=N). Compile-verified by T-20 (2026-09-07: gpui-pre 0.3.3 + this companion built the scaffold app under rustc 1.95; the measured-equal unofficial 1.19.0-pre side also compiles; docs/04-user-docs/07)."
+    },
+    "gpui-box": {
+      "package": "gpui-box-platform",
+      "pin": "mirror",
+      "features": [
+        "x11",
+        "wayland"
+      ],
+      "note": "version-for-version mirror of gpui-box 0.1.x (2/2, crates.io index, 2026-09-06). Launch shape compile-verified in the real-fork case study (docs/04-user-docs/07, gpui-box 0.1.1)."
+    }
+  }
+}

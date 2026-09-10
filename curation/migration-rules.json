@@ -1,0 +1,25 @@
+{
+  "schema": "gocar.rules.v1",
+  "note": "Migration rules (T-14, UC-07): human-confirmed recipes keyed to measured item deltas. Rules are data — versioned, reviewable, disableable; suggested (unconfirmed) rules are never applied by the engine. Every rule's transition provenance is checked against the dataset on load (gocar-gpui tests). Seed rule: the unofficial 1.17.2 profiler rewrite that removed the record_frame_* fns. Keys are v2 item-model identities (T-26): qualified under the pub `profiler` module (`fn:profiler::…`), and the successor's measured cfg gate is provenance-recorded — a default-feature 1.17.2+ build ships none of the FrameEvent machinery, which is exactly why the engine refuses to auto-apply this rename at those targets (see migrate's cfg-vouching, T-26).",
+  "rules": [
+    {
+      "id": "gpui-unofficial-1.17.2-01",
+      "from": { "key": "fn:profiler::record_frame_timing" },
+      "to": { "key": "fn:profiler::record_frame_event" },
+      "transition": {
+        "from": {
+          "provider": "gpui-unofficial",
+          "version": "1.16.1",
+          "api_hash": "7c9778c0794e9a371c842d77c52057f33805c0cd2aeb01224e088fce9735f232"
+        },
+        "to": {
+          "provider": "gpui-unofficial",
+          "version": "1.17.2",
+          "api_hash": "be7b33fa51319024399d02d75b5a01917d2f2d22a766e1f8302e5577496441c8"
+        }
+      },
+      "human_confirmed": true,
+      "note": "1.17.2 removed record_frame_timing and added record_frame_event in the same profiler rewrite (FrameEvent machinery). Confirmed 2026-09-06 by the gocar maintainers as the mechanical successor for the T-14 v1 demo — the call shape is the same record-a-sample call. T-26 (2026-09-07): the keys are re-based onto the v2 qualified identity (`fn:profiler::…`); the measured successor is cfg-gated (`cfg(feature = \"profiler\")`) at 1.17.2+, so the migration engine refuses this rename at those targets unless the target build enables the feature — re-verify payload semantics (the payload is now FrameEvent::Draw(FrameTiming)) and the feature before relying on this rule."
+    }
+  ]
+}

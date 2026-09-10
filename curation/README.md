@@ -1,28 +1,48 @@
 # Curation (hand-edited inputs)
 
-`main` is the human side of this repo. Everything here is edited by hand,
-reviewed like code, and consumed by the automation on the `data` branch.
+`main` is the human side of this repo: everything here is edited by hand,
+reviewed like code, and passed to the tools — which are **data-agnostic** — via
+`--curation <DIR>` / `GOCAR_CURATION`
+(`crates/gocar-gpui/src/curation.rs` in `cargo-gocar`). Nothing here is baked
+into a crate.
 
-Planned contents (not populated yet — sourced data comes first):
+## Files the tools read
 
-- **`migration-rules.json`** — the human-confirmed rename recipes keyed to
-  measured item deltas. Today this lives in `cargo-gocar`
-  (`crates/gocar-gpui/data/migration-rules.json`); it belongs here.
-- **`sources.json`** — the upstream source links per provider (`repository`,
-  `tree`, and the per-version git tag/ref pattern) that back the site's
-  docs.rs / GitHub source anchors. Today these ride the dataset's provider
-  `upstream` map; they are curation, not measurement, so they belong here.
-- **`companions.json`** — the binding facts for platform companions: which
-  package accompanies which fork, how its version pins (mirror the fork, or a
-  fixed version), and the features its dependency line needs. Today this is the
-  dataset's provider-level `platform_companion` map. The *crate data* (versions,
-  deps, source) is sourced by the pipeline via a `role: "companion"` entry;
-  this file holds only the binding choice on top of it.
-- **`research/`** — field notes and case-study documents that explain *why* a
-  rule or a source link exists.
+- **`migration-rules.json`** (`gocar.rules.v1`) — the human-confirmed rename
+  recipes keyed to measured item deltas (T-14, UC-07). Consumed by
+  `cargo gocar migrate` and by the fork-map bundle's `rules`.
+- **`companions.json`** (`gocar.companions.v1`) — the per-fork platform
+  companion:
 
-Rules:
+  ```jsonc
+  { "schema": "gocar.companions.v1",
+    "companions": {
+      "gpui-unofficial": { "package": "gpui-platform-gpui-unofficial",
+                           "pin": "mirror",                    // or { "fixed": "0.1.0" }
+                           "features": ["x11", "wayland"],
+                           "note": "…provenance…" }
+    } }
+  ```
 
-- Nothing derived is committed here (no crates.io data, no measurements) —
-  that is the `data` branch.
-- Every rule/link should name the measured evidence that justifies it.
+  `gocar-gpui` overlays these onto the dataset's providers at load, so the
+  scaffold (`new`), the resolver (`add`/`plan`/`lock`) and the fork-map export
+  all see them. The dataset itself carries no curated fields.
+
+## Still to move here
+
+These are curated data today only by accident of being Rust `const`s in
+`cargo-gocar`; their `evidence` points at the research docs, which belong here
+alongside them:
+
+- **`sources.json`** — the upstream GitHub source maps (`repo`/`tree`/`tag`) —
+  today `const UPSTREAM_GITHUB` in `export-fork-map` (T-45).
+- **`compile-markers.json`** — the docs/07 compile-verified badges.
+- **`kit-probes.json`** — the docs/12 kit-rebase probes.
+- **`research/`** — those study documents (docs/07, docs/12, …).
+
+## Rules
+
+- Nothing derived lives here (no crates.io data, no measurements) — that is the
+  `data` / `measured` branches.
+- Every rule, companion, or source link names the measured evidence that
+  justifies it, and is reviewed like code.
