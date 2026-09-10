@@ -148,7 +148,7 @@ adapts shapes (it holds no fork-specific knowledge):
 5. gzip-9 the merged dataset to `measured/gpui-contract.json.gz`.
 
 ```console
-cargo install gocar-index --version 0.1.0   # the measurement tool (crates.io)
+cargo install gocar-index --version 0.2.0   # the measurement tool (crates.io)
 python3 pipeline/measure.py --data in --out out
 python3 pipeline/measure.py --data in --out out --work /tmp/measure   # keep scratch
 ```

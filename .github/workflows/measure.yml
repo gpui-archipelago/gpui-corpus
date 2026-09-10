@@ -37,7 +37,7 @@ jobs:
         run: rustup update stable && rustup default stable
 
       - name: Install the measurement tool
-        run: cargo install gocar-index --version 0.1.0
+        run: cargo install gocar-index --version 0.2.0
 
       - name: Check out the data branch
         run: |
