@@ -101,6 +101,13 @@ class CratesIoAdapter(unittest.TestCase):
             with tarfile.open(blob, mode="r:gz") as tar:
                 self.assertEqual(tar.getnames(), ["Cargo.toml", "src/lib.rs"])
 
+    def test_registry_meta_keeps_the_registry_creation_time(self):
+        meta = fc.registry_meta(
+            self.ROWS[0], {"rust_version": "1.82", "created_at": "2026-01-02T03:04:05+00:00"}
+        )
+        self.assertEqual(meta["created_at"], "2026-01-02T03:04:05+00:00")
+        self.assertIsNone(fc.registry_meta(self.ROWS[1], {}).get("created_at"))
+
     def test_incremental_reuse_skips_downloads(self):
         with tempfile.TemporaryDirectory() as td:
             out = Path(td)
@@ -234,6 +241,7 @@ class MeasureStage(unittest.TestCase):
     def test_materialize_keeps_forks_and_nulls_the_attestations(self):
         dataset, skipped = mz.dataset_from_index(self.INDEX)
         self.assertEqual(dataset["schema"], "gocar.contract.v0")
+        self.assertIsNone(dataset["synced_at"], "no creation times in this fixture")
         self.assertEqual([p["id"] for p in dataset["providers"]], ["gpui-unofficial"])
         self.assertEqual(skipped, ["gpui-platform-gpui-unofficial (companion)"])
         version = dataset["providers"][0]["versions"][0]
@@ -242,6 +250,25 @@ class MeasureStage(unittest.TestCase):
         self.assertEqual(version["deps"][0]["name"], "serde")
         for field in ("versem", "api_hash", "tvm", "eac", "toolchain_floor"):
             self.assertIsNone(version[field], field)
+
+    def test_synced_at_is_the_newest_release_creation_time(self):
+        index = json.loads(json.dumps(self.INDEX))
+        index["providers"][0]["sources"][0]["releases"][0]["meta"]["created_at"] = (
+            "2026-09-05T05:05:17+00:00"
+        )
+        index["providers"][1]["sources"][0]["releases"] = [
+            {"id": "0.1.0", "meta": {"created_at": "2026-09-09T01:02:03+00:00"}, "artifact": None}
+        ]
+        self.assertEqual(mz.corpus_synced_at(index), "2026-09-09T01:02:03+00:00")
+        dataset, _ = mz.dataset_from_index(index)
+        self.assertEqual(dataset["synced_at"], "2026-09-09T01:02:03+00:00")
+
+    def test_synced_at_skips_missing_and_malformed_stamps(self):
+        index = json.loads(json.dumps(self.INDEX))
+        releases = index["providers"][0]["sources"][0]["releases"]
+        releases[0]["meta"]["created_at"] = "not-a-date"
+        releases.append({"id": "1.0.1", "meta": {}, "artifact": None})
+        self.assertIsNone(mz.corpus_synced_at(index))
 
     def test_extract_corpus_writes_the_analyzer_layout(self):
         with tempfile.TemporaryDirectory() as td:

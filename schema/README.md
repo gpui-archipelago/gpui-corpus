@@ -56,6 +56,7 @@ a provider lists typed sources, and every release is the same
                 "yanked": false,
                 "cksum": "…",            // crates.io SHA-256 of the .crate tarball
                 "rust_version": "1.82",
+                "created_at": "2026-09-05T05:05:17.123456+00:00", // registry publication time
                 "feature_names": [ … ],
                 "deps": [ { "name": …, "req": …, "optional": …, "default_features": …, "kind": … } ]
               },
@@ -123,7 +124,7 @@ learned). The `artifact` envelope is identical across kinds.
 - **spec:** `{ package, index_path }` — registry truth from the sparse index
   (`index.crates.io`); `repository`/`rust_version` enriched from the crates.io API.
 - **release `id`:** the semver version.
-- **meta:** `yanked`, `cksum`, `rust_version`, `feature_names`, `deps`.
+- **meta:** `yanked`, `cksum`, `rust_version`, `created_at`, `feature_names`, `deps`.
 - **blob:** the measurement input (`Cargo.toml` + `src/**` + `build.rs`).
 
 ### `github` (planned — schema reserved, adapter not yet written)

@@ -22,6 +22,10 @@ tools will consume once they have a store loader). Deterministic end to end: a
 run with no new releases rewrites byte-identical output, so the `measured`
 branch only moves when the measurement does.
 
+The dataset's `synced_at` — the fork map's "data as of" line — is the newest
+release `created_at` in the corpus index (registry truth), not a wall clock, so
+it stays deterministic while still stating how far the coverage reaches.
+
 Stdlib + the published `gocar-index`. Run (from the repo root):
 
     python3 pipeline/measure.py --data in --out out
@@ -38,6 +42,7 @@ import subprocess
 import sys
 import tarfile
 import tempfile
+from datetime import datetime
 from pathlib import Path
 
 from gz import xz9
@@ -53,6 +58,32 @@ SOURCE_KIND = "crates-io"
 # --------------------------------------------------------------------------
 # materialize: corpus index -> gocar.contract.v0 (registry truth, nulls)
 # --------------------------------------------------------------------------
+def corpus_synced_at(index: dict) -> str | None:
+    """The corpus's coverage timestamp: the newest release `created_at`.
+
+    The measured dataset's `synced_at` is the site's "data as of" line. It is
+    derived from registry truth (the publication time the crates.io API records
+    per release) rather than a wall clock, so a no-change re-measure stays
+    byte-identical while the dataset still states how far its coverage reaches.
+    Missing timestamps (an API failure is best-effort in stage 1) are skipped;
+    None only when no release carries one.
+    """
+    newest: datetime | None = None
+    for entity in index.get("providers", []):
+        for source in entity.get("sources", []):
+            for release in source.get("releases", []):
+                stamp = (release.get("meta") or {}).get("created_at")
+                if not stamp:
+                    continue
+                try:
+                    parsed = datetime.fromisoformat(stamp)
+                except (TypeError, ValueError):
+                    continue
+                if newest is None or parsed > newest:
+                    newest = parsed
+    return newest.isoformat() if newest is not None else None
+
+
 def dataset_from_index(index: dict) -> tuple[dict, list[str]]:
     """A `gocar.contract.v0` dataset from the corpus index, attestations null.
 
@@ -98,7 +129,7 @@ def dataset_from_index(index: dict) -> tuple[dict, list[str]]:
         })
     dataset = {
         "schema": DATASET_SCHEMA,
-        "synced_at": None,
+        "synced_at": corpus_synced_at(index),
         "recommended_provider": index.get("recommended_provider"),
         "contract": index["contract"],
         "providers": providers,

@@ -21,8 +21,10 @@ its dependencies are sourced exactly like a fork is.
 
 Incremental: a release already present with the same identity digest keeps its
 blob and is never rewritten, so a re-run only downloads new releases. Blobs are
-written with a fixed mtime and the index omits any wall-clock field, so a
-no-new-release run leaves the tree byte-identical (a meaningful branch diff).
+written with a fixed mtime and the index carries no wall-clock field (the
+`created_at` a release records is the registry's own publication time, not the
+fetch time), so a no-new-release run leaves the tree byte-identical (a
+meaningful branch diff).
 
 Stdlib only — no gocar crate needs to be published to source the corpus. Run:
 
@@ -156,11 +158,17 @@ def api_meta(package: str) -> tuple[dict, dict[str, dict]]:
 
 
 def registry_meta(row: dict, api_version: dict) -> dict:
-    """A crates.io release's `meta`: its registry truth, minus the id (vers)."""
+    """A crates.io release's `meta`: its registry truth, minus the id (vers).
+
+    `created_at` (the API's publication timestamp) is registry truth like the
+    rest: it is what lets the measured dataset carry an honest "data as of"
+    without introducing a wall-clock field (see `measure.py`).
+    """
     return {
         "yanked": bool(row.get("yanked", False)),
         "cksum": row.get("cksum"),
         "rust_version": api_version.get("rust_version") or None,
+        "created_at": api_version.get("created_at") or None,
         "feature_names": sorted((row.get("features") or {}).keys()),
         "deps": [
             {
