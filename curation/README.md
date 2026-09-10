@@ -59,12 +59,12 @@ storage repo decides which curated inputs exist). A malformed one fails loudly.
   `below` version bound; the first matching note wins. The note text never
   derives from the dataset — it is the docs' own record.
 
-## Still to move here
+## `research/` — the studies the curated data cites
 
-- **`research/`** — the study documents the `evidence` fields above point at
-  (docs/07, docs/12, …), so the curated data and its provenance live together.
-  Until then those files are read from `cargo-gocar`'s
-  `docs/04-user-docs/`.
+The `evidence` fields above name a study doc (`docs/04-user-docs/07-…md`,
+`…/12-…md`, …). Those docs are published here, verbatim copies of
+their `cargo-gocar` originals, because the fork map's reader links them
+publicly — see [`research/README.md`](research/README.md) for the sync.
 
 ## Rules
 
