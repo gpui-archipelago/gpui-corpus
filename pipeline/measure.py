@@ -81,7 +81,8 @@ def corpus_synced_at(index: dict) -> str | None:
                     continue
                 if newest is None or parsed > newest:
                     newest = parsed
-    return newest.isoformat() if newest is not None else None
+    # Whole seconds: the line is user-facing, sub-second precision is noise.
+    return newest.replace(microsecond=0).isoformat() if newest is not None else None
 
 
 def dataset_from_index(index: dict) -> tuple[dict, list[str]]:

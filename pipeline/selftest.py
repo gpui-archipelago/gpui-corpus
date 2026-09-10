@@ -257,7 +257,8 @@ class MeasureStage(unittest.TestCase):
             "2026-09-05T05:05:17+00:00"
         )
         index["providers"][1]["sources"][0]["releases"] = [
-            {"id": "0.1.0", "meta": {"created_at": "2026-09-09T01:02:03+00:00"}, "artifact": None}
+            # Microseconds are dropped: the value is a user-facing "data as of".
+            {"id": "0.1.0", "meta": {"created_at": "2026-09-09T01:02:03.876818+00:00"}, "artifact": None}
         ]
         self.assertEqual(mz.corpus_synced_at(index), "2026-09-09T01:02:03+00:00")
         dataset, _ = mz.dataset_from_index(index)
