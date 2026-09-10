@@ -2,18 +2,7 @@
   "schema": "gocar.corpus.config.v1",
   "contract": {
     "id": "gpui",
-    "description": "GPUI, Zed's GPU-accelerated UI framework — contract across its crates.io forks",
-    "api_surface": [
-      { "name": "Application", "kind": "struct" },
-      { "name": "WindowOptions", "kind": "struct" },
-      { "name": "Window", "kind": "struct" },
-      { "name": "App", "kind": "struct" },
-      { "name": "Context", "kind": "struct" },
-      { "name": "Render", "kind": "trait" },
-      { "name": "IntoElement", "kind": "trait" },
-      { "name": "div", "kind": "fn" },
-      { "name": "rgb", "kind": "fn" }
-    ]
+    "description": "GPUI, Zed's GPU-accelerated UI framework — contract across its crates.io forks"
   },
   "recommended_provider": "gpui-unofficial",
   "providers": [

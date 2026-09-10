@@ -33,7 +33,7 @@ a provider lists typed sources, and every release is the same
 ```jsonc
 {
   "schema": "gocar.corpus.v1",
-  "contract": { "id": "gpui", "description": "…", "api_surface": [ … ] },
+  "contract": { "id": "gpui", "description": "…" },
   "recommended_provider": "gpui-unofficial",
   "providers": [
     {

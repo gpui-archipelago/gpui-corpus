@@ -203,7 +203,7 @@ class MeasureStage(unittest.TestCase):
 
     INDEX = {
         "schema": "gocar.corpus.v1",
-        "contract": {"id": "gpui", "description": "d", "api_surface": []},
+        "contract": {"id": "gpui", "description": "d"},
         "recommended_provider": "gpui-unofficial",
         "providers": [
             {
