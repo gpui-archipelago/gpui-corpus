@@ -1,0 +1,30 @@
+name: check
+
+# Guard `main`: the pipeline and the curated config must at least be valid
+# before the scheduled sourcing job (corpus.yml) consumes them.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Compile the pipeline
+        run: python3 -m py_compile pipeline/fetch_corpus.py
+
+      - name: Validate the providers config
+        run: python3 -m json.tool providers.json >/dev/null
+
+      - name: Exercise the offline pipeline helpers
+        run: python3 pipeline/selftest.py

@@ -1,11 +1,22 @@
 name: corpus
 
-# Source crates.io version data into incremental blobs on the `data` branch.
+# Source version data into incremental blobs on the `data` branch.
 # `main` carries the pipeline; this job only ever writes `data`.
 on:
   schedule:
     - cron: "0 5 * * *" # daily, after the crates.io index settles
   workflow_dispatch:
+    inputs:
+      only:
+        description: "Force-refetch specs (comma-separated PKG@VERS)"
+        required: false
+      providers:
+        description: "Limit to provider ids (comma-separated)"
+        required: false
+      dry_run:
+        description: "Report only; write and push nothing"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -39,18 +50,35 @@ jobs:
             git -C out rm -rf --quiet . 2>/dev/null || true
           fi
 
-      - name: Source crates.io version data into blobs
-        run: python3 pipeline/fetch_corpus.py --out out
+      - name: Source version data into blobs
+        env:
+          ONLY: ${{ inputs.only }}
+          PROVIDERS: ${{ inputs.providers }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          args=()
+          if [ -n "$ONLY" ]; then
+            IFS=',' read -ra specs <<< "$ONLY"
+            for spec in "${specs[@]}"; do args+=(--only "$spec"); done
+          fi
+          if [ -n "$PROVIDERS" ]; then
+            IFS=',' read -ra ids <<< "$PROVIDERS"
+            for id in "${ids[@]}"; do args+=(--provider "$id"); done
+          fi
+          if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); fi
+          echo "python3 pipeline/fetch_corpus.py --out out ${args[*]}"
+          python3 pipeline/fetch_corpus.py --out out "${args[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Commit and push new blobs to data
+        if: ${{ inputs.dry_run != true }}
         working-directory: out
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
           if git diff --cached --quiet; then
-            echo "no new crates.io versions — data branch unchanged"
+            echo "no new releases — data branch unchanged"
             exit 0
           fi
-          git commit -m "corpus: source crates.io version data"
+          git commit -m "corpus: source version data"
           git push origin HEAD:data
