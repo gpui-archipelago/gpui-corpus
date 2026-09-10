@@ -21,7 +21,7 @@ jobs:
           python-version: "3.11"
 
       - name: Compile the pipeline
-        run: python3 -m py_compile pipeline/fetch_corpus.py
+        run: python3 -m py_compile pipeline/fetch_corpus.py pipeline/measure.py pipeline/gz.py
 
       - name: Validate the providers config
         run: python3 -m json.tool providers.json >/dev/null

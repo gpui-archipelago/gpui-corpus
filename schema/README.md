@@ -1,8 +1,13 @@
-# Derived blob formats (`data` branch)
+# Derived formats (`data` + `measured` branches)
 
-Everything under the `data` branch is produced by `pipeline/fetch_corpus.py`.
-It is derived, deterministic, and never hand-edited: a no-new-release re-run
-leaves the tree byte-identical. `main` holds the inputs; `data` holds these.
+Everything on the derived branches is produced by the pipeline and never
+hand-edited: a re-run with no new releases leaves each branch byte-identical.
+`main` holds the inputs; the derived branches hold these.
+
+- **`data`** — sourced crates.io version data, produced by
+  `pipeline/fetch_corpus.py` (this document, top half).
+- **`measured`** — the measured contract dataset, produced by
+  `pipeline/measure.py` (this document, bottom half).
 
 ## Layout
 
@@ -170,3 +175,38 @@ digest keeps its blob (never rewritten); only new releases are downloaded.
 upstream digest (`cksum` for crates-io, `commit` for github). The measurement
 stage should verify the upstream digest where it exists, and `artifact.sha256`
 against the downloaded blob.
+
+---
+
+# `measured` branch
+
+## Layout
+
+```
+gpui-contract.json.gz   # gocar.contract.v0 — registry truth + measured fields
+```
+
+One monolithic, deterministic gzip-9 dataset (mtime 0, no wall clock). It is
+the `data` branch's registry truth with the measured fields filled in by
+`gocar-index`: per-version `versem`, `api_hash`, and `surface` (the canonical
+item set with its sparse fn/doc/src/member payloads), plus the provider
+`api_epoch` heads.
+
+## Production
+
+`pipeline/measure.py` materializes a null-attestation dataset from
+`data/index.json.gz`, extracts `data/sources/**` into the analyzer's corpus
+layout, and runs the published `gocar-index` (`analyze` then `merge`). It
+adapts shapes only — the measurement is the tool.
+
+## Incrementality (current limit)
+
+Monolithic: the whole file is rewritten whenever any measured field moves, and
+`versem`/`api_epoch` can shift for *existing* versions when a new release lands
+(they are cumulative along a stream), so even per-version files would not be
+append-only. Committing the whole dataset is the simple option while the corpus
+is small (≈11 MB gzip-9 at 71 releases, well under GitHub's 100 MiB per-file cap).
+
+The future-proof layout — a small rewritten `index.json.gz` (headers + surface
+pointers) plus immutable `surfaces/<package>/<version>.json.gz` — is tracked as
+task **T-49**; it needs a store loader in the consuming tools first.

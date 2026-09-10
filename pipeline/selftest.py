@@ -14,6 +14,7 @@ import unittest
 from pathlib import Path
 
 import fetch_corpus as fc
+import measure as mz
 
 
 def crate_bytes(name: str, vers: str, *, with_lib: bool = True, with_manifest: bool = True) -> bytes:
@@ -195,6 +196,79 @@ class CompanionSourcing(unittest.TestCase):
             "sources/crates-io/gpui-platform-gpui-unofficial/0.1.0.tar.gz",
         )
         self.assertEqual(release["meta"]["deps"][0]["name"], "gpui-unofficial")
+
+
+class MeasureStage(unittest.TestCase):
+    """Stage 2 adapters: corpus index -> dataset, blobs -> analyzer layout."""
+
+    INDEX = {
+        "schema": "gocar.corpus.v1",
+        "contract": {"id": "gpui", "description": "d", "api_surface": []},
+        "recommended_provider": "gpui-unofficial",
+        "providers": [
+            {
+                "id": "gpui-unofficial", "package": "gpui-unofficial", "lib_name": "gpui",
+                "role": "fork", "repository": "r", "description": "d", "note": "n",
+                "sources": [{
+                    "kind": "crates-io", "spec": {"package": "gpui-unofficial"},
+                    "releases": [{
+                        "id": "1.0.0",
+                        "meta": {"yanked": False, "cksum": "aaa", "rust_version": "1.82",
+                                 "feature_names": ["f"],
+                                 "deps": [{"name": "serde", "req": "^1", "optional": False,
+                                           "default_features": True, "kind": "normal"}]},
+                        "artifact": {"blob": "sources/crates-io/gpui-unofficial/1.0.0.tar.gz",
+                                     "sha256": "x", "format": "tar.gz"},
+                    }],
+                }],
+            },
+            {
+                "id": "gpui-platform-gpui-unofficial",
+                "package": "gpui-platform-gpui-unofficial",
+                "role": "companion", "for": "gpui-unofficial",
+                "sources": [{"kind": "crates-io", "releases": []}],
+            },
+        ],
+    }
+
+    def test_materialize_keeps_forks_and_nulls_the_attestations(self):
+        dataset, skipped = mz.dataset_from_index(self.INDEX)
+        self.assertEqual(dataset["schema"], "gocar.contract.v0")
+        self.assertEqual([p["id"] for p in dataset["providers"]], ["gpui-unofficial"])
+        self.assertEqual(skipped, ["gpui-platform-gpui-unofficial (companion)"])
+        version = dataset["providers"][0]["versions"][0]
+        self.assertEqual(version["vers"], "1.0.0")
+        self.assertEqual(version["cksum"], "aaa")
+        self.assertEqual(version["deps"][0]["name"], "serde")
+        for field in ("versem", "api_hash", "tvm", "eac", "toolchain_floor"):
+            self.assertIsNone(version[field], field)
+
+    def test_extract_corpus_writes_the_analyzer_layout(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            blob = root / "sources/crates-io/gpui-unofficial/1.0.0.tar.gz"
+            blob.parent.mkdir(parents=True)
+            blob.write_bytes(fc.tar_gz9([
+                ("Cargo.toml", b'[package]\nname = "gpui-unofficial"\n', 0o644),
+                ("src/lib.rs", b"pub fn f() {}\n", 0o644),
+            ]))
+            index = json.loads(json.dumps(self.INDEX))
+            index["providers"] = index["providers"][:1]
+            count = mz.extract_corpus(root, index, root / "corpus")
+            self.assertEqual(count, 1)
+            self.assertTrue((root / "corpus/gpui-unofficial/1.0.0/Cargo.toml").is_file())
+            self.assertTrue((root / "corpus/gpui-unofficial/1.0.0/src/lib.rs").is_file())
+
+    def test_extract_member_rejects_path_traversal(self):
+        buf = io.BytesIO()
+        with tarfile.open(fileobj=buf, mode="w") as tar:
+            info = tarfile.TarInfo("../evil")
+            info.size = 1
+            tar.addfile(info, io.BytesIO(b"x"))
+        with tempfile.TemporaryDirectory() as td:
+            with tarfile.open(fileobj=io.BytesIO(buf.getvalue()), mode="r:") as tar:
+                with self.assertRaises(RuntimeError):
+                    mz.extract_member(tar, tar.getmembers()[0], Path(td) / "dest")
 
 
 if __name__ == "__main__":

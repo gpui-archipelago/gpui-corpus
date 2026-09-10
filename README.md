@@ -3,15 +3,16 @@
 Storage for the GPUI fork lineage — kept separate from the tools that consume
 it. `cargo-gocar` stays pure code; the data it needs lives here.
 
-The repo is deliberately two-layered:
+The repo is layered, one branch per layer:
 
-| Branch | Holds | Edited by |
+| Branch | Holds | Written by |
 | --- | --- | --- |
 | `main` | curation inputs (migration rules, source links, research) + the pipeline | humans, reviewed like code |
-| `data` | derived, immutable, gzip-9 blobs of crates.io version data | `pipeline/` automation only |
+| `data` | derived, immutable, gzip-9 blobs of crates.io version data | `pipeline/fetch_corpus.py` |
+| `measured` | the derived measured contract dataset (`gocar.contract.v0`) | `pipeline/measure.py` + the published `gocar-index` |
 
-Nothing derived is committed to `main`; nothing hand-written is committed to
-`data`.
+Nothing derived is committed to `main`; nothing hand-written is committed to a
+derived branch.
 
 ## Why it exists
 
@@ -57,9 +58,58 @@ no-new-release re-run is byte-identical. Network: `index.crates.io`,
 pipeline on a daily schedule (and on demand), and commits any new blobs to the
 `data` branch. It never touches `main`.
 
-## Next stage
+## Stage 2 — measure the corpus (implemented)
 
-Measurement (`gocar-index analyze`) consumes `sources/**`; the merge step
-consumes `index.json.gz`. Those are tools, not storage, so they live in
-`cargo-gocar` and are published independently — this repo never depends on a
-published gocar crate to be sourced.
+`pipeline/measure.py` consumes the `data` branch and produces the measured
+contract dataset on `measured`:
+
+```
+gpui-contract.json.gz   # gocar.contract.v0 — registry truth + api_hash/versem/surface
+```
+
+The measurement itself is the published `gocar-index` binary; the script only
+adapts shapes (it holds no fork-specific knowledge):
+
+1. materialize a null-attestation `gocar.contract.v0` dataset from the corpus
+   index (`data/index.json.gz`) — registry truth only,
+2. extract each release's source blob into the corpus layout
+   (`<corpus>/<package>/<version>/Cargo.toml` + `src/`),
+3. `gocar-index analyze <corpus> --out analysis.json`,
+4. `gocar-index merge <dataset.json> <analysis.json> merged.json`,
+5. gzip-9 the merged dataset to `measured/gpui-contract.json.gz`.
+
+```console
+cargo install gocar-index --version 0.1.0   # the measurement tool (crates.io)
+python3 pipeline/measure.py --data in --out out
+python3 pipeline/measure.py --data in --out out --work /tmp/measure   # keep scratch
+```
+
+So measuring no longer needs the 66 MB dataset baked into a crate: the tool is
+~60 KiB, the data comes from here, and a no-new-release run rewrites
+byte-identical output (the `measured` branch only moves when the measurement
+does).
+
+### Automation
+
+[`.github/workflows/measure.yml`](.github/workflows/measure.yml) runs after
+`corpus.yml` completes and on demand. It is triggered by `workflow_run`, not
+`push`: `corpus.yml` pushes `data` with the default `GITHUB_TOKEN`, and such
+pushes deliberately do not start other workflows.
+
+## Layout
+
+```
+providers.json            the entities + their typed sources (curation/config)
+pipeline/fetch_corpus.py  stage 1 — source crates.io version data
+pipeline/measure.py       stage 2 — measure the corpus with gocar-index
+pipeline/gz.py            the shared deterministic gzip helpers
+pipeline/selftest.py      offline tests for both stages
+curation/                 hand-edited migration rules, source links, research
+schema/                   the derived formats (data + measured branches)
+.github/workflows/        corpus.yml (data) · measure.yml (measured) · check.yml
+```
+
+The measurement tool (`gocar-index`) is a published crate, not code in this
+repo — see `cargo-gocar` (`crates/gocar-index`). The switch from the monolithic
+measured dataset to a split index + immutable surfaces is tracked as task
+**T-49** in `cargo-gocar/tasks/`.

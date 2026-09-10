@@ -47,6 +47,8 @@ import urllib.request
 from pathlib import Path
 from typing import Callable
 
+from gz import gz9, json_gz9
+
 INDEX_HOST = "https://index.crates.io"
 API_HOST = "https://crates.io/api/v1/crates"
 STATIC_HOST = "https://static.crates.io/crates"
@@ -71,16 +73,6 @@ KEEP_PREFIX = ("src/",)
 # --------------------------------------------------------------------------
 # deterministic compression
 # --------------------------------------------------------------------------
-def gz9(data: bytes) -> bytes:
-    """gzip level 9 with mtime=0 and OS=unknown — byte-stable across re-runs."""
-    buf = io.BytesIO()
-    with gzip.GzipFile(fileobj=buf, mode="wb", compresslevel=9, mtime=0) as gz:
-        gz.write(data)
-    out = bytearray(buf.getvalue())
-    out[9] = 255  # OS byte: "unknown", so the header does not leak the host
-    return bytes(out)
-
-
 def tar_gz9(entries: list[tuple[str, bytes, int]]) -> bytes:
     """A deterministic gzip-9 tar: sorted entries, zeroed ownership/mtime."""
     raw = io.BytesIO()
@@ -94,12 +86,6 @@ def tar_gz9(entries: list[tuple[str, bytes, int]]) -> bytes:
             info.uname = info.gname = ""
             tar.addfile(info, io.BytesIO(data))
     return gz9(raw.getvalue())
-
-
-def json_gz9(value: object) -> bytes:
-    """Compact, key-sorted, gzip-9 JSON — deterministic for equal content."""
-    text = json.dumps(value, separators=(",", ":"), ensure_ascii=False, sort_keys=True)
-    return gz9(text.encode("utf-8"))
 
 
 def write_artifact(out: Path, dest_rel: Path, payload: bytes) -> dict:
