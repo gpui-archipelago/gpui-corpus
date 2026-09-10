@@ -1,0 +1,81 @@
+{
+  "schema": "gocar.corpus.config.v1",
+  "contract": {
+    "id": "gpui",
+    "description": "GPUI, Zed's GPU-accelerated UI framework — contract across its crates.io forks",
+    "api_surface": [
+      { "name": "Application", "kind": "struct" },
+      { "name": "WindowOptions", "kind": "struct" },
+      { "name": "Window", "kind": "struct" },
+      { "name": "App", "kind": "struct" },
+      { "name": "Context", "kind": "struct" },
+      { "name": "Render", "kind": "trait" },
+      { "name": "IntoElement", "kind": "trait" },
+      { "name": "div", "kind": "fn" },
+      { "name": "rgb", "kind": "fn" }
+    ]
+  },
+  "recommended_provider": "gpui-unofficial",
+  "providers": [
+    {
+      "id": "gpui",
+      "package": "gpui",
+      "lib_name": "gpui",
+      "repository": null,
+      "note": "registry releases in the 0.2.x era, including -test tags; provenance unattested",
+      "sources": [
+        { "kind": "crates-io", "index_path": "gp/ui/gpui" }
+      ]
+    },
+    {
+      "id": "gpui-ce",
+      "package": "gpui-ce",
+      "lib_name": "gpui",
+      "repository": "https://github.com/gpui-ce/gpui-ce",
+      "note": "Community Edition fork; pinned git revision is the current cargo-gpui 'gpui-ce' backend",
+      "sources": [
+        { "kind": "crates-io", "index_path": "gp/ui/gpui-ce" }
+      ]
+    },
+    {
+      "id": "gpui-unofficial",
+      "package": "gpui-unofficial",
+      "lib_name": "gpui",
+      "repository": null,
+      "note": "crates.io republish stream of zed gpui main; default backend of cargo-gpui",
+      "sources": [
+        { "kind": "crates-io", "index_path": "gp/ui/gpui-unofficial" }
+      ]
+    },
+    {
+      "id": "gpui-pre",
+      "package": "gpui-pre",
+      "lib_name": "gpui",
+      "repository": null,
+      "note": "pre-release tracking fork",
+      "sources": [
+        { "kind": "crates-io", "index_path": "gp/ui/gpui-pre" }
+      ]
+    },
+    {
+      "id": "kael",
+      "package": "kael",
+      "lib_name": "gpui",
+      "repository": null,
+      "note": "independent fork",
+      "sources": [
+        { "kind": "crates-io", "index_path": "ka/el/kael" }
+      ]
+    },
+    {
+      "id": "gpui-box",
+      "package": "gpui-box",
+      "lib_name": "gpui",
+      "repository": null,
+      "note": "boxed/contained fork",
+      "sources": [
+        { "kind": "crates-io", "index_path": "gp/ui/gpui-box" }
+      ]
+    }
+  ]
+}

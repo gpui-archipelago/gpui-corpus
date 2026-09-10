@@ -1,0 +1,3 @@
+# local pipeline output
+/out/
+__pycache__/

@@ -1,0 +1,56 @@
+name: corpus
+
+# Source crates.io version data into incremental blobs on the `data` branch.
+# `main` carries the pipeline; this job only ever writes `data`.
+on:
+  schedule:
+    - cron: "0 5 * * *" # daily, after the crates.io index settles
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: corpus-data
+  cancel-in-progress: false
+
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main (pipeline + curation)
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Check out the derived data branch (create if absent)
+        run: |
+          if git ls-remote --exit-code --heads origin data >/dev/null 2>&1; then
+            git fetch --depth 1 origin data:data
+            git worktree add out data
+          else
+            # First run: bootstrap an empty data branch. main's files must not
+            # leak onto data, so drop the checked-out tree before generating.
+            git worktree add --detach out
+            git -C out checkout --orphan data
+            git -C out rm -rf --quiet . 2>/dev/null || true
+          fi
+
+      - name: Source crates.io version data into blobs
+        run: python3 pipeline/fetch_corpus.py --out out
+
+      - name: Commit and push new blobs to data
+        working-directory: out
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "no new crates.io versions — data branch unchanged"
+            exit 0
+          fi
+          git commit -m "corpus: source crates.io version data"
+          git push origin HEAD:data
