@@ -14,7 +14,7 @@ The measurement itself is the published `gocar-index` binary:
        expects (`<corpus>/<package>/<version>/Cargo.toml` + `src/`),
     3. `gocar-index analyze <corpus> --out analysis.json`,
     4. `gocar-index merge <dataset.json> <analysis.json> merged.json`,
-    5. gzip-9 the merged dataset to `<out>/gpui-contract.json.gz`.
+    5. compress the merged dataset (xz preset 9) to `<out>/gpui-contract.json.xz`.
 
 This is the **monolithic** layout (task T-49 tracks switching to a split
 `measured/index.json.gz` + immutable `measured/surfaces/…` layout, which the
@@ -40,10 +40,13 @@ import tarfile
 import tempfile
 from pathlib import Path
 
-from gz import gz9
+from gz import xz9
 
 DATASET_SCHEMA = "gocar.contract.v0"
-OUT_NAME = "gpui-contract.json.gz"
+OUT_NAME = "gpui-contract.json.xz"
+# The artifact used to be gzip-9 (`gpui-contract.json.gz`, ~12 MB); xz is
+# ~1.4 MB. Drop the legacy name so the branch carries a single artifact.
+LEGACY_NAMES = ("gpui-contract.json.gz",)
 SOURCE_KIND = "crates-io"
 
 
@@ -171,11 +174,13 @@ def measure(data_root: Path, out: Path, *, gocar_index: str, work: Path) -> None
     run([gocar_index, "analyze", str(corpus), "--out", str(analysis)])
     run([gocar_index, "merge", str(dataset_path), str(analysis), str(merged)])
 
-    payload = gz9(merged.read_bytes())
+    payload = xz9(merged.read_bytes())
     out_path = out / OUT_NAME
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_bytes(payload)
-    print(f"wrote {out_path} ({len(payload):,} bytes gzip-9)")
+    for legacy in LEGACY_NAMES:
+        (out / legacy).unlink(missing_ok=True)
+    print(f"wrote {out_path} ({len(payload):,} bytes xz)")
 
 
 def main() -> int:

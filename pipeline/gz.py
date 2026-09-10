@@ -11,6 +11,7 @@ from __future__ import annotations
 import gzip
 import io
 import json
+import lzma
 
 
 def gz9(data: bytes) -> bytes:
@@ -27,3 +28,9 @@ def json_gz9(value: object) -> bytes:
     """Compact, key-sorted, gzip-9 JSON — deterministic for equal content."""
     text = json.dumps(value, separators=(",", ":"), ensure_ascii=False, sort_keys=True)
     return gz9(text.encode("utf-8"))
+
+
+def xz9(data: bytes) -> bytes:
+    """xz (LZMA2) preset 9 — used for the dataset, where it is ~8× smaller
+    than gzip-9 on the highly repetitive item surfaces."""
+    return lzma.compress(data, format=lzma.FORMAT_XZ, preset=9)
