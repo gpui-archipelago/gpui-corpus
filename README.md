@@ -58,6 +58,75 @@ no-new-release re-run is byte-identical. Network: `index.crates.io`,
 pipeline on a daily schedule (and on demand), and commits any new blobs to the
 `data` branch. It never touches `main`.
 
+## Adding a tracked fork
+
+`providers.json` (on `main`) is the human-edited list of tracked entities — the
+only place a fork is declared. To track a new fork, append an entry to
+`providers`:
+
+```jsonc
+{
+  "id": "gpui-…",              // stable id, unique; what `cargo gocar` binds by
+  "package": "gpui-…",         // the crates.io package to bind
+  "lib_name": "gpui",          // extern name consumers compile against; every fork is "gpui"
+  "repository": null,          // optional; filled from the crates.io API when null
+  "note": "what this fork is",  // human note, carried into the corpus index
+  "sources": [
+    { "kind": "crates-io" }    // index_path is derived from `package`; set it if you prefer to be explicit
+  ]
+}
+```
+
+Rules the pipeline enforces (`validate_config`, before it touches the network):
+
+- `id` is unique across the file, `package` is required, and at least one
+  source is required.
+- `role` is optional and defaults to `fork` (a bindable lineage). A fork sets
+  no `for`.
+- `for`, when present, must name another provider in the file — that is how
+  companions and dependencies link to the fork they serve.
+
+`index_path` follows crates.io's sparse-index rule, so it can normally be
+omitted; the pipeline derives it:
+
+| package length | path | example |
+| --- | --- | --- |
+| 1 | `1/<x>` | `a` → `1/a` |
+| 2 | `2/<xy>` | `ab` → `2/ab` |
+| 3 | `3/<x>/<xyz>` | `abc` → `3/a/abc` |
+| 4+ | `<ab>/<cd>/<name>` | `gpui-unofficial` → `gp/ui/gpui-unofficial` |
+
+Then:
+
+1. Preview it: `python3 pipeline/fetch_corpus.py --out out --dry-run`
+   (needs the crates.io hosts; add `--provider <id>` to limit the run to the
+   new entry).
+2. Commit the edit to `main`. The daily `corpus.yml` — or a manual dispatch —
+   sources it into `data`, and `measure.yml` follows automatically and
+   republishes `measured`. Nothing else is needed: the measured dataset is
+   rebuilt from whatever the corpus index lists.
+
+Leave `contract` alone for a new fork (it changes only when the contract
+itself does), and change `recommended_provider` only if the new fork should
+become the default binding.
+
+**Removing a fork** is the same edit in reverse: delete its entry (its already-
+derived blobs stay on their branches, merely unindexed). Deleting branches is a
+separate, deliberate act.
+
+**Companions and dependencies** use the same shape plus `role`/`for`:
+
+```jsonc
+{ "id": "gpui-platform-gpui-unofficial", "package": "gpui-platform-gpui-unofficial",
+  "role": "companion", "for": "gpui-unofficial", "sources": [ { "kind": "crates-io" } ] }
+```
+
+A companion's dependency edges already ride each release's `meta.deps`; a
+dependency whose *code* also needs measuring gets its own entry with
+`role: "dependency"`. (The measured `gocar.contract.v0` dataset is
+fork-oriented, so the measurement stage currently measures forks only — see
+`schema/README.md`.)
+
 ## Stage 2 — measure the corpus (implemented)
 
 `pipeline/measure.py` consumes the `data` branch and produces the measured
