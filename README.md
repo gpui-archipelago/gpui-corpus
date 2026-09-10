@@ -33,9 +33,12 @@ sources/<kind>/<…>/<release>.tar.gz          # gzip-9 tar: Cargo.toml + src/**
 ```
 
 The index is source-agnostic — a release is `{id, meta, artifact}` whatever the
-kind — so adding a source is one adapter function, not a schema change. Formats
-and semantics: [`schema/README.md`](schema/README.md). Providers and their
-sources are declared in [`providers.json`](providers.json).
+kind — so adding a source is one adapter function, not a schema change. Entities
+are role-tagged too (`fork` | `companion` | `dependency`), so a fork's platform
+companion crate and its dependencies are sourced the same way, with no
+companion-specific code. Formats and semantics:
+[`schema/README.md`](schema/README.md). Providers and their sources are declared
+in [`providers.json`](providers.json).
 
 ```console
 python3 pipeline/fetch_corpus.py --out ../gpui-corpus-data   # write the data branch checkout

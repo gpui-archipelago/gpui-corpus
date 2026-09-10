@@ -132,5 +132,70 @@ class AdapterGuard(unittest.TestCase):
             fc.sync_provider(entry, {}, Path("/tmp"), only=set(), dry_run=True)
 
 
+class Roles(unittest.TestCase):
+    def test_lib_name_defaults_to_the_package_with_underscores(self):
+        self.assertEqual(fc.lib_name("gpui-platform-gpui-unofficial"), "gpui_platform_gpui_unofficial")
+        self.assertEqual(fc.lib_name("kael"), "kael")
+
+    def test_validate_config_accepts_a_companion_entry(self):
+        fc.validate_config({"providers": [
+            {"id": "gpui-unofficial", "package": "gpui-unofficial", "sources": [{"kind": "crates-io"}]},
+            {"id": "gpui-platform-gpui-unofficial", "package": "gpui-platform-gpui-unofficial",
+             "role": "companion", "for": "gpui-unofficial", "sources": [{"kind": "crates-io"}]},
+        ]})  # does not raise
+
+    def test_validate_config_rejects_bad_entries(self):
+        io_ = [{"kind": "crates-io"}]
+        cases = [
+            ([{"id": "a", "package": "a", "sources": []}], "no sources"),
+            ([{"id": "a", "package": "a", "role": "wat", "sources": io_}], "unknown role"),
+            ([{"id": "a", "package": "a", "for": "ghost", "sources": io_}], "unknown provider"),
+            ([{"id": "a", "package": "a", "sources": io_},
+              {"id": "a", "package": "b", "sources": io_}], "duplicate"),
+        ]
+        for providers, needle in cases:
+            with self.assertRaisesRegex(RuntimeError, needle):
+                fc.validate_config({"providers": providers})
+
+
+class CompanionSourcing(unittest.TestCase):
+    """A companion is sourced exactly like a fork — no companion-specific code."""
+
+    ENTRY = {
+        "id": "gpui-platform-gpui-unofficial",
+        "package": "gpui-platform-gpui-unofficial",
+        "role": "companion",
+        "for": "gpui-unofficial",
+        "sources": [{"kind": "crates-io", "index_path": "gp/ui/gpui-platform-gpui-unofficial"}],
+    }
+
+    def setUp(self):
+        self._sparse, self._api, self._fetch = fc.sparse_rows, fc.api_meta, fc.fetch
+        fc.sparse_rows = lambda path: [{
+            "vers": "0.1.0", "cksum": "ccc", "yanked": False, "features": {},
+            "deps": [{"name": "gpui-unofficial", "req": "1", "kind": "normal"}],
+        }]
+        fc.api_meta = lambda pkg: ({}, {})
+        fc.fetch = lambda url, **kw: crate_bytes("gpui-platform-gpui-unofficial", "0.1.0")
+        self.addCleanup(self._restore)
+
+    def _restore(self):
+        fc.sparse_rows, fc.api_meta, fc.fetch = self._sparse, self._api, self._fetch
+
+    def test_it_is_sourced_and_carries_its_role_and_dependencies(self):
+        with tempfile.TemporaryDirectory() as td:
+            provider, new, reused = fc.sync_provider(self.ENTRY, {}, Path(td), only=set(), dry_run=False)
+        self.assertEqual((new, reused), (1, 0))
+        self.assertEqual(provider["role"], "companion")
+        self.assertEqual(provider["for"], "gpui-unofficial")
+        self.assertEqual(provider["lib_name"], "gpui_platform_gpui_unofficial")
+        release = provider["sources"][0]["releases"][0]
+        self.assertEqual(
+            release["artifact"]["blob"],
+            "sources/crates-io/gpui-platform-gpui-unofficial/0.1.0.tar.gz",
+        )
+        self.assertEqual(release["meta"]["deps"][0]["name"], "gpui-unofficial")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

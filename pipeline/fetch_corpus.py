@@ -14,6 +14,11 @@ is the source's own release key, `meta` is kind-specific, and `artifact` (the
 blob + digest) is common. Adding a source kind means adding one adapter below —
 the config, index and blob namespace do not change shape.
 
+An entity is not necessarily a fork: `role` marks a fork lineage, its platform
+`companion`, or a `dependency`; `for` links a companion/dependency to the fork
+it serves. Nothing about the pipeline is fork-specific — a companion crate and
+its dependencies are sourced exactly like a fork is.
+
 Incremental: a release already present with the same identity digest keeps its
 blob and is never rewritten, so a re-run only downloads new releases. Blobs are
 written with a fixed mtime and the index omits any wall-clock field, so a
@@ -50,6 +55,11 @@ USER_AGENT = "gpui-corpus/0.1 (+https://github.com/gpui-archipelago/gpui-corpus)
 HERE = Path(__file__).resolve().parent
 CONFIG = HERE.parent / "providers.json"
 CORPUS_SCHEMA = "gocar.corpus.v1"
+
+# Provider roles. A `fork` is a bindable lineage; a `companion` is a fork's
+# platform crate; a `dependency` is a library sourced for measurement. Extend
+# this tuple to admit new roles — the schema is otherwise role-agnostic.
+ROLES = ("fork", "companion", "dependency")
 
 # The measurement input: what `gocar-index analyze` reads. A crate tarball's
 # remaining files (tests/, examples/, benches/, assets/, …) never reach the
@@ -288,6 +298,33 @@ def prior_releases(index: dict | None) -> dict[tuple[str, str, str], dict]:
 # --------------------------------------------------------------------------
 # driver
 # --------------------------------------------------------------------------
+def lib_name(package: str) -> str:
+    """The default Rust lib name for a package (Cargo normalizes `-` to `_`)."""
+    return package.replace("-", "_")
+
+
+def validate_config(config: dict) -> None:
+    """Reject a config the pipeline cannot honor, naming the offending entry."""
+    entries = config.get("providers", [])
+    ids = [entry["id"] for entry in entries]
+    if len(ids) != len(set(ids)):
+        raise RuntimeError("duplicate provider id(s) in the providers config")
+    known = set(ids)
+    for entry in entries:
+        role = entry.get("role", "fork")
+        if role not in ROLES:
+            raise RuntimeError(
+                f"provider '{entry['id']}': unknown role '{role}' (known: {', '.join(ROLES)})"
+            )
+        target = entry.get("for")
+        if target is not None and target not in known:
+            raise RuntimeError(f"provider '{entry['id']}': `for` names unknown provider '{target}'")
+        if not entry.get("package"):
+            raise RuntimeError(f"provider '{entry['id']}': missing `package`")
+        if not entry.get("sources"):
+            raise RuntimeError(f"provider '{entry['id']}': no sources declared")
+
+
 def sync_provider(
     entry: dict,
     prior: dict[tuple[str, str, str], dict],
@@ -314,7 +351,9 @@ def sync_provider(
     provider = {
         "id": entry["id"],
         "package": entry["package"],
-        "lib_name": entry["lib_name"],
+        "lib_name": entry.get("lib_name") or lib_name(entry["package"]),
+        "role": entry.get("role", "fork"),
+        "for": entry.get("for"),
         "repository": provider_meta.get("repository") or entry.get("repository"),
         "description": provider_meta.get("description"),
         "note": entry.get("note"),
@@ -344,6 +383,11 @@ def main() -> int:
     args = parser.parse_args()
 
     config = json.loads(args.config.read_text())
+    try:
+        validate_config(config)
+    except RuntimeError as exc:
+        print(f"error: invalid config: {exc}", file=sys.stderr)
+        return 1
     entries = config["providers"]
     if args.provider:
         wanted = set(args.provider)
@@ -377,7 +421,7 @@ def main() -> int:
         total_new += new
         total_reused += reused
         n_versions = sum(len(s["releases"]) for s in provider["sources"])
-        print(f"  {n_versions} release(s): {new} sourced, {reused} already present")
+        print(f"  {provider['role']}: {n_versions} release(s): {new} sourced, {reused} already present")
 
     if args.dry_run:
         print(f"\ndry run: {len(providers)} provider(s) inspected; nothing written")

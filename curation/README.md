@@ -12,6 +12,12 @@ Planned contents (not populated yet — sourced data comes first):
   `tree`, and the per-version git tag/ref pattern) that back the site's
   docs.rs / GitHub source anchors. Today these ride the dataset's provider
   `upstream` map; they are curation, not measurement, so they belong here.
+- **`companions.json`** — the binding facts for platform companions: which
+  package accompanies which fork, how its version pins (mirror the fork, or a
+  fixed version), and the features its dependency line needs. Today this is the
+  dataset's provider-level `platform_companion` map. The *crate data* (versions,
+  deps, source) is sourced by the pipeline via a `role: "companion"` entry;
+  this file holds only the binding choice on top of it.
 - **`research/`** — field notes and case-study documents that explain *why* a
   rule or a source link exists.
 

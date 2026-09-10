@@ -34,7 +34,9 @@ a provider lists typed sources, and every release is the same
     {
       "id": "gpui-unofficial",
       "package": "gpui-unofficial",      // the binding package identity
-      "lib_name": "gpui",
+      "lib_name": "gpui",                // defaults to package with `-` → `_`
+      "role": "fork",                    // fork | companion | dependency
+      "for": null,                        // provider id a companion/dependency serves
       "repository": "https://github.com/zed-industries/zed",
       "description": "…",
       "note": "…",
@@ -69,6 +71,42 @@ a provider lists typed sources, and every release is the same
 The measured fields (`versem`, `api_hash`, `api_epoch`, surfaces) are **not**
 here — they are the next stage's output and never enter this repo's source
 index.
+
+## Roles
+
+An entity is not necessarily a fork. Every provider carries a `role` and,
+when it serves another, a `for` link:
+
+| `role` | Meaning | `for` |
+| --- | --- | --- |
+| `fork` (default) | a bindable fork lineage | absent |
+| `companion` | a fork's platform layer crate (e.g. `gpui-platform-gpui-unofficial`) | the fork provider id |
+| `dependency` | a library sourced for measurement | the provider it belongs to (optional) |
+
+A companion (or dependency) is declared **exactly like a fork** — same
+`id`/`package`/`sources` shape, same blob layout (`sources/crates-io/<package>/…`)
+— so the pipeline needs no companion-specific code. For example (not populated
+yet):
+
+```jsonc
+{
+  "id": "gpui-platform-gpui-unofficial",
+  "package": "gpui-platform-gpui-unofficial",
+  "role": "companion",
+  "for": "gpui-unofficial",
+  "sources": [ { "kind": "crates-io" } ]   // index_path derives from the package
+}
+```
+
+A companion's **dependencies** are already carried per release in
+`meta.deps` (name, req, kind, optional, default features). When a dependency's
+*code* also needs measuring, declare it as its own entry with `role:
+"dependency"` and its own `sources` — no schema change.
+
+`validate_config` enforces: unique ids, a known `role`, a `for` that names an
+existing provider, a `package`, and at least one source. Binding-specific
+curation (a companion's `pin` — mirror/fixed — and its `features`) belongs in
+[`curation/`](../curation/README.md), not in this derived index.
 
 ## Source kinds
 
