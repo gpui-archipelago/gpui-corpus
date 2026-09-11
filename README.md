@@ -160,7 +160,13 @@ python3 pipeline/measure.py --data in --out out --no-compile-passes   # syn-leve
 
 The compiler passes add the measured `tvm` (auto-trait allocations; a drop on
 an unchanged surface is a T-break) and `eac`/`toolchain_floor` to each released
-row. They are the dominant cost — a dependency-graph build per release — so the
+row. They are the dominant cost — a dependency-graph build per release — so all
+releases share one cargo target dir (a `target/` symlink per crate into
+`<work>/cargo-target`): cargo fingerprints compiled artifacts by package id +
+flags, not by path, so a dependency one release already built is reused by every
+later release that resolves the same version. Only ~167 distinct dependency
+names appear across the corpus's ~5 600 direct dep edges, so this is the
+difference between a per-release rebuild and a per-distinct-dep build. The
 workflow caches cargo and allows up to 6 h; `--no-compile-passes` reproduces the
 pre-T-27 syn-level dataset offline from the pruned blobs. Because the TVM/EAC
 docs carry the toolchain provenance string, a compiler update re-measures (a

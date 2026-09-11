@@ -4,7 +4,7 @@
 Consumes the `data` branch (`gocar.corpus.v1` index + `sources/<kind>/…` blobs)
 and produces the measured contract dataset:
 
-    out/gpui-contract.json.gz   # gocar.contract.v0 with api_hash/versem/surface
+    out/gpui-contract.json.xz   # gocar.contract.v0 with api_hash/versem/surface/tvm/eac
 
 The measurement itself is the published `gocar-index` binary:
 
@@ -20,6 +20,12 @@ The measurement itself is the published `gocar-index` binary:
     4. `gocar-index analyze <corpus> --tvm <dir> --eac <dir> --out analysis.json`,
     5. `gocar-index merge <dataset.json> <analysis.json> merged.json`,
     6. compress the merged dataset (xz preset 9) to `<out>/gpui-contract.json.xz`.
+
+Step 3 is the expensive one — each pass builds a release's whole dependency
+graph. All releases therefore share **one cargo target dir**
+(`<work>/cargo-target`, reached through a `target/` symlink in each extracted
+crate) so cargo reuses a dependency another release already compiled: the
+fingerprint is keyed by package id + flags, not by the workspace path.
 
 Pass `--no-compile-passes` to skip steps 3–4's compiler passes and measure
 only the syn-level interface (offline, using the pruned blobs — the pre-T-27
@@ -52,6 +58,7 @@ import hashlib
 import io
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tarfile
@@ -262,10 +269,38 @@ def materialize_build_corpus(index: dict, build_dir: Path) -> tuple[list[tuple[s
     return built, skipped
 
 
+def link_shared_target(crate_dir: Path, shared: Path) -> None:
+    """Point a crate's `target/` at one shared dir.
+
+    Cargo fingerprints compiled artifacts by package id + flags, **not** by the
+    workspace path, so a shared target dir lets every release reuse the
+    dependencies another release already compiled (the corpus shares ~90% of
+    its direct dep edges across releases, and only ~167 distinct dep names are
+    involved). Without this, each of the ~67 releases rebuilds its whole
+    dependency graph from scratch — the dominant cost of the TVM/EAC passes.
+
+    `gocar-index` reads `<crate-dir>/target/doc/<lib>.json`, so the symlink
+    keeps that path valid while cargo writes through to the shared dir.
+    """
+    link = crate_dir / "target"
+    if link.is_symlink():
+        link.unlink()
+    elif link.is_dir():
+        shutil.rmtree(link)
+    elif link.exists():
+        link.unlink()
+    link.parent.mkdir(parents=True, exist_ok=True)
+    link.symlink_to(shared, target_is_directory=True)
+
+
 def compile_passes(
     gocar_index: str, build_dir: Path, releases: list[tuple[str, str]], work: Path
 ) -> tuple[Path, Path]:
     """Run `gocar-index tvm`/`eac` per release; return (tvm_dir, eac_dir).
+
+    All releases share one cargo target dir (`<work>/cargo-target`, reached via
+    each crate's `target/` symlink), so dependency compilation is paid once per
+    distinct dep version rather than once per release.
 
     Best-effort by design: a release that fails to build is left without a
     doc, so `analyze --tvm/--eac` leaves it `null` — the honest unknown,
@@ -273,9 +308,12 @@ def compile_passes(
     """
     tvm_dir = work / "tvm"
     eac_dir = work / "eac"
+    shared_target = work / "cargo-target"
+    shared_target.mkdir(parents=True, exist_ok=True)
     tvm_ok = eac_ok = 0
     for package, vers in releases:
         crate_dir = build_dir / package / vers
+        link_shared_target(crate_dir, shared_target)
         tvm_out = tvm_dir / package / f"{vers}.json"
         try:
             run([gocar_index, "tvm", str(crate_dir), "--out", str(tvm_out)])

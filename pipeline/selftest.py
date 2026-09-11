@@ -357,6 +357,18 @@ class CompilePasses(unittest.TestCase):
             mz.ensure_workspace_table(manifest)
             self.assertEqual(manifest.read_text().count("[workspace]"), 1)
 
+    def test_link_shared_target_points_target_at_the_shared_dir(self):
+        with tempfile.TemporaryDirectory() as td:
+            crate = Path(td) / "gpui-box/1.0.0"
+            crate.mkdir(parents=True)
+            (crate / "target").mkdir()  # a pre-existing dir is replaced
+            shared = Path(td) / "cargo-target"
+            shared.mkdir()
+            mz.link_shared_target(crate, shared)
+            mz.link_shared_target(crate, shared)  # idempotent
+            self.assertTrue((crate / "target").is_symlink())
+            self.assertEqual((crate / "target").resolve(), shared.resolve())
+
     def test_compile_passes_run_both_tools_and_survive_failures(self):
         recorded: list[list[str]] = []
 
