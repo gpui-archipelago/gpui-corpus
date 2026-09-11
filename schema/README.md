@@ -174,8 +174,9 @@ digest keeps its blob (never rewritten); only new releases are downloaded.
 
 `artifact.sha256` is the blob's own digest; a kind's `meta` carries the
 upstream digest (`cksum` for crates-io, `commit` for github). The measurement
-stage should verify the upstream digest where it exists, and `artifact.sha256`
-against the downloaded blob.
+stage verifies the upstream digest where it exists (the compiler-pass
+materialization checks the `.crate`'s `cksum` before building), and may check
+`artifact.sha256` against the extracted blob.
 
 ---
 
@@ -184,21 +185,27 @@ against the downloaded blob.
 ## Layout
 
 ```
-gpui-contract.json.gz   # gocar.contract.v0 — registry truth + measured fields
+gpui-contract.json.xz   # gocar.contract.v0 — registry truth + measured fields
 ```
 
-One monolithic, deterministic gzip-9 dataset (mtime 0, no wall clock). It is
-the `data` branch's registry truth with the measured fields filled in by
-`gocar-index`: per-version `versem`, `api_hash`, and `surface` (the canonical
-item set with its sparse fn/doc/src/member payloads), plus the provider
-`api_epoch` heads.
+One monolithic, deterministic xz-9 dataset (no wall clock). It is the `data`
+branch's registry truth with the measured fields filled in by `gocar-index`:
+per-version `versem`, `api_hash`, the `surface` (the canonical item set with
+its sparse fn/doc/src/member payloads), the compiler-pass `tvm` (T-27 — the
+per-type auto-trait allocations; a measured drop on an unchanged surface is a
+T-break) and `eac`/`toolchain_floor` (T-28 — the verified toolchain span and
+attested floor), plus the provider `api_epoch` heads. Every measured field is
+`null` where its pass did not run — an honest unknown, never synthesized.
 
 ## Production
 
 `pipeline/measure.py` materializes a null-attestation dataset from
 `data/index.json.gz`, extracts `data/sources/**` into the analyzer's corpus
-layout, and runs the published `gocar-index` (`analyze` then `merge`). It
-adapts shapes only — the measurement is the tool.
+layout, and runs the published `gocar-index`. The compiler passes additionally
+fetch each release's **full published `.crate`** from `static.crates.io`,
+verify its `cksum`, and run `gocar-index tvm`/`eac` over it (the pruned blobs
+cannot build); `--no-compile-passes` reproduces the syn-level dataset offline.
+The script adapts shapes only — the measurement is the tool.
 
 ## Incrementality (current limit)
 

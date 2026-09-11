@@ -7,24 +7,27 @@ temp dir. Run: `python3 pipeline/selftest.py` (from the repo root or from
 from __future__ import annotations
 
 import io
+import hashlib
 import json
 import tarfile
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 import fetch_corpus as fc
 import measure as mz
 
 
 def crate_bytes(name: str, vers: str, *, with_lib: bool = True, with_manifest: bool = True) -> bytes:
-    """A synthetic `.crate` tarball: <name>-<vers>/{Cargo.toml,src/…,tests/…}."""
+    """A synthetic `.crate` tarball: <name>-<vers>/{Cargo.toml,README.md,src/…,tests/…}."""
     buf = io.BytesIO()
     members = []
     if with_manifest:
         members.append((f"{name}-{vers}/Cargo.toml", b'[package]\nname = "x"\nversion = "0.0.0"\n'))
     if with_lib:
         members.append((f"{name}-{vers}/src/lib.rs", b"pub fn f() {}\n"))
+    members.append((f"{name}-{vers}/README.md", b"# demo\n"))
     members.append((f"{name}-{vers}/tests/it.rs", b"#[test]\nfn t() {}\n"))
     with tarfile.open(fileobj=buf, mode="w:gz") as tar:
         for member, data in members:
@@ -297,6 +300,82 @@ class MeasureStage(unittest.TestCase):
             with tarfile.open(fileobj=io.BytesIO(buf.getvalue()), mode="r:") as tar:
                 with self.assertRaises(RuntimeError):
                     mz.extract_member(tar, tar.getmembers()[0], Path(td) / "dest")
+
+
+class CompilePasses(unittest.TestCase):
+    """T-27/T-28: the full-crate materialization + best-effort compiler passes."""
+
+    def _index(self, releases):
+        return {"providers": [{
+            "id": "gpui-box", "package": "gpui-box", "role": "fork",
+            "sources": [{"kind": "crates-io", "releases": releases}],
+        }]}
+
+    def _release(self, vers, cksum, blob=True):
+        return {
+            "id": vers,
+            "meta": {"cksum": cksum},
+            "artifact": {"blob": f"sources/crates-io/gpui-box/{vers}.tar.gz"} if blob else None,
+        }
+
+    def test_extract_full_crate_strips_the_top_dir_and_keeps_extras(self):
+        with tempfile.TemporaryDirectory() as td:
+            dest = Path(td) / "gpui-box/1.0.0"
+            mz.extract_crate_tarball(crate_bytes("gpui-box", "1.0.0"), dest)
+            self.assertTrue((dest / "Cargo.toml").is_file())
+            self.assertTrue((dest / "src/lib.rs").is_file())
+            # The pruned blob drops these; the full crate must keep them.
+            self.assertTrue((dest / "README.md").is_file())
+            self.assertTrue((dest / "tests/it.rs").is_file())
+
+    def test_materialize_verifies_the_cksum_and_skips_failures(self):
+        good = crate_bytes("gpui-box", "1.0.0")
+        index = self._index([
+            self._release("1.0.0", hashlib.sha256(good).hexdigest()),
+            self._release("1.0.1", "deadbeef"),
+            self._release("1.0.2", hashlib.sha256(good).hexdigest()),
+        ])
+
+        def fake_fetch(url, **kw):
+            if url.endswith("gpui-box-1.0.2.crate"):
+                raise RuntimeError("offline")
+            return good
+
+        with tempfile.TemporaryDirectory() as td:
+            with mock.patch.object(mz, "fetch", fake_fetch):
+                built, skipped = mz.materialize_build_corpus(index, Path(td))
+            self.assertEqual(built, [("gpui-box", "1.0.0")])
+            self.assertEqual(skipped, 2, "cksum mismatch + fetch failure are skipped, never fatal")
+            manifest = (Path(td) / "gpui-box/1.0.0/Cargo.toml").read_text()
+            self.assertIn("[workspace]", manifest)
+
+    def test_ensure_workspace_table_is_idempotent(self):
+        with tempfile.TemporaryDirectory() as td:
+            manifest = Path(td) / "Cargo.toml"
+            manifest.write_text('[package]\nname = "x"\n')
+            mz.ensure_workspace_table(manifest)
+            mz.ensure_workspace_table(manifest)
+            self.assertEqual(manifest.read_text().count("[workspace]"), 1)
+
+    def test_compile_passes_run_both_tools_and_survive_failures(self):
+        recorded: list[list[str]] = []
+
+        def fake_run(argv):
+            recorded.append(argv)
+            if argv[1] == "tvm" and argv[2].endswith("1.0.1"):
+                raise SystemExit("tvm failed")
+
+        releases = [("gpui-box", "1.0.0"), ("gpui-box", "1.0.1")]
+        with tempfile.TemporaryDirectory() as td:
+            with mock.patch.object(mz, "run", fake_run):
+                tvm_dir, eac_dir = mz.compile_passes("gocar-index", Path(td), releases, Path(td))
+        kinds = [(argv[1], argv[2].rsplit("/", 1)[-1]) for argv in recorded]
+        self.assertIn(("tvm", "1.0.0"), kinds)
+        self.assertIn(("eac", "1.0.0"), kinds)
+        # A tvm failure on one release never blocks the eac pass (nor later releases).
+        self.assertIn(("eac", "1.0.1"), kinds)
+        self.assertEqual(tvm_dir, Path(td) / "tvm")
+        self.assertEqual(eac_dir, Path(td) / "eac")
 
 
 if __name__ == "__main__":

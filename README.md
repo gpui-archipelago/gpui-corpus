@@ -133,7 +133,7 @@ fork-oriented, so the measurement stage currently measures forks only — see
 contract dataset on `measured`:
 
 ```
-gpui-contract.json.gz   # gocar.contract.v0 — registry truth + api_hash/versem/surface
+gpui-contract.json.xz   # gocar.contract.v0 — registry truth + api_hash/versem/surface/tvm/eac
 ```
 
 The measurement itself is the published `gocar-index` binary; the script only
@@ -143,18 +143,31 @@ adapts shapes (it holds no fork-specific knowledge):
    index (`data/index.json.gz`) — registry truth only,
 2. extract each release's source blob into the corpus layout
    (`<corpus>/<package>/<version>/Cargo.toml` + `src/`),
-3. `gocar-index analyze <corpus> --out analysis.json`,
-4. `gocar-index merge <dataset.json> <analysis.json> merged.json`,
-5. gzip-9 the merged dataset to `measured/gpui-contract.json.gz`.
+3. run the **compiler passes** (T-27 TVM, T-28 EAC): fetch each release's
+   full published `.crate` (checksum-verified against the index) and run
+   `gocar-index tvm` + `gocar-index eac` over it — best-effort, a release
+   that does not build records `null` + a printed reason,
+4. `gocar-index analyze <corpus> --tvm <dir> --eac <dir> --out analysis.json`,
+5. `gocar-index merge <dataset.json> <analysis.json> merged.json`,
+6. xz-9 the merged dataset to `measured/gpui-contract.json.xz`.
 
 ```console
-cargo install gocar-index --version 0.2.0   # the measurement tool (crates.io)
+cargo install gocar-index --version 0.5.0   # the measurement tool (crates.io)
 python3 pipeline/measure.py --data in --out out
 python3 pipeline/measure.py --data in --out out --work /tmp/measure   # keep scratch
+python3 pipeline/measure.py --data in --out out --no-compile-passes   # syn-level only
 ```
 
+The compiler passes add the measured `tvm` (auto-trait allocations; a drop on
+an unchanged surface is a T-break) and `eac`/`toolchain_floor` to each released
+row. They are the dominant cost — a dependency-graph build per release — so the
+workflow caches cargo and allows up to 6 h; `--no-compile-passes` reproduces the
+pre-T-27 syn-level dataset offline from the pruned blobs. Because the TVM/EAC
+docs carry the toolchain provenance string, a compiler update re-measures (a
+real measurement change) and moves the `measured` branch.
+
 So measuring no longer needs the 66 MB dataset baked into a crate: the tool is
-~60 KiB, the data comes from here, and a no-new-release run rewrites
+~60 KiB, the data comes from here, and a no-new-release syn-level run rewrites
 byte-identical output (the `measured` branch only moves when the measurement
 does).
 
