@@ -61,9 +61,25 @@ jobs:
           key: ${{ runner.os }}-gocar-index-0.5.0
 
       - name: Install the measurement tool
-        # --force: the `~/.cargo/bin` cache above can restore a binary from a
-        # previous run, and `cargo install` refuses to overwrite an existing one.
-        run: cargo install gocar-index --version 0.5.0 --force
+        run: |
+          # Keep in sync with the cache key above.
+          version=0.5.0
+          stamp="$HOME/.cargo/bin/.gocar-index-version"
+          # No-op when the cache above restored the pinned build: `cargo install`
+          # refuses to overwrite an existing binary ("binary `gocar-index`
+          # already exists in destination"), and a reinstall is a full rebuild.
+          # The stamp sits in the cached `~/.cargo/bin` itself, so it is restored
+          # and invalidated together with the binary; cargo's own `install --list`
+          # bookkeeping can't be used here because `~/.cargo/.crates.toml` is not
+          # among the cached paths and would be missing on a hit.
+          if [ -x "$HOME/.cargo/bin/gocar-index" ] \
+             && [ "$(cat "$stamp" 2>/dev/null)" = "$version" ]; then
+            echo "gocar-index $version already installed — skipping cargo install"
+          else
+            # --force: replace whatever a hit under an older key left behind.
+            cargo install gocar-index --version "$version" --force
+            printf '%s\n' "$version" > "$stamp"
+          fi
 
       - name: Check out the data branch
         run: |
