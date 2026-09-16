@@ -5,6 +5,7 @@ Consumes the `data` branch (`gocar.corpus.v1` index + `sources/<kind>/…` blobs
 and produces the measured contract dataset:
 
     out/gpui-contract.json.xz   # gocar.contract.v0 with api_hash/versem/surface/tvm/eac
+    out/attestations/           # the T-27/T-28 docs + their reuse index
 
 The measurement itself is the published `gocar-index` binary:
 
@@ -27,18 +28,34 @@ graph. All releases therefore share **one cargo target dir**
 crate) so cargo reuses a dependency another release already compiled: the
 fingerprint is keyed by package id + flags, not by the workspace path.
 
+The passes are also **incremental across runs**. Their docs double as the
+`measured` branch's `attestations/` tree — `attestations/{tvm,eac}/<package>/
+<vers>.json`, which is the layout `analyze` reads, so reuse copies nothing. A
+release is not re-measured when its `cksum`, its freshly resolved dependency
+graph (the `Cargo.lock` digest — a new dep release can move an auto-trait
+allocation or break the build) and its docs all still match what the previous
+run recorded, nor when its `.crate` cannot be materialized at all (it cannot be
+re-measured either, and a transient fetch failure must not publish a `null`).
+A *failure* is never cached: a release whose pass produced no doc is attempted
+again on every run. `attestations/index.json` holds each entry's keys and doc
+digests, and `pipeline/attestations.py` documents the rule; the whole cache is
+dropped when the measurement environment moves (the tool binary's digest,
+`rustc`, `rustdoc`), so a new tool or compiler still re-measures everything.
+Pass `--no-reuse` to measure every release again, ignoring the cache.
+
 Pass `--no-compile-passes` to skip steps 3–4's compiler passes and measure
 only the syn-level interface (offline, using the pruned blobs — the pre-T-27
-behavior).
+behavior). The `attestations/` tree is left alone in that mode: with no passes
+run, no doc is measured or verified.
 
 This is the **monolithic** layout (task T-49 tracks switching to a split
 `measured/index.json.gz` + immutable `measured/surfaces/…` layout, which the
 tools will consume once they have a store loader). Deterministic end to end: a
-run with no new releases rewrites byte-identical output, so the `measured`
-branch only moves when the measurement does. (With the compiler passes on, the
-TVM/EAC docs carry the toolchain provenance string, so a compiler update
-re-measures and moves the branch — a real measurement change, recorded, not
-suppressed.)
+run with no new releases rewrites byte-identical output — the dataset *and* the
+`attestations/` tree it reused — so the `measured` branch only moves when the
+measurement does. (With the compiler passes on, the TVM/EAC docs carry the
+toolchain provenance string, so a compiler update re-measures and moves the
+branch — a real measurement change, recorded, not suppressed.)
 
 The dataset's `synced_at` — the fork map's "data as of" line — is the newest
 release `created_at` in the corpus index (registry truth), not a wall clock, so
@@ -66,11 +83,14 @@ import tempfile
 from datetime import datetime
 from pathlib import Path
 
+from attestations import PASSES, Cache, environment
 from fetch_corpus import STATIC_HOST, fetch
 from gz import xz9
 
 DATASET_SCHEMA = "gocar.contract.v0"
 OUT_NAME = "gpui-contract.json.xz"
+# The compiler-pass docs + their reuse index, beside the dataset on `measured`.
+ATTESTATIONS_DIR = "attestations"
 # The artifact used to be gzip-9 (`gpui-contract.json.gz`, ~12 MB); xz is
 # ~1.4 MB. Drop the legacy name so the branch carries a single artifact.
 LEGACY_NAMES = ("gpui-contract.json.gz",)
@@ -238,16 +258,19 @@ def ensure_workspace_table(manifest: Path) -> None:
     manifest.write_text(text.rstrip() + "\n\n[workspace]\n", encoding="utf-8")
 
 
-def materialize_build_corpus(index: dict, build_dir: Path) -> tuple[list[tuple[str, str]], int]:
+def materialize_build_corpus(
+    index: dict, build_dir: Path
+) -> tuple[list[tuple[str, str]], list[tuple[str, str]]]:
     """Fetch + extract the full published crate for every fork release.
 
     Checksum-verified against the index (immutable registry artifacts: the
     tarball a cksum names never changes). A release whose crate cannot be
-    fetched/extracted is skipped (its passes record `null` later), never
-    fatal — the syn-level measurement must still complete.
+    fetched/extracted is reported as failed — it has no passes to run, so it
+    records `null` unless it still has an attestation to keep — never fatal:
+    the syn-level measurement must still complete.
     """
     built: list[tuple[str, str]] = []
-    skipped = 0
+    failed: list[tuple[str, str]] = []
     for entity in index.get("providers", []):
         if entity.get("role", "fork") != "fork":
             continue
@@ -265,8 +288,8 @@ def materialize_build_corpus(index: dict, build_dir: Path) -> tuple[list[tuple[s
                     built.append((package, vers))
                 except (OSError, RuntimeError, tarfile.TarError) as exc:
                     print(f"  warning: cannot materialize {package} {vers}: {exc}", file=sys.stderr)
-                    skipped += 1
-    return built, skipped
+                    failed.append((package, vers))
+    return built, failed
 
 
 def link_shared_target(crate_dir: Path, shared: Path) -> None:
@@ -294,9 +317,17 @@ def link_shared_target(crate_dir: Path, shared: Path) -> None:
 
 
 def compile_passes(
-    gocar_index: str, build_dir: Path, releases: list[tuple[str, str]], work: Path
-) -> tuple[Path, Path]:
-    """Run `gocar-index tvm`/`eac` per release; return (tvm_dir, eac_dir).
+    gocar_index: str,
+    build_dir: Path,
+    releases: list[tuple[str, str]],
+    work: Path,
+    docs: dict[str, Path],
+) -> None:
+    """Run `gocar-index tvm`/`eac` per release, writing the docs into `docs`.
+
+    `docs[kind]` is the directory the analyzer reads back from
+    (`<kind>/<package>/<vers>.json`): the `attestations/` tree, or the scratch
+    work dir when attestations are disabled. `gocar-index` creates the parents.
 
     All releases share one cargo target dir (`<work>/cargo-target`, reached via
     each crate's `target/` symlink), so dependency compilation is paid once per
@@ -304,23 +335,22 @@ def compile_passes(
 
     Best-effort by design: a release that fails to build is left without a
     doc, so `analyze --tvm/--eac` leaves it `null` — the honest unknown,
-    never a fabricated matrix.
+    never a fabricated matrix. A doc that was not written is also never
+    indexed as an attestation (`attestations.Cache.record`).
     """
-    tvm_dir = work / "tvm"
-    eac_dir = work / "eac"
     shared_target = work / "cargo-target"
     shared_target.mkdir(parents=True, exist_ok=True)
     tvm_ok = eac_ok = 0
     for package, vers in releases:
         crate_dir = build_dir / package / vers
         link_shared_target(crate_dir, shared_target)
-        tvm_out = tvm_dir / package / f"{vers}.json"
+        tvm_out = docs["tvm"] / package / f"{vers}.json"
         try:
             run([gocar_index, "tvm", str(crate_dir), "--out", str(tvm_out)])
             tvm_ok += 1
         except SystemExit as exc:
             print(f"  warning: tvm unmeasured for {package} {vers}: {exc}", file=sys.stderr)
-        eac_out = eac_dir / package / f"{vers}.json"
+        eac_out = docs["eac"] / package / f"{vers}.json"
         try:
             run([gocar_index, "eac", str(crate_dir), "--out", str(eac_out)])
             eac_ok += 1
@@ -329,7 +359,71 @@ def compile_passes(
     print(
         f"compiler passes: {tvm_ok} tvm · {eac_ok} eac measured (of {len(releases)} built crate(s))"
     )
-    return tvm_dir, eac_dir
+
+
+# --------------------------------------------------------------------------
+# attestation reuse: keep the docs whose inputs have not moved
+# --------------------------------------------------------------------------
+def release_cksums(index: dict) -> dict[tuple[str, str], str | None]:
+    """Every fork release's registry identity digest, keyed by (package, version).
+
+    Mirrors `materialize_build_corpus`'s walk of the index, so every release a
+    pass could run for has a key here. A miss resolves to `None`, which only
+    ever refuses a reuse — the safe direction.
+    """
+    cksums: dict[tuple[str, str], str | None] = {}
+    for entity in index.get("providers", []):
+        if entity.get("role", "fork") != "fork":
+            continue
+        for source in entity.get("sources", []):
+            for release in source.get("releases", []):
+                meta = release.get("meta") or {}
+                cksums[(entity["package"], release["id"])] = meta.get("cksum")
+    return cksums
+
+
+def measure_passes(
+    gocar_index: str,
+    index: dict,
+    build_dir: Path,
+    built: list[tuple[str, str]],
+    failed: list[tuple[str, str]],
+    work: Path,
+    cache: Cache,
+) -> tuple[Path, Path]:
+    """The T-27/T-28 passes, minus the releases whose attestations still hold.
+
+    Per release: keep the cached docs when every input they recorded still
+    matches (the cache re-resolves the dependency graph to prove it); otherwise
+    measure the release. The passes write into the cache's own tree (which is
+    what `analyze` reads), and `record` indexes exactly what they wrote.
+    Returns the (tvm, eac) doc directories — the `attestations/` tree, or the
+    scratch work dirs when attestations are disabled.
+    """
+    docs = {kind: cache.dir_for(kind) if cache.enabled else work / kind for kind in PASSES}
+    cksums = release_cksums(index)
+    to_measure: list[tuple[str, str]] = []
+    reused = 0
+    for package, vers in built:
+        cksum = cksums.get((package, vers))
+        if cache.reuse(package, vers, cksum, build_dir / package / vers):
+            print(f"= {package} {vers} (attestation reused)")
+            reused += 1
+        else:
+            to_measure.append((package, vers))
+    for package, vers in failed:
+        if cache.carry_forward(package, vers, cksums.get((package, vers))):
+            print(f"= {package} {vers} (attestation kept: crate not materialized)")
+            reused += 1
+    if to_measure:
+        compile_passes(gocar_index, build_dir, to_measure, work, docs)
+        for package, vers in to_measure:
+            cache.record(package, vers, cksums.get((package, vers)), build_dir / package / vers)
+    print(
+        f"attestations: {reused} reused, {len(to_measure)} measured "
+        f"(of {len(built) + len(failed)} release(s))"
+    )
+    return docs["tvm"], docs["eac"]
 
 
 # --------------------------------------------------------------------------
@@ -343,7 +437,13 @@ def run(argv: list[str]) -> None:
 
 
 def measure(
-    data_root: Path, out: Path, *, gocar_index: str, work: Path, with_compile_passes: bool = True
+    data_root: Path,
+    out: Path,
+    *,
+    gocar_index: str,
+    work: Path,
+    with_compile_passes: bool = True,
+    reuse: bool = True,
 ) -> None:
     index_bytes = (data_root / "index.json.gz").read_bytes()
     index = json.loads(gzip.decompress(index_bytes))
@@ -368,9 +468,17 @@ def measure(
     if with_compile_passes:
         build_dir = work / "build"
         build_dir.mkdir(parents=True, exist_ok=True)
-        built, skipped = materialize_build_corpus(index, build_dir)
-        print(f"materialized {len(built)} full crate(s) for the compiler passes ({skipped} skipped)")
-        tvm_dir, eac_dir = compile_passes(gocar_index, build_dir, built, work)
+        built, failed = materialize_build_corpus(index, build_dir)
+        print(
+            f"materialized {len(built)} full crate(s) for the compiler passes "
+            f"({len(failed)} skipped)"
+        )
+        cache = Cache(out / ATTESTATIONS_DIR, environment(gocar_index), reuse=reuse)
+        print(cache.describe())
+        tvm_dir, eac_dir = measure_passes(
+            gocar_index, index, build_dir, built, failed, work, cache
+        )
+        cache.write()
         analyze_argv += ["--tvm", str(tvm_dir), "--eac", str(eac_dir)]
     run(analyze_argv)
     run([gocar_index, "merge", str(dataset_path), str(analysis), str(merged)])
@@ -395,6 +503,11 @@ def main() -> int:
         action="store_true",
         help="skip the TVM/EAC compiler passes (syn-level only; offline, uses the pruned blobs)",
     )
+    parser.add_argument(
+        "--no-reuse",
+        action="store_true",
+        help="measure every release again, ignoring the cached attestations",
+    )
     args = parser.parse_args()
 
     work = args.work or Path(tempfile.mkdtemp(prefix="gpui-corpus-measure-"))
@@ -405,6 +518,7 @@ def main() -> int:
             gocar_index=args.gocar_index,
             work=work,
             with_compile_passes=not args.no_compile_passes,
+            reuse=not args.no_reuse,
         )
     except (OSError, RuntimeError, json.JSONDecodeError) as exc:
         print(f"error: {exc}", file=sys.stderr)

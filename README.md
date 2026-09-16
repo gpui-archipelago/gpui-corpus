@@ -134,6 +134,7 @@ contract dataset on `measured`:
 
 ```
 gpui-contract.json.xz   # gocar.contract.v0 — registry truth + api_hash/versem/surface/tvm/eac
+attestations/           # the T-27/T-28 docs + the index saying which still hold
 ```
 
 The measurement itself is the published `gocar-index` binary; the script only
@@ -146,7 +147,8 @@ adapts shapes (it holds no fork-specific knowledge):
 3. run the **compiler passes** (T-27 TVM, T-28 EAC): fetch each release's
    full published `.crate` (checksum-verified against the index) and run
    `gocar-index tvm` + `gocar-index eac` over it — best-effort, a release
-   that does not build records `null` + a printed reason,
+   that does not build records `null` + a printed reason, and a release whose
+   attestation still holds is not measured again,
 4. `gocar-index analyze <corpus> --tvm <dir> --eac <dir> --out analysis.json`,
 5. `gocar-index merge <dataset.json> <analysis.json> merged.json`,
 6. xz-9 the merged dataset to `measured/gpui-contract.json.xz`.
@@ -156,6 +158,7 @@ cargo install gocar-index --version 0.5.0   # the measurement tool (crates.io)
 python3 pipeline/measure.py --data in --out out
 python3 pipeline/measure.py --data in --out out --work /tmp/measure   # keep scratch
 python3 pipeline/measure.py --data in --out out --no-compile-passes   # syn-level only
+python3 pipeline/measure.py --data in --out out --no-reuse            # ignore the cached attestations
 ```
 
 The compiler passes add the measured `tvm` (auto-trait allocations; a drop on
@@ -171,6 +174,17 @@ workflow caches cargo and allows up to 6 h; `--no-compile-passes` reproduces the
 pre-T-27 syn-level dataset offline from the pruned blobs. Because the TVM/EAC
 docs carry the toolchain provenance string, a compiler update re-measures (a
 real measurement change) and moves the `measured` branch.
+
+Those docs are kept on the branch (`measured/attestations/`, plus the index that
+says which of them still hold — `pipeline/attestations.py`), so a run measures
+only the releases whose inputs moved. A release is reused when its `cksum`, its
+freshly resolved `Cargo.lock` digest and the measurement environment (the
+`gocar-index` binary's digest, `rustc`, `rustdoc`) all still match what its docs
+recorded — a new release, a dependency bump, a rebuilt tool or a compiler update
+measures again. A pass that produced no doc is never cached (a failure must not
+become permanent), and a release whose `.crate` cannot be fetched keeps the
+attestation it already has (it cannot be measured either, and a transient fetch
+failure must not publish a `null`). `--no-reuse` forces a full re-measure.
 
 So measuring no longer needs the 66 MB dataset baked into a crate: the tool is
 ~60 KiB, the data comes from here, and a no-new-release syn-level run rewrites
@@ -190,6 +204,7 @@ pushes deliberately do not start other workflows.
 providers.json            the entities + their typed sources (curation/config)
 pipeline/fetch_corpus.py  stage 1 — source crates.io version data
 pipeline/measure.py       stage 2 — measure the corpus with gocar-index
+pipeline/attestations.py  stage 2 — the reuse rule for the compiler-pass docs
 pipeline/gz.py            the shared deterministic gzip helpers
 pipeline/selftest.py      offline tests for both stages
 curation/                 hand-edited migration rules, source links, research

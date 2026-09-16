@@ -3,6 +3,11 @@ name: measure
 # Measure the sourced corpus (data branch) into the measured dataset (measured
 # branch), using the published `gocar-index`.
 #
+# The measured branch also carries `attestations/` — the per-release TVM/EAC
+# docs and the index that says which of them still hold. They are what lets a
+# run skip the compiler passes for releases whose inputs have not moved
+# (`pipeline/attestations.py`), so they are committed with the dataset.
+#
 # Triggered by workflow_run, not `push`: corpus.yml pushes the data branch with
 # the default GITHUB_TOKEN, and such pushes deliberately do not start other
 # workflows. `main` carries the pipeline; this job only ever writes `measured`.
@@ -11,6 +16,11 @@ on:
     workflows: [corpus]
     types: [completed]
   workflow_dispatch:
+    inputs:
+      reuse:
+        description: "Reuse the attestations already measured (uncheck to re-measure every release)"
+        type: boolean
+        default: true
 
 permissions:
   contents: write
@@ -74,9 +84,13 @@ jobs:
           fi
 
       - name: Measure the corpus into the dataset
+        env:
+          REUSE: ${{ inputs.reuse }}
         run: |
           set -o pipefail
-          python3 pipeline/measure.py --data in --out out | tee -a "$GITHUB_STEP_SUMMARY"
+          args=()
+          if [ "$REUSE" = "false" ]; then args+=(--no-reuse); fi
+          python3 pipeline/measure.py --data in --out out "${args[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Commit and push the measured dataset
         working-directory: out

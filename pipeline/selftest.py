@@ -15,6 +15,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
+import attestations as at
 import fetch_corpus as fc
 import measure as mz
 
@@ -343,9 +344,13 @@ class CompilePasses(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as td:
             with mock.patch.object(mz, "fetch", fake_fetch):
-                built, skipped = mz.materialize_build_corpus(index, Path(td))
+                built, failed = mz.materialize_build_corpus(index, Path(td))
             self.assertEqual(built, [("gpui-box", "1.0.0")])
-            self.assertEqual(skipped, 2, "cksum mismatch + fetch failure are skipped, never fatal")
+            self.assertEqual(
+                failed,
+                [("gpui-box", "1.0.1"), ("gpui-box", "1.0.2")],
+                "cksum mismatch + fetch failure are reported, never fatal",
+            )
             manifest = (Path(td) / "gpui-box/1.0.0/Cargo.toml").read_text()
             self.assertIn("[workspace]", manifest)
 
@@ -379,15 +384,317 @@ class CompilePasses(unittest.TestCase):
 
         releases = [("gpui-box", "1.0.0"), ("gpui-box", "1.0.1")]
         with tempfile.TemporaryDirectory() as td:
+            docs = {"tvm": Path(td) / "docs/tvm", "eac": Path(td) / "docs/eac"}
             with mock.patch.object(mz, "run", fake_run):
-                tvm_dir, eac_dir = mz.compile_passes("gocar-index", Path(td), releases, Path(td))
-        kinds = [(argv[1], argv[2].rsplit("/", 1)[-1]) for argv in recorded]
-        self.assertIn(("tvm", "1.0.0"), kinds)
-        self.assertIn(("eac", "1.0.0"), kinds)
+                mz.compile_passes("gocar-index", Path(td), releases, Path(td), docs)
+            # One shared target dir per run, reached through each crate's link.
+            self.assertTrue((Path(td) / "cargo-target").is_dir())
+        kinds = [(argv[1], argv[2].rsplit("/", 1)[-1], argv[4]) for argv in recorded]
+        self.assertIn(("tvm", "1.0.0", str(docs["tvm"] / "gpui-box/1.0.0.json")), kinds)
+        self.assertIn(("eac", "1.0.0", str(docs["eac"] / "gpui-box/1.0.0.json")), kinds)
         # A tvm failure on one release never blocks the eac pass (nor later releases).
-        self.assertIn(("eac", "1.0.1"), kinds)
-        self.assertEqual(tvm_dir, Path(td) / "tvm")
-        self.assertEqual(eac_dir, Path(td) / "eac")
+        self.assertIn(("eac", "1.0.1", str(docs["eac"] / "gpui-box/1.0.1.json")), kinds)
+
+
+class MeasurementEnvironment(unittest.TestCase):
+    """The fingerprint a cached attestation is only valid within."""
+
+    def test_rustc_version_mirrors_the_tools_parsing(self):
+        cases = {
+            "rustc 1.98.1 (48a229cea 2026-09-01)\n": "1.98.1",
+            "rustc 1.98.0-nightly (0e2f9a1b2 2026-09-01)\n": "1.98.0-nightly",
+            "1.98.1\n": "1.98.1",
+            "not rustc\n": None,
+            "\n": None,
+        }
+        for text, expected in cases.items():
+            with mock.patch.object(at, "_probe", lambda *_: text):
+                self.assertEqual(at.rustc_version(), expected, repr(text))
+                # The rustdoc line is recorded verbatim, not parsed.
+                self.assertEqual(at.rustdoc_version(), text.strip() or None)
+
+    def test_an_unknown_probe_leaves_no_environment(self):
+        with mock.patch.object(at, "_probe", lambda *_: None):
+            self.assertIsNone(at.environment("gocar-index"))
+
+    def test_the_environment_keys_on_the_tool_binary_itself(self):
+        with tempfile.TemporaryDirectory() as td:
+            tool = Path(td) / "gocar-index"
+            tool.write_text("#!/bin/sh\n")
+            tool.chmod(0o755)
+            with mock.patch.object(at, "rustc_version", lambda: "1.98.1"), mock.patch.object(
+                at, "rustdoc_version", lambda: "rustdoc 1.98.1 (48a229cea 2026-09-01)"
+            ):
+                first = at.environment(str(tool))
+                self.assertIsNotNone(first)
+                # A rebuild — even of the same version — is a different tool.
+                tool.write_text("#!/bin/sh\n# rebuilt\n")
+                self.assertNotEqual(at.environment(str(tool))["tool"], first["tool"])
+
+
+class AttestationReuse(unittest.TestCase):
+    """Keeping the T-27/T-28 docs whose inputs have not moved (`attestations.py`)."""
+
+    ENV = {
+        "tool": "a" * 64,
+        "rustc": "1.98.1",
+        "rustdoc": "rustdoc 1.98.1 (48a229cea 2026-09-01)",
+    }
+    SCHEMAS = {"tvm": "gocar.tvm.v1", "eac": "gocar.eac.v1"}
+
+    def setUp(self):
+        """The dependency proof is a real `cargo generate-lockfile`; here it is the
+        lock already on disk, so the rule is exercised without a build."""
+        patcher = mock.patch.object(
+            at, "resolve_lock", lambda crate_dir: at.digest_file(crate_dir / at.LOCK_NAME)
+        )
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def _crate(self, root: Path, vers: str, lock: str = "lock") -> Path:
+        """A materialized crate, with the lock `cargo generate-lockfile` left."""
+        crate = root / "build/gpui-box" / vers
+        crate.mkdir(parents=True, exist_ok=True)
+        (crate / at.LOCK_NAME).write_text(lock)
+        return crate
+
+    def _measure(self, tree: Path, vers: str) -> None:
+        """Write the docs the two passes would have written for a release."""
+        for kind, schema in self.SCHEMAS.items():
+            path = tree / kind / "gpui-box" / f"{vers}.json"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(json.dumps({"schema": schema, "crate_name": "gpui-box"}))
+
+    def _prepare(self, root: Path, tree: Path) -> Path:
+        """One release as a completed run leaves it; returns its crate dir."""
+        cache = at.Cache(tree, dict(self.ENV))
+        self._measure(tree, "1.0.0")
+        crate = self._crate(root, "1.0.0")
+        cache.record("gpui-box", "1.0.0", "cksum-a", crate)
+        cache.write()
+        return crate
+
+    def _reuse(self, tree: Path, crate: Path, cksum, environment=None) -> bool:
+        return at.Cache(tree, dict(environment or self.ENV)).reuse(
+            "gpui-box", crate.name, cksum, crate
+        )
+
+    def _index(self, releases) -> dict:
+        return {
+            "providers": [{
+                "id": "gpui-box", "package": "gpui-box", "role": "fork",
+                "sources": [{"kind": "crates-io", "releases": [
+                    {"id": vers, "meta": {"cksum": f"cksum-{vers}"}} for vers in releases
+                ]}],
+            }]
+        }
+
+    def _fake_run(self, runs: list[tuple[str, str, str]]):
+        """Stand in for `gocar-index tvm/eac`: record the call, write the doc."""
+        def run(argv):
+            package, vers = Path(argv[2]).parts[-2:]
+            runs.append((argv[1], package, vers))
+            out = Path(argv[4])
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(
+                json.dumps({"schema": self.SCHEMAS[argv[1]], "crate_name": package})
+            )
+        return run
+
+    def test_a_release_is_reused_when_every_input_it_recorded_still_holds(self):
+        with tempfile.TemporaryDirectory() as td:
+            root, tree = Path(td), Path(td) / "attestations"
+            crate = self._prepare(root, tree)
+            first_index = (tree / at.INDEX_NAME).read_bytes()
+
+            second = at.Cache(tree, dict(self.ENV))
+            self.assertIn("1 attested release(s)", second.describe())
+            self.assertTrue(second.reuse("gpui-box", "1.0.0", "cksum-a", crate))
+            second.write()
+            self.assertTrue((tree / "tvm/gpui-box/1.0.0.json").is_file())
+            self.assertTrue((tree / "eac/gpui-box/1.0.0.json").is_file())
+            # A run that reuses everything moves nothing on the branch.
+            self.assertEqual((tree / at.INDEX_NAME).read_bytes(), first_index)
+
+    def test_any_moved_input_measures_the_release_again(self):
+        with tempfile.TemporaryDirectory() as td:
+            root, tree = Path(td), Path(td) / "attestations"
+            crate = self._prepare(root, tree)
+            self.assertTrue(self._reuse(tree, crate, "cksum-a"))
+            # A different source blob for the same version.
+            self.assertFalse(self._reuse(tree, crate, "cksum-b"))
+            self.assertFalse(self._reuse(tree, crate, None), "no identity, no reuse")
+            # A moved dependency resolution: the same crate, a different lock.
+            (crate / at.LOCK_NAME).write_text("moved")
+            self.assertFalse(self._reuse(tree, crate, "cksum-a"))
+            (crate / at.LOCK_NAME).write_text("lock")
+            self.assertTrue(self._reuse(tree, crate, "cksum-a"))
+            # No lock at all is no proof at all.
+            (crate / at.LOCK_NAME).unlink()
+            self.assertFalse(self._reuse(tree, crate, "cksum-a"))
+            (crate / at.LOCK_NAME).write_text("lock")
+            # A doc whose bytes moved, then one whose schema moved.
+            (tree / "tvm/gpui-box/1.0.0.json").write_text("{}")
+            self.assertFalse(self._reuse(tree, crate, "cksum-a"))
+            self._measure(tree, "1.0.0")
+            (tree / "eac/gpui-box/1.0.0.json").write_text(json.dumps({"schema": "gocar.eac.v2"}))
+            self.assertFalse(self._reuse(tree, crate, "cksum-a"))
+            self._measure(tree, "1.0.0")
+            # A measurement environment that moved drops the whole cache.
+            moved = at.Cache(tree, dict(self.ENV, rustdoc="rustdoc 1.98.2 (beef 2026-09-02)"))
+            self.assertIn("measurement environment moved", moved.describe())
+            self.assertIn("rustdoc changed", moved.describe())
+            self.assertFalse(moved.reuse("gpui-box", "1.0.0", "cksum-a", crate))
+
+    def test_write_drops_every_doc_its_index_does_not_list(self):
+        with tempfile.TemporaryDirectory() as td:
+            root, tree = Path(td), Path(td) / "attestations"
+            crate = self._prepare(root, tree)
+            # A second package and a stray file, both unlisted by the run below.
+            for kind, schema in self.SCHEMAS.items():
+                path = tree / kind / "gpui-ce/0.1.0.json"
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(json.dumps({"schema": schema}))
+            stray = tree / "tvm/gpui-box/9.9.9.json"
+            stray.write_text(json.dumps({"schema": "gocar.tvm.v1"}))
+
+            later = at.Cache(tree, dict(self.ENV))
+            self.assertTrue(later.reuse("gpui-box", "1.0.0", "cksum-a", crate))
+            later.write()
+            self.assertTrue((tree / "tvm/gpui-box/1.0.0.json").is_file())
+            self.assertFalse((tree / "tvm/gpui-ce").exists(), "empty package dirs are dropped")
+            self.assertFalse(stray.exists())
+
+    def test_a_release_whose_pass_produced_no_doc_is_never_attested(self):
+        with tempfile.TemporaryDirectory() as td:
+            root, tree = Path(td), Path(td) / "attestations"
+            cache = at.Cache(tree, dict(self.ENV))
+            # No docs on disk: the pass failed, so there is nothing to attest.
+            cache.record("gpui-box", "1.0.0", "cksum-a", self._crate(root, "1.0.0"))
+            self.assertNotIn("gpui-box/1.0.0", cache.entries)
+            cache.write()
+            self.assertFalse(self._reuse(tree, self._crate(root, "1.0.0"), "cksum-a"))
+            # Half a measurement is not a measurement either.
+            self._measure(tree, "1.0.0")
+            (tree / "eac/gpui-box/1.0.0.json").unlink()
+            half = at.Cache(tree, dict(self.ENV))
+            half.record("gpui-box", "1.0.0", "cksum-a", self._crate(root, "1.0.0"))
+            self.assertIn("gpui-box/1.0.0", half.entries, "the tvm doc is still a receipt")
+            self.assertFalse(self._reuse(tree, self._crate(root, "1.0.0"), "cksum-a"))
+
+    def test_an_unmaterialized_crate_keeps_its_attestation(self):
+        with tempfile.TemporaryDirectory() as td:
+            root, tree = Path(td), Path(td) / "attestations"
+            self._prepare(root, tree)
+            cache = at.Cache(tree, dict(self.ENV))
+            self.assertTrue(cache.carry_forward("gpui-box", "1.0.0", "cksum-a"))
+            cache.write()
+            self.assertTrue((tree / "tvm/gpui-box/1.0.0.json").is_file())
+            # The identity digest still has to match: the crate we could not fetch
+            # is not necessarily the release we recorded.
+            self.assertFalse(
+                at.Cache(tree, dict(self.ENV)).carry_forward("gpui-box", "1.0.0", "cksum-b")
+            )
+            # A moved environment drops it like everything else.
+            self.assertFalse(
+                at.Cache(tree, dict(self.ENV, rustc="1.99.0")).carry_forward(
+                    "gpui-box", "1.0.0", "cksum-a"
+                )
+            )
+
+    def test_measure_passes_measures_only_the_releases_that_moved(self):
+        runs: list[tuple[str, str, str]] = []
+        resolved: list[str] = []
+        releases = ["1.0.0", "1.0.1"]
+
+        def fake_resolve(crate_dir):
+            resolved.append(crate_dir.name)
+            return at.digest_file(crate_dir / at.LOCK_NAME)
+
+        with tempfile.TemporaryDirectory() as td:
+            work, out = Path(td) / "work", Path(td) / "measured"
+            tree = out / "attestations"
+            index = self._index(releases)
+            for vers in releases:
+                self._crate(work, vers)
+            with mock.patch.object(mz, "run", self._fake_run(runs)), mock.patch.object(
+                at, "resolve_lock", fake_resolve
+            ):
+                first = at.Cache(tree, dict(self.ENV))
+                tvm_dir, eac_dir = mz.measure_passes(
+                    "gocar-index", index, work / "build", [("gpui-box", v) for v in releases],
+                    [], work, first,
+                )
+                first.write()
+                self.assertEqual(
+                    runs,
+                    [
+                        ("tvm", "gpui-box", "1.0.0"), ("eac", "gpui-box", "1.0.0"),
+                        ("tvm", "gpui-box", "1.0.1"), ("eac", "gpui-box", "1.0.1"),
+                    ],
+                )
+                self.assertEqual(resolved, [], "a cold cache probes nothing")
+                self.assertEqual((tvm_dir, eac_dir), (tree / "tvm", tree / "eac"))
+
+                # Second run, same environment: only the release whose crate
+                # re-resolves to a different lock is measured again.
+                runs.clear()
+                (work / "build/gpui-box/1.0.1/Cargo.lock").write_text("lock: moved")
+                second = at.Cache(tree, dict(self.ENV))
+                mz.measure_passes(
+                    "gocar-index", index, work / "build", [("gpui-box", v) for v in releases],
+                    [], work, second,
+                )
+                second.write()
+                self.assertEqual(
+                    runs, [("tvm", "gpui-box", "1.0.1"), ("eac", "gpui-box", "1.0.1")]
+                )
+                self.assertEqual(resolved, ["1.0.0", "1.0.1"], "one probe per candidate")
+
+    def test_a_disabled_cache_measures_into_the_work_dirs(self):
+        runs: list[tuple[str, str, str]] = []
+
+        def no_resolve(crate_dir):
+            raise AssertionError("a cache without an environment resolves nothing")
+
+        with tempfile.TemporaryDirectory() as td:
+            work, out = Path(td) / "work", Path(td) / "measured"
+            self._crate(work, "1.0.0")
+            cache = at.Cache(out / "attestations", None)
+            self.assertIn("attestations: disabled", cache.describe())
+            with mock.patch.object(mz, "run", self._fake_run(runs)), mock.patch.object(
+                at, "resolve_lock", no_resolve
+            ):
+                tvm_dir, eac_dir = mz.measure_passes(
+                    "gocar-index", self._index(["1.0.0"]), work / "build",
+                    [("gpui-box", "1.0.0")], [], work, cache,
+                )
+            cache.write()
+            self.assertEqual((tvm_dir, eac_dir), (work / "tvm", work / "eac"))
+            self.assertEqual(runs, [("tvm", "gpui-box", "1.0.0"), ("eac", "gpui-box", "1.0.0")])
+            self.assertFalse((out / "attestations").exists())
+
+    def test_no_reuse_measures_again_and_still_refreshes_the_index(self):
+        runs: list[tuple[str, str, str]] = []
+        with tempfile.TemporaryDirectory() as td:
+            root, tree = Path(td), Path(td) / "attestations"
+            crate = self._prepare(root, tree)
+            index = self._index(["1.0.0"])
+            cache = at.Cache(tree, dict(self.ENV), reuse=False)
+            self.assertIn("not reused (--no-reuse)", cache.describe())
+            self.assertFalse(cache.reuse("gpui-box", "1.0.0", "cksum-a", crate))
+            with mock.patch.object(mz, "run", self._fake_run(runs)), mock.patch.object(
+                at, "resolve_lock", lambda crate_dir: at.digest_file(crate_dir / at.LOCK_NAME)
+            ):
+                mz.measure_passes(
+                    "gocar-index", index, root / "build", [("gpui-box", "1.0.0")], [], root, cache
+                )
+            cache.write()
+            self.assertEqual(runs, [("tvm", "gpui-box", "1.0.0"), ("eac", "gpui-box", "1.0.0")])
+            # The index is current again, so the next run reuses.
+            self.assertTrue(
+                at.Cache(tree, dict(self.ENV)).reuse("gpui-box", "1.0.0", "cksum-1.0.0", crate)
+            )
 
 
 if __name__ == "__main__":

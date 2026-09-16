@@ -185,7 +185,10 @@ materialization checks the `.crate`'s `cksum` before building), and may check
 ## Layout
 
 ```
-gpui-contract.json.xz   # gocar.contract.v0 — registry truth + measured fields
+gpui-contract.json.xz                    # gocar.contract.v0 — registry truth + measured fields
+attestations/index.json                  # gocar.attestations.v1 — the docs' reuse keys
+attestations/tvm/<package>/<vers>.json   # T-27 docs, as `gocar-index tvm` wrote them
+attestations/eac/<package>/<vers>.json   # T-28 docs, as `gocar-index eac` wrote them
 ```
 
 One monolithic, deterministic xz-9 dataset (no wall clock). It is the `data`
@@ -197,6 +200,10 @@ T-break) and `eac`/`toolchain_floor` (T-28 — the verified toolchain span and
 attested floor), plus the provider `api_epoch` heads. Every measured field is
 `null` where its pass did not run — an honest unknown, never synthesized.
 
+The `attestations/` tree holds the compiler passes' docs, in the layout
+`analyze --tvm/--eac` reads them: they are both the receipts behind the `tvm`
+and `eac` columns and the input to the next run's measurement (below).
+
 ## Production
 
 `pipeline/measure.py` materializes a null-attestation dataset from
@@ -207,9 +214,35 @@ verify its `cksum`, and run `gocar-index tvm`/`eac` over it (the pruned blobs
 cannot build); `--no-compile-passes` reproduces the syn-level dataset offline.
 The script adapts shapes only — the measurement is the tool.
 
-## Incrementality (current limit)
+## Attestation reuse
 
-Monolithic: the whole file is rewritten whenever any measured field moves, and
+The compiler passes are a measure run's dominant cost (a dependency-graph build
+per release) and their output is per release, so `measure.py` keeps their docs
+and skips the work they stand for. A release is measured again unless every
+input its docs recorded is provably unchanged:
+
+| Key | What it would take to move the measurement |
+| --- | --- |
+| `cksum` | the release's source bytes — the registry digest stage 1 already keys on |
+| `lock` | the crate's resolved `Cargo.lock` digest: cargo resolves an extracted crate to the newest matching dep versions, and a dependency release can move an auto-trait allocation or break the build |
+| environment | the `gocar-index` binary's own digest, plus `rustc`/`rustdoc` — a rebuild, a patch release or a toolchain bump drops the whole cache |
+
+The lock is re-derived with `cargo generate-lockfile` (a resolve, not a build)
+and the environment is compared once per run, before anything is reused; an
+unprovable resolution is never trusted. A pass that produced no doc leaves no
+entry, so a failure is never cached — it is attempted again next run. A release
+whose `.crate` cannot be fetched at all keeps its entry: it cannot be measured
+either, and a transient fetch failure must not publish a `null`.
+
+The tree is then rewritten to exactly what the run publishes; a doc the index
+does not list is deleted, so it never grows a backlog of superseded
+measurements. `measure.py --no-reuse` measures every release again (also
+available as the `reuse` input on the `measure` workflow).
+
+## Dataset incrementality (current limit)
+
+The *dataset* is still monolithic (the compiler passes have their own reuse,
+above): the whole file is rewritten whenever any measured field moves, and
 `versem`/`api_epoch` can shift for *existing* versions when a new release lands
 (they are cumulative along a stream), so even per-version files would not be
 append-only. Committing the whole dataset is the simple option while the corpus
