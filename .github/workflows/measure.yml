@@ -35,9 +35,11 @@ jobs:
     runs-on: ubuntu-latest
     # The syn-level analysis is minutes; the T-27/T-28 compiler passes build
     # every release's dependency graph (a full `cargo rustdoc` + `cargo check`
-    # per version), which is the dominant cost. A release that cannot build
-    # records null (best-effort), so a slow/flaky build degrades rather than
-    # fails. Raise this if the corpus grows.
+    # per version), which is the dominant cost — a run that reuses every
+    # attestation pays only the lock resolutions, and a floor build additionally
+    # pays its own dep graph per distinct declared MSRV. A release that cannot
+    # build records null (best-effort), so a slow/flaky build degrades rather
+    # than fails. Raise this if the corpus grows.
     timeout-minutes: 360
     steps:
       - name: Check out main (pipeline)
@@ -51,14 +53,18 @@ jobs:
       - name: Ensure a current Rust toolchain
         run: rustup update stable && rustup default stable
 
-      - name: Cache cargo registry and installed tools
+      - name: Cache cargo registry, installed tools and floor toolchains
         uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
             ~/.cargo/bin
-          key: ${{ runner.os }}-gocar-index-0.5.0
+            ~/.rustup/toolchains
+          # A fixed key is written once: a toolchain the corpus starts declaring
+          # *after* the first save is re-downloaded every run until this key is
+          # bumped — the same discipline as the pinned tool version below.
+          key: ${{ runner.os }}-gocar-index-0.5.0-toolchains
 
       - name: Install the measurement tool
         run: |
@@ -85,6 +91,21 @@ jobs:
         run: |
           git fetch --depth 1 origin data:data
           git worktree add in data
+
+      - name: Install the declared MSRV toolchains
+        run: |
+          set -o pipefail
+          # The EAC pass attempts a floor build under a release's declared
+          # rust-version where that compiler is installed; the pipeline prints
+          # exactly the ones it will ask for (padded specs, below the active
+          # compiler), so this installs the names the pass later uses.
+          toolchains=$(python3 pipeline/measure.py --data in --floor-toolchains)
+          if [ -n "$toolchains" ]; then
+            echo "floor toolchains: $toolchains"
+            rustup toolchain install --profile minimal $toolchains
+          else
+            echo "no declared MSRV below the active compiler — no floor is attempted"
+          fi
 
       - name: Check out the measured branch (create if absent)
         run: |

@@ -159,6 +159,7 @@ python3 pipeline/measure.py --data in --out out
 python3 pipeline/measure.py --data in --out out --work /tmp/measure   # keep scratch
 python3 pipeline/measure.py --data in --out out --no-compile-passes   # syn-level only
 python3 pipeline/measure.py --data in --out out --no-reuse            # ignore the cached attestations
+python3 pipeline/measure.py --data in --floor-toolchains               # print the MSRVs to install
 ```
 
 The compiler passes add the measured `tvm` (auto-trait allocations; a drop on
@@ -185,6 +186,16 @@ measures again. A pass that produced no doc is never cached (a failure must not
 become permanent), and a release whose `.crate` cannot be fetched keeps the
 attestation it already has (it cannot be measured either, and a transient fetch
 failure must not publish a `null`). `--no-reuse` forces a full re-measure.
+
+The EAC pass also attempts a **floor build** (T-28) under each release's declared
+`rust-version`, where that compiler is installed: the attested floor is what
+`plan`/`verify-env` prune and enforce on, and a declaration that does not hold is
+recorded `incompatible` rather than promoted to a floor. The workflow installs
+the toolchains it needs (`measure.py --floor-toolchains` prints exactly the set
+the policy will ask for, padded and below the active compiler); a release that
+declares no MSRV keeps `toolchain_floor: null`, and a declared MSRV whose
+compiler is missing is *not* attempted — an absent compiler was not measured to
+fail. Cost: one dependency graph per distinct declared MSRV, paid once per run.
 
 So measuring no longer needs the 66 MB dataset baked into a crate: the tool is
 ~60 KiB, the data comes from here, and a no-new-release syn-level run rewrites

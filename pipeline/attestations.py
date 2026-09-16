@@ -19,7 +19,14 @@ there. A doc is reusable precisely when every input it recorded is unchanged:
   what stops a dep bump from being silently absorbed,
 - the **measurement environment** — the digest of the `gocar-index` binary
   itself (any rebuild, patch release or toolchain bump moves it) plus the
-  `rustc`/`rustdoc` versions the passes drive.
+  `rustc`/`rustdoc` versions the passes drive,
+- the **floor build** (T-28) — whether the EAC was asked to build under a
+  declared MSRV, and which compiler that was. A release the run can attempt a
+  floor for is measured again; the one case that does *not* invalidate an entry
+  is a run that cannot attempt it because the compiler is not installed
+  (`Floor.missing`): an attested floor is a fact about the crate and that
+  compiler, not about this runner's toolchains, so it is kept — with a warning —
+  rather than replaced by a `null`.
 
 The environment is compared once per run and invalidates the whole cache when it
 moves, so the branch re-measures as it did before reuse existed. Per release the
@@ -42,6 +49,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+from typing import NamedTuple
 
 # Schema string of the `attestations/index.json` this module writes.
 SCHEMA = "gocar.attestations.v1"
@@ -138,6 +146,119 @@ def environment_note(current: dict, recorded: dict) -> str:
 def _short(value: str | None) -> str:
     """A digest shortened for a log line."""
     return (value if value is not None else "unknown")[:12]
+
+
+class Floor(NamedTuple):
+    """One release's floor build (T-28): what to attempt, and what it would need.
+
+    `attempt` is the rustup toolchain to hand `gocar-index eac
+    --floor-toolchain`, or `None` for no attempt at all. `missing` names the
+    declared MSRV that warranted an attempt but has no installed compiler — the
+    two must not be confused: a compiler that is absent was never measured to
+    fail, so it can never be recorded as `incompatible`.
+    """
+
+    attempt: str | None
+    missing: str | None
+
+
+def normalized_version(text: str) -> str | None:
+    """A `rust-version` padded to three components (`1.85` → `1.85.0`), or `None`.
+
+    Mirrors `gocar_core::toolchain::parse_declared_rust_version`: cargo accepts a
+    two-component `rust-version` and reads it as `1.85.0` (caret semantics), and
+    the corpus declares floors both ways. Rustup names toolchains both ways too,
+    which is why the policy matches on the padded form and then passes the name
+    rustup actually lists.
+    """
+    parts = text.strip().split(".")
+    if not parts or len(parts) > 3 or not all(part.isdigit() for part in parts):
+        return None
+    return ".".join(parts + ["0"] * (3 - len(parts)))
+
+
+def _components(version: str) -> tuple[int, int, int]:
+    """The three numeric components of an already-normalized `X.Y.Z` version."""
+    major, minor, patch = version.split(".")
+    return int(major), int(minor), int(patch)
+
+
+def _version_key(text: str) -> tuple[int, int, int] | None:
+    """The leading components of a version string, prerelease and build dropped."""
+    normalized = normalized_version(text.strip().split("-")[0].split("+")[0])
+    return _components(normalized) if normalized else None
+
+
+def installed_toolchains() -> dict[str, str]:
+    """Installed rustup toolchains that name a version: padded version → its name.
+
+    `cargo +<name>` resolves a toolchain by the name it was *installed* under, so
+    `+1.85.0` does not mean an installed `1.85` — rustup would go and fetch a
+    different channel mid-measurement. A floor build therefore asks for the name
+    rustup lists (`+1.85`), while the candidate is matched on the padded version
+    (so a `1.85` declaration still finds an installed `1.85.0`). A named channel
+    (`stable`, `nightly`) carries no version to compare and is never a floor
+    candidate; no rustup on `PATH` means no installed set at all.
+    """
+    try:
+        proc = subprocess.run(
+            ["rustup", "toolchain", "list"], capture_output=True, text=True
+        )
+    except OSError:
+        return {}
+    if proc.returncode != 0:
+        return {}
+    toolchains: dict[str, str] = {}
+    for line in proc.stdout.splitlines():
+        tokens = line.split()
+        if not tokens:
+            continue
+        version, separator, target = tokens[0].partition("-")
+        padded = normalized_version(version)
+        if padded and separator and target:
+            toolchains[padded] = version
+    return toolchains
+
+
+def floor_for(declared: str | None, installed: dict[str, str], active: str | None) -> Floor:
+    """The floor build one release warrants, given the release's declared MSRV.
+
+    The candidate is the release's *declared* `rust-version` — the crate's own
+    claim, and the thing T-22 showed can lie or drift. It is attempted only when
+    it is a version **below the active compiler** (nothing below the compiler
+    that already verified the crate is being proved; a floor at or above it
+    would only re-run that build) and a matching compiler is **installed**.
+    """
+    padded = normalized_version(declared or "")
+    if padded is None:
+        return Floor(None, None)
+    compiler = _version_key(active or "")
+    if compiler is None or _components(padded) >= compiler:
+        return Floor(None, None)
+    name = installed.get(padded)
+    return Floor(name, None if name is not None else padded)
+
+
+def wanted_floor_toolchains(declared: list[str]) -> list[str]:
+    """The toolchains a runner must install for the floor policy to have candidates.
+
+    Emitted padded (`1.97.0`, not the corpus's `1.97`) so the toolchain that gets
+    installed is named in full: that name is what the EAC records as the floor,
+    and a three-component version is what every consumer of `toolchain_floor`
+    parses. The workflow installs exactly this list, so the names the pipeline
+    later asks for are the installed ones.
+    """
+    active = rustc_version()
+    wanted: list[str] = []
+    for value in declared:
+        padded = normalized_version(value)
+        if padded is None or padded in wanted:
+            continue
+        compiler = _version_key(active or "")
+        if compiler is None or _components(padded) >= compiler:
+            continue
+        wanted.append(padded)
+    return wanted
 
 
 def resolve_lock(crate_dir: Path) -> str | None:
@@ -261,19 +382,40 @@ class Cache:
             return False
         return _doc_schema(path) == recorded.get("schema")
 
-    def reuse(self, package: str, vers: str, cksum: str | None, crate_dir: Path) -> bool:
+    def reuse(
+        self,
+        package: str,
+        vers: str,
+        cksum: str | None,
+        crate_dir: Path,
+        floor: Floor,
+    ) -> bool:
         """Keep this release's cached docs when every input they recorded is unchanged.
 
         True means the docs stay where they are (they are already the analyzer's
         input) and are carried into the new index; False means the caller must
         measure the release again. The dependency proof is only paid once an
         entry exists under this identity — an empty cache resolves nothing.
+
+        The floor build is an input like any other: an attempt this run that the
+        entry does not record (or records under another compiler) re-measures the
+        release. The single exception is `Floor.missing` — see the module
+        docstring: the entry keeps its attested floor and says so.
         """
         if not (self.enabled and self.reuse_ok) or cksum is None:
             return False
         entry = self.previous.get(_key(package, vers))
         if entry is None or entry.get("cksum") != cksum:
             return False
+        attested = entry.get("floor")
+        if floor.attempt != attested and not (attested and floor.missing):
+            return False
+        if floor.attempt != attested:
+            print(
+                f"  warning: {package} {vers} keeps its attested floor {attested}: "
+                f"no {floor.missing} compiler is installed",
+                file=sys.stderr,
+            )
         lock = resolve_lock(crate_dir)
         if lock is None or entry.get("lock") != lock:
             return False
@@ -295,7 +437,9 @@ class Cache:
             return False
         return self._adopt(package, vers, entry)
 
-    def record(self, package: str, vers: str, cksum: str | None, crate_dir: Path) -> None:
+    def record(
+        self, package: str, vers: str, cksum: str | None, crate_dir: Path, floor: str | None
+    ) -> None:
         """Index the docs the passes just wrote — never one they did not write."""
         if not self.enabled:
             return
@@ -303,7 +447,7 @@ class Cache:
         # already there; resolving it here (rather than recording a `null`)
         # keeps the entry reusable instead of permanently unprovable.
         lock = digest_file(crate_dir / LOCK_NAME) or resolve_lock(crate_dir)
-        entry: dict[str, object] = {"cksum": cksum, "lock": lock}
+        entry: dict[str, object] = {"cksum": cksum, "lock": lock, "floor": floor}
         for kind in PASSES:
             path = self.path_for(kind, package, vers)
             digest = digest_file(path)

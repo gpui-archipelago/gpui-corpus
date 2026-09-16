@@ -43,6 +43,14 @@ dropped when the measurement environment moves (the tool binary's digest,
 `rustc`, `rustdoc`), so a new tool or compiler still re-measures everything.
 Pass `--no-reuse` to measure every release again, ignoring the cache.
 
+The EAC pass also attempts a **floor build** (T-28) under each release's
+declared `rust-version` where that compiler is installed: the recorded floor is
+what `plan`/`verify-env` prune and enforce on, and a declaration that does not
+hold is measured and listed `incompatible` rather than promoted to a floor. A
+compiler that is not installed is never attempted — it was not measured to fail
+— and `--floor-toolchains` prints the specs a runner must install for the policy
+to have candidates (the workflow does exactly that).
+
 Pass `--no-compile-passes` to skip steps 3–4's compiler passes and measure
 only the syn-level interface (offline, using the pruned blobs — the pre-T-27
 behavior). The `attestations/` tree is left alone in that mode: with no passes
@@ -83,7 +91,15 @@ import tempfile
 from datetime import datetime
 from pathlib import Path
 
-from attestations import PASSES, Cache, environment
+from attestations import (
+    PASSES,
+    Cache,
+    environment,
+    floor_for,
+    installed_toolchains,
+    rustc_version,
+    wanted_floor_toolchains,
+)
 from fetch_corpus import STATIC_HOST, fetch
 from gz import xz9
 
@@ -322,16 +338,21 @@ def compile_passes(
     releases: list[tuple[str, str]],
     work: Path,
     docs: dict[str, Path],
+    floors: dict[tuple[str, str], str] | None = None,
 ) -> None:
     """Run `gocar-index tvm`/`eac` per release, writing the docs into `docs`.
 
     `docs[kind]` is the directory the analyzer reads back from
     (`<kind>/<package>/<vers>.json`): the `attestations/` tree, or the scratch
     work dir when attestations are disabled. `gocar-index` creates the parents.
+    `floors` names the toolchain to attempt a floor build under, per release
+    (T-28); a release absent from it gets no floor attempt — the EAC still
+    records the compiler that verified it.
 
     All releases share one cargo target dir (`<work>/cargo-target`, reached via
     each crate's `target/` symlink), so dependency compilation is paid once per
-    distinct dep version rather than once per release.
+    distinct dep version rather than once per release. That sharing is per
+    *compiler*: a floor build under a distinct toolchain pays its own dep graph.
 
     Best-effort by design: a release that fails to build is left without a
     doc, so `analyze --tvm/--eac` leaves it `null` — the honest unknown,
@@ -340,7 +361,7 @@ def compile_passes(
     """
     shared_target = work / "cargo-target"
     shared_target.mkdir(parents=True, exist_ok=True)
-    tvm_ok = eac_ok = 0
+    tvm_ok = eac_ok = floor_ok = 0
     for package, vers in releases:
         crate_dir = build_dir / package / vers
         link_shared_target(crate_dir, shared_target)
@@ -351,13 +372,20 @@ def compile_passes(
         except SystemExit as exc:
             print(f"  warning: tvm unmeasured for {package} {vers}: {exc}", file=sys.stderr)
         eac_out = docs["eac"] / package / f"{vers}.json"
+        eac_argv = [gocar_index, "eac", str(crate_dir), "--out", str(eac_out)]
+        floor = (floors or {}).get((package, vers))
+        if floor:
+            eac_argv += ["--floor-toolchain", floor]
         try:
-            run([gocar_index, "eac", str(crate_dir), "--out", str(eac_out)])
+            run(eac_argv)
             eac_ok += 1
+            if floor:
+                floor_ok += 1
         except SystemExit as exc:
             print(f"  warning: eac unmeasured for {package} {vers}: {exc}", file=sys.stderr)
     print(
-        f"compiler passes: {tvm_ok} tvm · {eac_ok} eac measured (of {len(releases)} built crate(s))"
+        f"compiler passes: {tvm_ok} tvm · {eac_ok} eac measured "
+        f"(of {len(releases)} built crate(s); {floor_ok} with a floor build)"
     )
 
 
@@ -382,6 +410,27 @@ def release_cksums(index: dict) -> dict[tuple[str, str], str | None]:
     return cksums
 
 
+def declared_floors(index: dict) -> dict[tuple[str, str], str]:
+    """Each release's declared `rust-version` (registry truth), where it declares one.
+
+    The declared floor is the crate's own claim — not an attestation (T-22) —
+    which is exactly why the EAC pass attempts it: `gocar-index eac
+    --floor-toolchain <declared>` records the compiler that actually built the
+    crate, or lists it `incompatible` where the claim does not hold. Mirrors
+    `release_cksums`'s walk of the index, so the keys always line up.
+    """
+    declared: dict[tuple[str, str], str] = {}
+    for entity in index.get("providers", []):
+        if entity.get("role", "fork") != "fork":
+            continue
+        for source in entity.get("sources", []):
+            for release in source.get("releases", []):
+                value = (release.get("meta") or {}).get("rust_version")
+                if value:
+                    declared[(entity["package"], release["id"])] = value
+    return declared
+
+
 def measure_passes(
     gocar_index: str,
     index: dict,
@@ -394,19 +443,32 @@ def measure_passes(
     """The T-27/T-28 passes, minus the releases whose attestations still hold.
 
     Per release: keep the cached docs when every input they recorded still
-    matches (the cache re-resolves the dependency graph to prove it); otherwise
-    measure the release. The passes write into the cache's own tree (which is
-    what `analyze` reads), and `record` indexes exactly what they wrote.
-    Returns the (tvm, eac) doc directories — the `attestations/` tree, or the
-    scratch work dirs when attestations are disabled.
+    matches (the cache re-resolves the dependency graph to prove it, and a floor
+    build is an input like any other — a release the run can attempt one for is
+    measured again); otherwise measure the release. The passes write into the
+    cache's own tree (which is what `analyze` reads), and `record` indexes
+    exactly what they wrote. Returns the (tvm, eac) doc directories — the
+    `attestations/` tree, or the scratch work dirs when attestations are
+    disabled.
+
+    The floor candidate is the release's declared MSRV and is attempted only
+    where that compiler is installed (see `attestations.floor_for`); a corpus
+    row that declares none keeps `toolchain_floor` `null` — unmeasured, never a
+    copy of the declaration.
     """
     docs = {kind: cache.dir_for(kind) if cache.enabled else work / kind for kind in PASSES}
     cksums = release_cksums(index)
+    declared = declared_floors(index)
+    installed = installed_toolchains()
+    active = rustc_version()
+    floors = {key: floor_for(declared.get(key), installed, active) for key in built}
     to_measure: list[tuple[str, str]] = []
     reused = 0
     for package, vers in built:
         cksum = cksums.get((package, vers))
-        if cache.reuse(package, vers, cksum, build_dir / package / vers):
+        if cache.reuse(
+            package, vers, cksum, build_dir / package / vers, floors[(package, vers)]
+        ):
             print(f"= {package} {vers} (attestation reused)")
             reused += 1
         else:
@@ -416,12 +478,27 @@ def measure_passes(
             print(f"= {package} {vers} (attestation kept: crate not materialized)")
             reused += 1
     if to_measure:
-        compile_passes(gocar_index, build_dir, to_measure, work, docs)
+        attempts = {key: floors[key].attempt for key in to_measure if floors[key].attempt}
+        compile_passes(gocar_index, build_dir, to_measure, work, docs, attempts)
         for package, vers in to_measure:
-            cache.record(package, vers, cksums.get((package, vers)), build_dir / package / vers)
+            cache.record(
+                package,
+                vers,
+                cksums.get((package, vers)),
+                build_dir / package / vers,
+                floors[(package, vers)].attempt,
+            )
+    missing = sorted({floor.missing for floor in floors.values() if floor.missing})
+    candidates = sum(1 for floor in floors.values() if floor.attempt)
     print(
         f"attestations: {reused} reused, {len(to_measure)} measured "
         f"(of {len(built) + len(failed)} release(s))"
+    )
+    # What the floor policy offers (the passes report how many of those actually
+    # ran), plus the declared MSRVs whose compiler this runner lacks.
+    print(
+        f"floors: {candidates} declared-MSRV candidate(s)"
+        + (f" · declared but no compiler installed: {', '.join(missing)}" if missing else "")
     )
     return docs["tvm"], docs["eac"]
 
@@ -495,7 +572,7 @@ def measure(
 def main() -> int:
     parser = argparse.ArgumentParser(description="Measure the sourced corpus into the measured dataset.")
     parser.add_argument("--data", type=Path, required=True, help="the data-branch checkout (index + sources)")
-    parser.add_argument("--out", type=Path, required=True, help="the measured-branch checkout")
+    parser.add_argument("--out", type=Path, default=None, help="the measured-branch checkout")
     parser.add_argument("--gocar-index", default="gocar-index", help="the gocar-index binary (default: PATH)")
     parser.add_argument("--work", type=Path, default=None, help="scratch dir (default: a fresh temp dir)")
     parser.add_argument(
@@ -508,10 +585,24 @@ def main() -> int:
         action="store_true",
         help="measure every release again, ignoring the cached attestations",
     )
+    parser.add_argument(
+        "--floor-toolchains",
+        action="store_true",
+        help="print the declared-MSRV toolchains the floor policy needs installed, then exit",
+    )
     args = parser.parse_args()
 
-    work = args.work or Path(tempfile.mkdtemp(prefix="gpui-corpus-measure-"))
     try:
+        if args.floor_toolchains:
+            # A runner installs exactly this list (see measure.yml), so at measure
+            # time the names the policy asks for are the installed ones.
+            index = json.loads(gzip.decompress((args.data / "index.json.gz").read_bytes()))
+            wanted = wanted_floor_toolchains(sorted(set(declared_floors(index).values())))
+            print(" ".join(wanted))
+            return 0
+        if args.out is None:
+            raise RuntimeError("--out is required (the measured-branch checkout)")
+        work = args.work or Path(tempfile.mkdtemp(prefix="gpui-corpus-measure-"))
         measure(
             args.data,
             args.out,

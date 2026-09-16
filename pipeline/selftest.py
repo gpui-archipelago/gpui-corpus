@@ -6,6 +6,7 @@ temp dir. Run: `python3 pipeline/selftest.py` (from the repo root or from
 
 from __future__ import annotations
 
+import contextlib
 import io
 import hashlib
 import json
@@ -432,6 +433,73 @@ class MeasurementEnvironment(unittest.TestCase):
                 self.assertNotEqual(at.environment(str(tool))["tool"], first["tool"])
 
 
+class FloorPolicy(unittest.TestCase):
+    """Which floor build a release warrants (T-28, `attestations.floor_for`)."""
+
+    def test_a_declared_msrv_is_attempted_under_its_installed_compiler(self):
+        installed = {"1.85.0": "1.85", "1.97.1": "1.97.1"}
+        self.assertEqual(at.floor_for("1.85", installed, "1.98.1"), ("1.85", None))
+        self.assertEqual(at.floor_for("1.97.1", installed, "1.98.1"), ("1.97.1", None))
+        # The installed *name* is what rustup answers to — never a rewrite of it
+        # (`cargo +1.85.0` would send rustup after a different channel).
+        self.assertEqual(at.floor_for("1.85.0", installed, "1.98.1"), ("1.85", None))
+        self.assertEqual(at.floor_for(" 1.85 ", installed, "1.98.1"), ("1.85", None))
+
+    def test_no_attempt_without_a_declaration_or_below_the_active_compiler(self):
+        installed = {"1.85.0": "1.85", "1.98.0": "1.98"}
+        for declared in (None, "", "not-a-version", "1.98.2-rc.1"):
+            self.assertEqual(at.floor_for(declared, installed, "1.98.1"), (None, None), declared)
+        # The compiler that already verified the crate proves nothing below itself.
+        self.assertEqual(at.floor_for("1.98.1", installed, "1.98.1"), (None, None))
+        self.assertEqual(at.floor_for("1.99", installed, "1.98.1"), (None, None))
+        # No active compiler at all is no policy at all.
+        self.assertEqual(at.floor_for("1.85", installed, None), (None, None))
+
+    def test_a_declared_msrv_without_its_compiler_is_a_named_gap(self):
+        # Never attempted — a compiler that is absent was not measured to fail, so
+        # it can never be recorded `incompatible` — and never silently the same as
+        # "this release declares no floor".
+        self.assertEqual(at.floor_for("1.87", {"1.85.0": "1.85"}, "1.98.1"), (None, "1.87.0"))
+
+    def test_installed_toolchains_reads_the_names_rustup_lists(self):
+        class Listed:
+            returncode = 0
+            stdout = (
+                "stable-x86_64-unknown-linux-gnu (active, default)\n"
+                "nightly-x86_64-unknown-linux-gnu\n"
+                "1.85-x86_64-unknown-linux-gnu\n"
+                "1.90.0-x86_64-unknown-linux-gnu\n"
+                "1.91.0-aarch64-unknown-linux-gnu\n"
+            )
+
+        class Failed:
+            returncode = 1
+            stdout = ""
+
+        def missing(*args, **kwargs):
+            raise OSError("rustup is not installed")
+
+        with mock.patch.object(at.subprocess, "run", lambda *a, **k: Listed()):
+            # A named channel carries no version to compare and is not a candidate.
+            self.assertEqual(
+                at.installed_toolchains(),
+                {"1.85.0": "1.85", "1.90.0": "1.90.0", "1.91.0": "1.91.0"},
+            )
+        with mock.patch.object(at.subprocess, "run", lambda *a, **k: Failed()):
+            self.assertEqual(at.installed_toolchains(), {})
+        with mock.patch.object(at.subprocess, "run", missing):
+            self.assertEqual(at.installed_toolchains(), {})
+
+    def test_wanted_toolchains_are_padded_and_below_the_active_compiler(self):
+        with mock.patch.object(at, "rustc_version", lambda: "1.98.1"):
+            self.assertEqual(
+                at.wanted_floor_toolchains(
+                    ["", "1.85", "1.87", "1.97", "1.97.1", "1.98.1", "1.99"]
+                ),
+                ["1.85.0", "1.87.0", "1.97.0", "1.97.1"],
+            )
+
+
 class AttestationReuse(unittest.TestCase):
     """Keeping the T-27/T-28 docs whose inputs have not moved (`attestations.py`)."""
 
@@ -441,6 +509,7 @@ class AttestationReuse(unittest.TestCase):
         "rustdoc": "rustdoc 1.98.1 (48a229cea 2026-09-01)",
     }
     SCHEMAS = {"tvm": "gocar.tvm.v1", "eac": "gocar.eac.v1"}
+    NO_FLOOR = at.Floor(None, None)
 
     def setUp(self):
         """The dependency proof is a real `cargo generate-lockfile`; here it is the
@@ -470,13 +539,13 @@ class AttestationReuse(unittest.TestCase):
         cache = at.Cache(tree, dict(self.ENV))
         self._measure(tree, "1.0.0")
         crate = self._crate(root, "1.0.0")
-        cache.record("gpui-box", "1.0.0", "cksum-a", crate)
+        cache.record("gpui-box", "1.0.0", "cksum-a", crate, None)
         cache.write()
         return crate
 
-    def _reuse(self, tree: Path, crate: Path, cksum, environment=None) -> bool:
+    def _reuse(self, tree: Path, crate: Path, cksum, environment=None, floor=None) -> bool:
         return at.Cache(tree, dict(environment or self.ENV)).reuse(
-            "gpui-box", crate.name, cksum, crate
+            "gpui-box", crate.name, cksum, crate, floor or self.NO_FLOOR
         )
 
     def _index(self, releases) -> dict:
@@ -509,7 +578,7 @@ class AttestationReuse(unittest.TestCase):
 
             second = at.Cache(tree, dict(self.ENV))
             self.assertIn("1 attested release(s)", second.describe())
-            self.assertTrue(second.reuse("gpui-box", "1.0.0", "cksum-a", crate))
+            self.assertTrue(second.reuse("gpui-box", "1.0.0", "cksum-a", crate, self.NO_FLOOR))
             second.write()
             self.assertTrue((tree / "tvm/gpui-box/1.0.0.json").is_file())
             self.assertTrue((tree / "eac/gpui-box/1.0.0.json").is_file())
@@ -544,7 +613,7 @@ class AttestationReuse(unittest.TestCase):
             moved = at.Cache(tree, dict(self.ENV, rustdoc="rustdoc 1.98.2 (beef 2026-09-02)"))
             self.assertIn("measurement environment moved", moved.describe())
             self.assertIn("rustdoc changed", moved.describe())
-            self.assertFalse(moved.reuse("gpui-box", "1.0.0", "cksum-a", crate))
+            self.assertFalse(moved.reuse("gpui-box", "1.0.0", "cksum-a", crate, self.NO_FLOOR))
 
     def test_write_drops_every_doc_its_index_does_not_list(self):
         with tempfile.TemporaryDirectory() as td:
@@ -559,7 +628,7 @@ class AttestationReuse(unittest.TestCase):
             stray.write_text(json.dumps({"schema": "gocar.tvm.v1"}))
 
             later = at.Cache(tree, dict(self.ENV))
-            self.assertTrue(later.reuse("gpui-box", "1.0.0", "cksum-a", crate))
+            self.assertTrue(later.reuse("gpui-box", "1.0.0", "cksum-a", crate, self.NO_FLOOR))
             later.write()
             self.assertTrue((tree / "tvm/gpui-box/1.0.0.json").is_file())
             self.assertFalse((tree / "tvm/gpui-ce").exists(), "empty package dirs are dropped")
@@ -570,7 +639,7 @@ class AttestationReuse(unittest.TestCase):
             root, tree = Path(td), Path(td) / "attestations"
             cache = at.Cache(tree, dict(self.ENV))
             # No docs on disk: the pass failed, so there is nothing to attest.
-            cache.record("gpui-box", "1.0.0", "cksum-a", self._crate(root, "1.0.0"))
+            cache.record("gpui-box", "1.0.0", "cksum-a", self._crate(root, "1.0.0"), None)
             self.assertNotIn("gpui-box/1.0.0", cache.entries)
             cache.write()
             self.assertFalse(self._reuse(tree, self._crate(root, "1.0.0"), "cksum-a"))
@@ -578,9 +647,97 @@ class AttestationReuse(unittest.TestCase):
             self._measure(tree, "1.0.0")
             (tree / "eac/gpui-box/1.0.0.json").unlink()
             half = at.Cache(tree, dict(self.ENV))
-            half.record("gpui-box", "1.0.0", "cksum-a", self._crate(root, "1.0.0"))
+            half.record("gpui-box", "1.0.0", "cksum-a", self._crate(root, "1.0.0"), None)
             self.assertIn("gpui-box/1.0.0", half.entries, "the tvm doc is still a receipt")
             self.assertFalse(self._reuse(tree, self._crate(root, "1.0.0"), "cksum-a"))
+
+    def test_the_floor_build_is_part_of_the_reuse_key(self):
+        with tempfile.TemporaryDirectory() as td:
+            root, tree = Path(td), Path(td) / "attestations"
+            crate = self._prepare(root, tree)
+            # The entry records no floor, so a run that can attempt one measures again.
+            self.assertFalse(self._reuse(tree, crate, "cksum-a", floor=at.Floor("1.85", None)))
+            cache = at.Cache(tree, dict(self.ENV))
+            cache.record("gpui-box", "1.0.0", "cksum-a", crate, "1.85")
+            cache.write()
+            self.assertTrue(self._reuse(tree, crate, "cksum-a", floor=at.Floor("1.85", None)))
+            # A different compiler is a different certificate.
+            self.assertFalse(self._reuse(tree, crate, "cksum-a", floor=at.Floor("1.87", None)))
+            self.assertFalse(self._reuse(tree, crate, "cksum-a", floor=self.NO_FLOOR))
+
+    def test_an_attested_floor_survives_a_runner_without_that_compiler(self):
+        with tempfile.TemporaryDirectory() as td:
+            root, tree = Path(td), Path(td) / "attestations"
+            crate = self._prepare(root, tree)
+            cache = at.Cache(tree, dict(self.ENV))
+            cache.record("gpui-box", "1.0.0", "cksum-a", crate, "1.85")
+            cache.write()
+            # The compiler is gone from this runner: the floor is a fact about the
+            # crate and that compiler, so it is kept — loudly, never as a null.
+            with contextlib.redirect_stderr(io.StringIO()) as err:
+                self.assertTrue(
+                    self._reuse(tree, crate, "cksum-a", floor=at.Floor(None, "1.85.0"))
+                )
+            self.assertIn("keeps its attested floor 1.85", err.getvalue())
+            # A release that declares nothing cannot keep a missing compiler's floor.
+            self.assertFalse(self._reuse(tree, crate, "cksum-a", floor=at.Floor(None, None)))
+
+    def test_measure_passes_attempts_the_floor_and_keys_the_reuse_on_it(self):
+        runs: list[list[str]] = []
+
+        def fake_run(argv):
+            runs.append(argv)
+            out = Path(argv[argv.index("--out") + 1])
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(
+                json.dumps({"schema": self.SCHEMAS[argv[1]], "crate_name": "gpui-box"})
+            )
+
+        index = {
+            "providers": [{
+                "id": "gpui-box", "package": "gpui-box", "role": "fork",
+                "sources": [{"kind": "crates-io", "releases": [
+                    {"id": "1.0.0", "meta": {"cksum": "cksum-1.0.0", "rust_version": "1.85"}}
+                ]}],
+            }]
+        }
+        releases = [("gpui-box", "1.0.0")]
+        with tempfile.TemporaryDirectory() as td:
+            work, out = Path(td) / "work", Path(td) / "measured"
+            tree = out / "attestations"
+            self._crate(work, "1.0.0")
+            with mock.patch.object(mz, "run", fake_run), mock.patch.object(
+                mz, "rustc_version", lambda: "1.98.1"
+            ), mock.patch.object(mz, "installed_toolchains", lambda: {"1.85.0": "1.85"}):
+                first = at.Cache(tree, dict(self.ENV))
+                mz.measure_passes(
+                    "gocar-index", index, work / "build", releases, [], work, first
+                )
+            first.write()
+            self.assertEqual(
+                [argv[argv.index("--floor-toolchain") + 1] for argv in runs if "--floor-toolchain" in argv],
+                ["1.85"],
+                "only the eac pass takes a floor, under the installed name",
+            )
+            recorded = json.loads((tree / at.INDEX_NAME).read_text())["entries"]
+            self.assertEqual(recorded["gpui-box/1.0.0"]["floor"], "1.85")
+
+            # A second run whose runner lacks that compiler keeps the certificate
+            # rather than re-measuring the release without it.
+            runs.clear()
+            second = at.Cache(tree, dict(self.ENV))
+            with mock.patch.object(mz, "run", fake_run), mock.patch.object(
+                mz, "rustc_version", lambda: "1.98.1"
+            ), mock.patch.object(mz, "installed_toolchains", lambda: {}):
+                mz.measure_passes(
+                    "gocar-index", index, work / "build", releases, [], work, second
+                )
+            second.write()
+            self.assertEqual(runs, [])
+            self.assertEqual(
+                json.loads((tree / at.INDEX_NAME).read_text())["entries"]["gpui-box/1.0.0"]["floor"],
+                "1.85",
+            )
 
     def test_an_unmaterialized_crate_keeps_its_attestation(self):
         with tempfile.TemporaryDirectory() as td:
@@ -682,7 +839,7 @@ class AttestationReuse(unittest.TestCase):
             index = self._index(["1.0.0"])
             cache = at.Cache(tree, dict(self.ENV), reuse=False)
             self.assertIn("not reused (--no-reuse)", cache.describe())
-            self.assertFalse(cache.reuse("gpui-box", "1.0.0", "cksum-a", crate))
+            self.assertFalse(cache.reuse("gpui-box", "1.0.0", "cksum-a", crate, self.NO_FLOOR))
             with mock.patch.object(mz, "run", self._fake_run(runs)), mock.patch.object(
                 at, "resolve_lock", lambda crate_dir: at.digest_file(crate_dir / at.LOCK_NAME)
             ):
@@ -693,7 +850,9 @@ class AttestationReuse(unittest.TestCase):
             self.assertEqual(runs, [("tvm", "gpui-box", "1.0.0"), ("eac", "gpui-box", "1.0.0")])
             # The index is current again, so the next run reuses.
             self.assertTrue(
-                at.Cache(tree, dict(self.ENV)).reuse("gpui-box", "1.0.0", "cksum-1.0.0", crate)
+                at.Cache(tree, dict(self.ENV)).reuse(
+                    "gpui-box", "1.0.0", "cksum-1.0.0", crate, self.NO_FLOOR
+                )
             )
 
 

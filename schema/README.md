@@ -225,6 +225,7 @@ input its docs recorded is provably unchanged:
 | --- | --- |
 | `cksum` | the release's source bytes — the registry digest stage 1 already keys on |
 | `lock` | the crate's resolved `Cargo.lock` digest: cargo resolves an extracted crate to the newest matching dep versions, and a dependency release can move an auto-trait allocation or break the build |
+| `floor` | whether the EAC was asked to build under a declared MSRV, and under which compiler (T-28): a release this run can attempt a floor for is measured again |
 | environment | the `gocar-index` binary's own digest, plus `rustc`/`rustdoc` — a rebuild, a patch release or a toolchain bump drops the whole cache |
 
 The lock is re-derived with `cargo generate-lockfile` (a resolve, not a build)
@@ -233,6 +234,12 @@ unprovable resolution is never trusted. A pass that produced no doc leaves no
 entry, so a failure is never cached — it is attempted again next run. A release
 whose `.crate` cannot be fetched at all keeps its entry: it cannot be measured
 either, and a transient fetch failure must not publish a `null`.
+
+The floor key has one deliberate asymmetry: a runner that lacks the compiler a
+declared MSRV names keeps the entry's attested floor (with a warning) instead of
+re-measuring the release without it. That floor is a fact about the crate and
+that compiler, not about this runner's installed toolchains, and dropping it
+would publish a `null` for information the project already established.
 
 The tree is then rewritten to exactly what the run publishes; a doc the index
 does not list is deleted, so it never grows a backlog of superseded
