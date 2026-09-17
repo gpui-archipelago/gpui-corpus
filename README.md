@@ -182,7 +182,11 @@ only the releases whose inputs moved. A release is reused when its `cksum`, its
 freshly resolved `Cargo.lock` digest and the measurement environment (the
 `gocar-index` binary's digest, `rustc`, `rustdoc`) all still match what its docs
 recorded — a new release, a dependency bump, a rebuilt tool or a compiler update
-measures again. A pass that produced no doc is never cached (a failure must not
+measures again. The tool install is `--locked` (the published `.crate` ships its
+`Cargo.lock`), so a rebuild reproduces the same dependency graph; the digest
+still moves when the compiler that builds it does, and the run log names every
+component that moved, not just the first. A pass that produced no doc is never
+cached (a failure must not
 become permanent), and a release whose `.crate` cannot be fetched keeps the
 attestation it already has (it cannot be measured either, and a transient fetch
 failure must not publish a `null`). `--no-reuse` forces a full re-measure.

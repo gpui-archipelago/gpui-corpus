@@ -133,14 +133,24 @@ def environment(gocar_index: str) -> dict | None:
 
 
 def environment_note(current: dict, recorded: dict) -> str:
-    """One line naming the first environment component that moved."""
+    """One line naming **every** environment component that moved.
+
+    The binary is listed first (the tool's identity), but a rebuild is usually
+    caused by a compiler change, so naming only the first mover would hide the
+    actual cause: a run that reports a moved tool binary should also say whether
+    `rustc`/`rustdoc` moved with it.
+    """
+    moved = []
     for field in ("tool", "rustc", "rustdoc"):
         if current.get(field) != recorded.get(field):
             before, after = recorded.get(field), current.get(field)
             if field == "tool":
-                return "the gocar-index binary changed " f"({_short(before)} → {_short(after)})"
-            return f"{field} changed ({before} → {after})"
-    return "the recorded environment differs"
+                moved.append(
+                    "the gocar-index binary changed " f"({_short(before)} → {_short(after)})"
+                )
+            else:
+                moved.append(f"{field} changed ({before} → {after})")
+    return "; ".join(moved) if moved else "the recorded environment differs"
 
 
 def _short(value: str | None) -> str:

@@ -83,7 +83,13 @@ jobs:
             echo "gocar-index $version already installed — skipping cargo install"
           else
             # --force: replace whatever a hit under an older key left behind.
-            cargo install gocar-index --version "$version" --force
+            # --locked: build the exact dependency graph the published crate's
+            # own `Cargo.lock` pins (the .crate ships it). Without it every
+            # rebuild resolves newer semver-compatible deps, and a different
+            # binary is a different measurement environment — it drops the whole
+            # attestation cache (`pipeline/attestations.py`), i.e. every release
+            # re-measures.
+            cargo install gocar-index --version "$version" --locked --force
             printf '%s\n' "$version" > "$stamp"
           fi
 

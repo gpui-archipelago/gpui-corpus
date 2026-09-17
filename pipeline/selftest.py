@@ -614,6 +614,19 @@ class AttestationReuse(unittest.TestCase):
             self.assertIn("measurement environment moved", moved.describe())
             self.assertIn("rustdoc changed", moved.describe())
             self.assertFalse(moved.reuse("gpui-box", "1.0.0", "cksum-a", crate, self.NO_FLOOR))
+            # Every mover is named, not just the first: a rebuilt tool binary
+            # usually means the compiler that built it moved too, and the log
+            # has to say which input actually moved.
+            both = at.Cache(
+                tree,
+                dict(
+                    self.ENV,
+                    tool="b" * 64,
+                    rustdoc="rustdoc 1.98.2 (beef 2026-09-02)",
+                ),
+            )
+            self.assertIn("the gocar-index binary changed", both.describe())
+            self.assertIn("rustdoc changed", both.describe())
 
     def test_write_drops_every_doc_its_index_does_not_list(self):
         with tempfile.TemporaryDirectory() as td:
