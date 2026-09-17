@@ -1,18 +1,15 @@
 {
   "schema": "gocar.eac.v1",
-  "crate_name": "gpui-box",
+  "crate_name": "gpui-unofficial",
   "producer": {
     "mechanism": "cargo-check",
     "toolchain": "1.98.1"
   },
   "toolchain": {
     "verified": [
-      "1.98.1",
-      "1.97.0"
+      "1.98.1"
     ],
-    "incompatible": [],
-    "declared": "1.97",
-    "floor": "1.97.0"
+    "incompatible": []
   },
   "features": {
     "exhaustive": [],
@@ -23,13 +20,10 @@
         "bench"
       ],
       [
+        "bench-support"
+      ],
+      [
         "default"
-      ],
-      [
-        "input-latency-histogram"
-      ],
-      [
-        "inspector"
       ],
       [
         "leak-detection"
@@ -38,7 +32,13 @@
         "profiler"
       ],
       [
+        "proptest"
+      ],
+      [
         "screen-capture"
+      ],
+      [
+        "stacker"
       ],
       [
         "test-support"
