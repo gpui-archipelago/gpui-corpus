@@ -107,17 +107,24 @@ jobs:
             echo "no declared MSRV below the active compiler — no floor is attempted"
           fi
 
-      - name: Check out the measured branch (create if absent)
+      - name: Check out the measured branch (reuse it when it exists)
         run: |
+          # A hosted runner starts with no local `measured`, so a bare fetch
+          # reports `* [new branch] measured -> measured`: that is git creating
+          # the *local* ref from the remote one, not a new branch upstream.
+          # `--quiet` drops that misleading line, and the echo below states
+          # which path was taken and which commit (the remote tip) landed.
           if git ls-remote --exit-code --heads origin measured >/dev/null 2>&1; then
-            git fetch --depth 1 origin measured:measured
+            git fetch --depth 1 --quiet origin measured:measured
             git worktree add out measured
+            echo "reusing the measured branch at $(git -C out rev-parse --short=12 HEAD) — $(git -C out log -1 --format=%s)"
           else
             # First run: bootstrap an empty measured branch. main's files must
             # not leak onto it, so drop the checked-out tree before generating.
             git worktree add --detach out
             git -C out checkout --orphan measured
             git -C out rm -rf --quiet . 2>/dev/null || true
+            echo "origin has no measured branch yet — bootstrapped an empty one"
           fi
 
       - name: Measure the corpus into the dataset
