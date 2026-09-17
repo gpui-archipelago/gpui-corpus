@@ -1,0 +1,850 @@
+{
+  "entries": {
+    "gpui-box/0.1.0": {
+      "cksum": "cbeab797b85b50ec1e1e539ccf3fb29f2803725bf63e217d26d633eb1c22dc1e",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "0568262a2212036630c2b52bd3f3637b2c1d5706d722f0099fed3778f66b8dc0"
+      },
+      "lock": "49f3fe7c917fde9313a6fabcf1b973c0f6275538c76480c28a0b57abba7f86da",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "8c68e88ce61d0be26092db537615f153c3b0922d3bca334c75d4b2e3a0064197"
+      }
+    },
+    "gpui-box/0.1.1": {
+      "cksum": "db48a79a46251bae15fa5308f4e23fdb288c522ea37db6891d9a09b4854bd11f",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "0568262a2212036630c2b52bd3f3637b2c1d5706d722f0099fed3778f66b8dc0"
+      },
+      "lock": "f4e5757a21932db93d20d0b43eae1e82af7b6ee66e327b55470194412364cbc0",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "c2165bc7c667f01234317c3fde2f1db42789ea7f1823ff5f0b2b62f42143dbd9"
+      }
+    },
+    "gpui-ce/0.2.2": {
+      "cksum": "b0af79c6659e0fea67773cfbd751fc5c8e51be00139827f365d7d1237a468a4d",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "6a6d02c1442dbde0d4d490953e63e234aad9586002012f72492ccbb5cd67a604"
+      },
+      "lock": "993338acce39c9307f10e52e6ea64a8aa740267e7f33c11792340b937ac368e3",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "ccbef6645850fd4895bb9436c7f644bd66e06f38290f8d83c69abe9b1f8f53df"
+      }
+    },
+    "gpui-ce/0.3.2": {
+      "cksum": "69cf2c0f4eb13b87fbf528cc201b3a101389b406a5d6a7b143b2f08198a853de",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "3d82ff2e42cc483c7645cb4cd2ade3fb9220922848afd321dfa919eb7211a200"
+      },
+      "lock": "18aacf631d24a246de175e65902108d35e39245bf8814757e0baeee6ed6df403",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "f41adadb3b53cd3f7579788a6659725600e724c5ffeffcd0477326d625def28c"
+      }
+    },
+    "gpui-ce/0.3.3": {
+      "cksum": "e44a107ce223acf01c69a901edfa5bb7d233e3f226aaefe017d2268e9cfe11ca",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "3d82ff2e42cc483c7645cb4cd2ade3fb9220922848afd321dfa919eb7211a200"
+      },
+      "lock": "5f7f3b320a59524cc7682daa203017971fa9b8bbce4ef1d1b203e374409afe4f",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "f41adadb3b53cd3f7579788a6659725600e724c5ffeffcd0477326d625def28c"
+      }
+    },
+    "gpui-pre/0.3.0": {
+      "cksum": "5802daa461608153504b99be0b0acd6ca5ab2b2f10bc337732160ae86d6c5fff",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "649d9141e92b0e2cf20aff9d9785c2cd245d92f70d0d416c85bbc6a510dc0ea2"
+      },
+      "lock": "be4b29b4dd62cb9d74563dcb1c505391c9f047485460025f2beea0910cfe5e90",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "f4aac455caf40b588c12d32fc901c9b2f42f297fc9405df143946f4ace9d926b"
+      }
+    },
+    "gpui-pre/0.3.1": {
+      "cksum": "abb3eb3e6977fe9d138c57e56b7e7066352be1bd0ca1300d7ed40ddbf9587b77",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "649d9141e92b0e2cf20aff9d9785c2cd245d92f70d0d416c85bbc6a510dc0ea2"
+      },
+      "lock": "ebbed16d3ef46865429c531c7ef541b59c962937e47a980b7cac480e1f8b600e",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "d56dffa9c8ffa9ed5eaf625aacd3d0ef6695dfa02faea0ab912715cbf95d43c8"
+      }
+    },
+    "gpui-pre/0.3.2": {
+      "cksum": "c4680a36f5977d6e0892b0e7f3a2a9248a7b8acedc2b1975c88d4eb5517a21ad",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "649d9141e92b0e2cf20aff9d9785c2cd245d92f70d0d416c85bbc6a510dc0ea2"
+      },
+      "lock": "3192f4ff6b1840b3bf0a9c2abec69a05a6a47a36bb0d4ab339aeed89a8ba519d",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "d56dffa9c8ffa9ed5eaf625aacd3d0ef6695dfa02faea0ab912715cbf95d43c8"
+      }
+    },
+    "gpui-pre/0.3.3": {
+      "cksum": "f8b0f6f593153b6eb84c336ea7ccf12a1fca186f0db99af628e72f85048c1d7b",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "649d9141e92b0e2cf20aff9d9785c2cd245d92f70d0d416c85bbc6a510dc0ea2"
+      },
+      "lock": "58e4ea3e6b2e836b7f9868e1eeb3d0da33bd1bda0c6fd3628537033b9a23ed7e",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "d56dffa9c8ffa9ed5eaf625aacd3d0ef6695dfa02faea0ab912715cbf95d43c8"
+      }
+    },
+    "gpui-pre/0.3.4": {
+      "cksum": "20199390dbd6cfbb7f0cb2ca57b46120cc1f434746a77367d2780657e0973725",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "649d9141e92b0e2cf20aff9d9785c2cd245d92f70d0d416c85bbc6a510dc0ea2"
+      },
+      "lock": "5ec4bb0c842089502238bd12f27ff0862971c078ffc412cb33f12f10a6cba47d",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "d56dffa9c8ffa9ed5eaf625aacd3d0ef6695dfa02faea0ab912715cbf95d43c8"
+      }
+    },
+    "gpui-pre/0.3.5": {
+      "cksum": "2a9ca98fdcad06276de623c2f48ebd710f1e7724eebef2f2673c583e85dc8335",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "649d9141e92b0e2cf20aff9d9785c2cd245d92f70d0d416c85bbc6a510dc0ea2"
+      },
+      "lock": "757ebf9f1510d380bbea7b8997d3758231a9d19011bcdc89e531669de59724a7",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "1ea2a3b3bbb403f6017614d2422ad74e8e8e852b1c223796604078f23df9d4a3"
+      }
+    },
+    "gpui-unofficial/0.230.1": {
+      "cksum": "e428147b84059a447a59fbc1b4f9ed5c9dfbc168552fdf6bbd3ed090d42f2fef",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "2d56bc7f714e5a8d740b2da9830f08808554397c999b31e02398edd8f52fce09"
+      },
+      "lock": "5e4bc3d93bc8e39e0bfb7bd4fe24769e5cb6e0105932bd294adea831bcbfb53b",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "89f4e35b72b1c76a44e5c7c3f9f63a5f7cfe7ae746fcb17d80da362534844a2e"
+      }
+    },
+    "gpui-unofficial/0.230.2": {
+      "cksum": "86f99537a485ebea7f84c362b4a99c82b08ed226c0113d4d1ba0e6ece074ec09",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "2d56bc7f714e5a8d740b2da9830f08808554397c999b31e02398edd8f52fce09"
+      },
+      "lock": "19560e705efb102f49be3244edde8023a4e6b1394fc8ae5c89aee1c3c61b3035",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "89f4e35b72b1c76a44e5c7c3f9f63a5f7cfe7ae746fcb17d80da362534844a2e"
+      }
+    },
+    "gpui-unofficial/0.231.1": {
+      "cksum": "606350de0fe40c90ca27ab9f4aa811c5a9cef11a69b03ba2ae1fcd5b33f78537",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "2d56bc7f714e5a8d740b2da9830f08808554397c999b31e02398edd8f52fce09"
+      },
+      "lock": "5f72416b884573cf88426fed5f48e8b2323cf8c02e0988f7d7e02096f362b826",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "89f4e35b72b1c76a44e5c7c3f9f63a5f7cfe7ae746fcb17d80da362534844a2e"
+      }
+    },
+    "gpui-unofficial/0.231.2": {
+      "cksum": "f27484a852de830e0ebd9b1360836ee3827e6c2c76b6fe126efbfc01aeedbac7",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "2d56bc7f714e5a8d740b2da9830f08808554397c999b31e02398edd8f52fce09"
+      },
+      "lock": "dce80f59082fefec31b7004868178a74b630bc16c6e31929c7b03410595ad6b5",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "4e8aa4b3166ab239130d7ba2d4bce9e748bc7d74d9a510731885298f29b566ec"
+      }
+    },
+    "gpui-unofficial/0.232.2": {
+      "cksum": "ad593dd1d82b54e943e452c5fc24c9aad809ce7b5c514c84ebad931805afd2fe",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "2d56bc7f714e5a8d740b2da9830f08808554397c999b31e02398edd8f52fce09"
+      },
+      "lock": "2a30540d45a2b1d8d727ff9d578a51c571c4b3d9d3c6f3ac34e6bc50377a22e4",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "29c0bcb3db095d23a4eca39dd0225ecedf1bf934b4adc8ce860c7f20cb2a1606"
+      }
+    },
+    "gpui-unofficial/0.232.3": {
+      "cksum": "ccb0983bbf44a074f563ae5bd062ff6bb3ff6af6f6b24e1d198cf35fb4d45158",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "2d56bc7f714e5a8d740b2da9830f08808554397c999b31e02398edd8f52fce09"
+      },
+      "lock": "d85a1d7a1c4d4dc4a242917f14c440b6473822045651dcff71ed3b2af1159868",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "29c0bcb3db095d23a4eca39dd0225ecedf1bf934b4adc8ce860c7f20cb2a1606"
+      }
+    },
+    "gpui-unofficial/0.233.10": {
+      "cksum": "084a8231ddc88ab3647946d2302bf596d77bc0fe29c1647403719a120d699301",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "2d56bc7f714e5a8d740b2da9830f08808554397c999b31e02398edd8f52fce09"
+      },
+      "lock": "14afe539dd2e68161fe9778d68418a2d1f19a783a59c5fa30d850a5d64345b94",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "29c0bcb3db095d23a4eca39dd0225ecedf1bf934b4adc8ce860c7f20cb2a1606"
+      }
+    },
+    "gpui-unofficial/0.233.5": {
+      "cksum": "3c2ecd0453f044d6ef64c9ac575b4bf7184e1344be8b0778b1a438cb67e17cdc",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "2d56bc7f714e5a8d740b2da9830f08808554397c999b31e02398edd8f52fce09"
+      },
+      "lock": "ec496e51f2ac6419450c5775681655787df054a705c9bcc1f720cd7d6c7df9d8",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "29c0bcb3db095d23a4eca39dd0225ecedf1bf934b4adc8ce860c7f20cb2a1606"
+      }
+    },
+    "gpui-unofficial/0.233.6": {
+      "cksum": "6ff7fa9d4332ed879957e2582c9ccdf5ff89e3b64d8c12aba16e53402e9310f3",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "2d56bc7f714e5a8d740b2da9830f08808554397c999b31e02398edd8f52fce09"
+      },
+      "lock": "cbd9708072928e521da147519ebb8aa194298c442d421a3e4e5be7a248f78aec",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "29c0bcb3db095d23a4eca39dd0225ecedf1bf934b4adc8ce860c7f20cb2a1606"
+      }
+    },
+    "gpui-unofficial/0.233.7": {
+      "cksum": "aaef6adb2429fec2cacfb70cfcd6e13c9dc32de9c2b79f498780439c4d86d5f6",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "2d56bc7f714e5a8d740b2da9830f08808554397c999b31e02398edd8f52fce09"
+      },
+      "lock": "f7e7cc8c3ccb4eaea42bf0aa3f2e91bdb49246f03589318319c73361c6a85172",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "29c0bcb3db095d23a4eca39dd0225ecedf1bf934b4adc8ce860c7f20cb2a1606"
+      }
+    },
+    "gpui-unofficial/0.233.8": {
+      "cksum": "86c28bb1c7cfbe8fd4d3185c38cd679c0f53844dadb1892f83d1c00472d6f948",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "2d56bc7f714e5a8d740b2da9830f08808554397c999b31e02398edd8f52fce09"
+      },
+      "lock": "263baa37de92a0dc77260f51085a8bd8f0496970397d2852a2543bc902ec3938",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "29c0bcb3db095d23a4eca39dd0225ecedf1bf934b4adc8ce860c7f20cb2a1606"
+      }
+    },
+    "gpui-unofficial/0.233.9": {
+      "cksum": "2012369a1e23dcff18ccf3a73db4c47836561ac1da6dc8e63748ff4b7a10bfaa",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "2d56bc7f714e5a8d740b2da9830f08808554397c999b31e02398edd8f52fce09"
+      },
+      "lock": "a829f049ef4aa2c73ac21ca5b70bba575b62de9b6ced04a911185ae6c33cefbe",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "29c0bcb3db095d23a4eca39dd0225ecedf1bf934b4adc8ce860c7f20cb2a1606"
+      }
+    },
+    "gpui-unofficial/1.0.0": {
+      "cksum": "b576555abb37bea510a675664e93a3159202d13a9c694a7af6de32973f6f71ee",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "b27895647960130532f5716223084122e43f772354a305df493502ea016cfb68"
+      },
+      "lock": "956d1093b272353cac7ea18ed1563309a13f00a9aabe0626465c2a9bafd186ff",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "62f24acabc0b319c70dc4022a508b665aa8c25be9489e69214b866e16f10ca2f"
+      }
+    },
+    "gpui-unofficial/1.0.1": {
+      "cksum": "05dcd7de282e2ea95551809a075bdc7064d9e37b8c13a9e54f27dd1136cd1146",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "b27895647960130532f5716223084122e43f772354a305df493502ea016cfb68"
+      },
+      "lock": "2ff1d62d0d5ab919dfc6c63d4ea3e96aeec1d5dd32ee85f9c08cff7b7ea4553f",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "62f24acabc0b319c70dc4022a508b665aa8c25be9489e69214b866e16f10ca2f"
+      }
+    },
+    "gpui-unofficial/1.1.5": {
+      "cksum": "932e75c5a679a1ad64d116ab8a1cfc55243ecc3d180e037c27a8c805b937297e",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "b27895647960130532f5716223084122e43f772354a305df493502ea016cfb68"
+      },
+      "lock": "2588265cb083762342a580baefbe304f7af55157f92952b55362ac184e42ade9",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "1537f7b54d6593d84801f9710831bfe734ab52f08b3f166db64bd06943e1afa3"
+      }
+    },
+    "gpui-unofficial/1.1.6": {
+      "cksum": "190314ccf91ee640067bd3ca4d702dd6854aca697cb1b75518aa27f800b276f1",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "b27895647960130532f5716223084122e43f772354a305df493502ea016cfb68"
+      },
+      "lock": "14f35a4c064412e5adba4dbb61016ef01648cf0968cadf7dbe9614dfcea88852",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "1537f7b54d6593d84801f9710831bfe734ab52f08b3f166db64bd06943e1afa3"
+      }
+    },
+    "gpui-unofficial/1.1.7": {
+      "cksum": "252abaf2b8cddc39d18d90da329c4b2366db59bc94d4a934515972de69120e07",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "b27895647960130532f5716223084122e43f772354a305df493502ea016cfb68"
+      },
+      "lock": "ee268a4d05753af81d468789e19d73c08fabb6d51435a11b9055fc6b3616241c",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "1537f7b54d6593d84801f9710831bfe734ab52f08b3f166db64bd06943e1afa3"
+      }
+    },
+    "gpui-unofficial/1.1.8": {
+      "cksum": "c726c19e41118d048c64d999ba17001555b6f9a2d297beedc794758efcf9f5a3",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "b27895647960130532f5716223084122e43f772354a305df493502ea016cfb68"
+      },
+      "lock": "bb77bb23f72998cc4fcd5e648735383251854379fc3fb8d406795755db5c620f",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "1537f7b54d6593d84801f9710831bfe734ab52f08b3f166db64bd06943e1afa3"
+      }
+    },
+    "gpui-unofficial/1.10.0": {
+      "cksum": "1fb87746047ee43dcc2cf46fc16a1b37e9c92983eb9e0c5c7a0191cc9ac7726b",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "95a9cb6dc891c07fae7cd7a3d2d3c59c74f5ddd23d2ccd6014c0f9f7753b937a"
+      },
+      "lock": "ad737b82b5403642a7495afae1cd2cd6b2d1ddf23d836226321cca539490f666",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "d685f249454ee3f8d8c40b75efc536c7702b20d20313e0bf8faa2dd51b6f028b"
+      }
+    },
+    "gpui-unofficial/1.10.1": {
+      "cksum": "965370dc4993cc23bc542af681388c4c2aacfe059c8fd2ef65f0efd3aa494d15",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "95a9cb6dc891c07fae7cd7a3d2d3c59c74f5ddd23d2ccd6014c0f9f7753b937a"
+      },
+      "lock": "728f99ac3ad72a0e1e6669abed0cbcc1e29f43bbb382aec376d7f4fd2aa96197",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "d685f249454ee3f8d8c40b75efc536c7702b20d20313e0bf8faa2dd51b6f028b"
+      }
+    },
+    "gpui-unofficial/1.10.2": {
+      "cksum": "6eba945700e7d009f70bb03c11c68ce593f3b63d71be693829d52df05b525771",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "95a9cb6dc891c07fae7cd7a3d2d3c59c74f5ddd23d2ccd6014c0f9f7753b937a"
+      },
+      "lock": "4d618a623d0f12cbe0b2c726cbb46fa8a4a998da2af824d4bd0ba3244ad71b73",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "d685f249454ee3f8d8c40b75efc536c7702b20d20313e0bf8faa2dd51b6f028b"
+      }
+    },
+    "gpui-unofficial/1.10.3": {
+      "cksum": "1177ceb65ad69cb68c900137485127294409a104dae50741a6c0e7ef17c10bed",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "95a9cb6dc891c07fae7cd7a3d2d3c59c74f5ddd23d2ccd6014c0f9f7753b937a"
+      },
+      "lock": "8625f66a8e02dabae591ab2ed215f2f2e97bbe39ec35e91c6be25c647d2e8c3d",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "d685f249454ee3f8d8c40b75efc536c7702b20d20313e0bf8faa2dd51b6f028b"
+      }
+    },
+    "gpui-unofficial/1.11.3": {
+      "cksum": "bacad0efb21a8690a0f6ad95ad35052b441b25ff2c349355c1c19b2e2498fc01",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "95a9cb6dc891c07fae7cd7a3d2d3c59c74f5ddd23d2ccd6014c0f9f7753b937a"
+      },
+      "lock": "a6848bb6c8de051fe18c0531997c4b7899bb1650b3babd9e482bdf38a7a42702",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "d685f249454ee3f8d8c40b75efc536c7702b20d20313e0bf8faa2dd51b6f028b"
+      }
+    },
+    "gpui-unofficial/1.12.0": {
+      "cksum": "43bd2c5d6703aaf42cb8d8d46851c3383be44f69bc3fed5fa13bda126b34ee8e",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "95a9cb6dc891c07fae7cd7a3d2d3c59c74f5ddd23d2ccd6014c0f9f7753b937a"
+      },
+      "lock": "30508d3ab69dc27f1216a433e7c213b2135336d6d7a8e05f9b1061fac637ccaf",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "ea5e0cc5e572292e0531834c8d2aa63b219b87202321cf3892f9e564c6b7c810"
+      }
+    },
+    "gpui-unofficial/1.12.1": {
+      "cksum": "5a304fc028768036156b48e9156ed774e842109cee0346d7e914f706ad5bab3c",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "95a9cb6dc891c07fae7cd7a3d2d3c59c74f5ddd23d2ccd6014c0f9f7753b937a"
+      },
+      "lock": "d5d617399b60b97bedcfdd5128433336afb77dc1258f51ebf7b6a2d66c039f99",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "ea5e0cc5e572292e0531834c8d2aa63b219b87202321cf3892f9e564c6b7c810"
+      }
+    },
+    "gpui-unofficial/1.13.1": {
+      "cksum": "0fd651337641034701c5ca8d8bd57935270ed76e9107c40603934ac698f503c8",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "95a9cb6dc891c07fae7cd7a3d2d3c59c74f5ddd23d2ccd6014c0f9f7753b937a"
+      },
+      "lock": "6e64e4a8ec38ada6b9154059573b54b56f1b48aef47bb10f516afa06346521de",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "2af86e097544fff11790307fb4a8d2515539f73c11c2d469dcb4e3cf70161d27"
+      }
+    },
+    "gpui-unofficial/1.13.2": {
+      "cksum": "23ae200403344793c317c5cc80dcca6cf67b56f1a394f7d8c3acd1a0238ce454",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "95a9cb6dc891c07fae7cd7a3d2d3c59c74f5ddd23d2ccd6014c0f9f7753b937a"
+      },
+      "lock": "6591b65c77e1cc252ddd9e950958ebce69daacda705a287604eeb04246ec8755",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "2af86e097544fff11790307fb4a8d2515539f73c11c2d469dcb4e3cf70161d27"
+      }
+    },
+    "gpui-unofficial/1.14.2": {
+      "cksum": "2e27380f5ffbef6a200041b6592295307f7fd606b4b67dc5aa16964c141e85b1",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "95a9cb6dc891c07fae7cd7a3d2d3c59c74f5ddd23d2ccd6014c0f9f7753b937a"
+      },
+      "lock": "5e1b51b3b3c41a20cc7b25a8af73d9679eba87e1f478b2bc23eb9f115efb0630",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "0425e91556deba57f40f2fa5d376250b56d34e0948982e7ea912c32c972f14af"
+      }
+    },
+    "gpui-unofficial/1.15.0": {
+      "cksum": "d9bb6c791c4a0bb7dc88f42f6b9bd0a20e01f4a2c6d75cc122b66a281caa0e83",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "95a9cb6dc891c07fae7cd7a3d2d3c59c74f5ddd23d2ccd6014c0f9f7753b937a"
+      },
+      "lock": "1216746c5f38c11394a16e4e608fe3c881d685f9a9f47496836763af54ca9859",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "69fb5930f14c6d8a2366c4d19fef288a4484127c958d21e5c9a2647753a12e9d"
+      }
+    },
+    "gpui-unofficial/1.16.1": {
+      "cksum": "c9ebd63352653113683dd206a0f1afe681ac4696ee12c372fa17b6234ee6cb88",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "d2b37f768cd09bede201a2b9c317c318be35452afba819947f537be1ed14eaef"
+      },
+      "lock": "d9f07b2da067c125363c008a6ef06734eb2210728f4d2a6a706f4e9dc6ce3dd7",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "7b149bdbc01e69aaae25dfc7f7bb38dbf756dd4f404f61e9b0f9d8f6c797296f"
+      }
+    },
+    "gpui-unofficial/1.16.2": {
+      "cksum": "94bde978965081a26211369795c021c32be4744f195c8279bc728e82a72cdf68",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "d2b37f768cd09bede201a2b9c317c318be35452afba819947f537be1ed14eaef"
+      },
+      "lock": "82dafabc3727cfe23853321c6c8dc5fd8e8f0438529c68fa8a170fea26b60d2b",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "7b149bdbc01e69aaae25dfc7f7bb38dbf756dd4f404f61e9b0f9d8f6c797296f"
+      }
+    },
+    "gpui-unofficial/1.16.3": {
+      "cksum": "b228b1004d4dd0d8eb5f3a37850647362f835695149c8723970fa99d18138adb",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "d2b37f768cd09bede201a2b9c317c318be35452afba819947f537be1ed14eaef"
+      },
+      "lock": "1ff7e1b023a245ebc2022a972f6cd9f87a16608f37258efbc924d2499f338258",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "7b149bdbc01e69aaae25dfc7f7bb38dbf756dd4f404f61e9b0f9d8f6c797296f"
+      }
+    },
+    "gpui-unofficial/1.17.0-pre": {
+      "cksum": "e38f92fddecf5b3a3e701206d3e9f0a8888c7605c4c1de018f4245f5763ca2e4",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "d6655be76d43c57b5693d35cf09b232e7614d850c42b3b784fdee6a9aa0eb1a7"
+      },
+      "lock": "213fb7ea5d17d01027fec4ff804ca4cfbcc9da6013a965b9e0833042fb603fb0",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "74e7efc85d21ad7a282389e57dcef40c8e66fee5b4af515867aeefd9dce3553d"
+      }
+    },
+    "gpui-unofficial/1.17.2": {
+      "cksum": "5364b783eaa13d216fe38078dd2f5c4e526d97dc8a7aae5904a4b23581396c69",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "d6655be76d43c57b5693d35cf09b232e7614d850c42b3b784fdee6a9aa0eb1a7"
+      },
+      "lock": "38dc9a0777310b72c8fda2aaf25629740a05e283ac002bbb030e0563fe262b33",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "74e7efc85d21ad7a282389e57dcef40c8e66fee5b4af515867aeefd9dce3553d"
+      }
+    },
+    "gpui-unofficial/1.18.0": {
+      "cksum": "0e5bc598d11a2444abce84ced510014d296bcd6771cd6fe61212b71bfdd1f3f2",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "f4c78bc0f117eae84766aabb835e1d573c0a588fb3a8f0e4f76b540a122da4ff"
+      },
+      "lock": "48b916cc272ee3e07d928afeb826835986773a4e0517150c0fbe3697a99b398e",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "74e7efc85d21ad7a282389e57dcef40c8e66fee5b4af515867aeefd9dce3553d"
+      }
+    },
+    "gpui-unofficial/1.18.0-pre": {
+      "cksum": "b6ef729a2e504e93e67130104b294450c12ef5d41679940dfafda21d7b8f135f",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "f4c78bc0f117eae84766aabb835e1d573c0a588fb3a8f0e4f76b540a122da4ff"
+      },
+      "lock": "3db326a1d469f4af2546760b81fe0a999872fbadc3e24b625e6ee7b68b0b832e",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "74e7efc85d21ad7a282389e57dcef40c8e66fee5b4af515867aeefd9dce3553d"
+      }
+    },
+    "gpui-unofficial/1.18.1": {
+      "cksum": "97fc01427e0760a3ce5a53e7b0ebbcf068a7f72b922ccb9357aca2e0e635f014",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "f4c78bc0f117eae84766aabb835e1d573c0a588fb3a8f0e4f76b540a122da4ff"
+      },
+      "lock": "f873dc0d5744f673a913f40bd823f416bc7b8e241b09fef278f99ff870247439",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "74e7efc85d21ad7a282389e57dcef40c8e66fee5b4af515867aeefd9dce3553d"
+      }
+    },
+    "gpui-unofficial/1.19.0-pre": {
+      "cksum": "cf7621140f70e8d48826c4f999f86cde0e7ba0fcf1207568cdbeebd73b9b80bc",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "f4c78bc0f117eae84766aabb835e1d573c0a588fb3a8f0e4f76b540a122da4ff"
+      },
+      "lock": "be982a665f46a89b874b5a31bf4e8f351318287651fa9fea1881f34e138feded",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "c50ab9c7818d9dd4128c14f129b0356537395335f92c78363cc3dc8306502fdc"
+      }
+    },
+    "gpui-unofficial/1.19.1-pre": {
+      "cksum": "cb820ebe0d5fa46ea3018a250d07e0cf9500f32fc31dfa859af7ccef4ae11a7b",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "f4c78bc0f117eae84766aabb835e1d573c0a588fb3a8f0e4f76b540a122da4ff"
+      },
+      "lock": "d51656a498f6cfb498d1b77eaafc6a76677b18a5e7e27199d78b5f0a84810327",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "c50ab9c7818d9dd4128c14f129b0356537395335f92c78363cc3dc8306502fdc"
+      }
+    },
+    "gpui-unofficial/1.19.2": {
+      "cksum": "4058467a05e38f02ce4089b42cb6d2564047fe7f676efdb0c2db2780345e6fa7",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "f4c78bc0f117eae84766aabb835e1d573c0a588fb3a8f0e4f76b540a122da4ff"
+      },
+      "lock": "9763fed59a064398e38e13fa1a57488c8a18e7604e8168bbc3ba794043ea5371",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "c50ab9c7818d9dd4128c14f129b0356537395335f92c78363cc3dc8306502fdc"
+      }
+    },
+    "gpui-unofficial/1.2.3": {
+      "cksum": "99a01cadbbf3d5742ee390d60ac77509b881a45f7df01922caccbed3b764ce28",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "b27895647960130532f5716223084122e43f772354a305df493502ea016cfb68"
+      },
+      "lock": "5bca0d1a9ba8083c23644d161ab32785985d73594541c5ebca451377d54bb87d",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "93f8b6859a942030c7962e46e3f789e273cd2c9de6adaa965f4963e84c748257"
+      }
+    },
+    "gpui-unofficial/1.2.6": {
+      "cksum": "6d0db3362be34279de15628e7d60f692009aa9063a022a1f05b647f0a56a411b",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "b27895647960130532f5716223084122e43f772354a305df493502ea016cfb68"
+      },
+      "lock": "1a404c9d73d2a293a26d8d3f0e52a62acaeafaa5db6759b1fee31ba38bd8095d",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "93f8b6859a942030c7962e46e3f789e273cd2c9de6adaa965f4963e84c748257"
+      }
+    },
+    "gpui-unofficial/1.2.7": {
+      "cksum": "f13a7c1f8cb8fa7fd740f8cd72488b8ab78a6ccb4702b74d6acb6724ced016af",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "b27895647960130532f5716223084122e43f772354a305df493502ea016cfb68"
+      },
+      "lock": "721693dcbdc0877f5eee7df1c4e3e5f85aa856b93595cbb63863f2af4e961bdd",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "93f8b6859a942030c7962e46e3f789e273cd2c9de6adaa965f4963e84c748257"
+      }
+    },
+    "gpui-unofficial/1.20.0-pre": {
+      "cksum": "67bdfd78a4f20459b3f0769cc212d1a83c3d164e49b0cfd45f2cc92205a19f37",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "f4c78bc0f117eae84766aabb835e1d573c0a588fb3a8f0e4f76b540a122da4ff"
+      },
+      "lock": "5904424262ed5c583d254a307be7cf4185887a4d11ffcdacfaa26a1510eb1218",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "0480abb2a5c68605fadd8d05ba67985b562ff374593b12fa6bb2368171cbe871"
+      }
+    },
+    "gpui-unofficial/1.20.1": {
+      "cksum": "e9dafeecf3ec513aae2770388afdb07c72c2851da32438d4a05a654030c6e8c7",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "f4c78bc0f117eae84766aabb835e1d573c0a588fb3a8f0e4f76b540a122da4ff"
+      },
+      "lock": "aada08ade9776bec7fb668cbe2334e743c010b8a7ebc3d05dbb6edc6aa28560e",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "0480abb2a5c68605fadd8d05ba67985b562ff374593b12fa6bb2368171cbe871"
+      }
+    },
+    "gpui-unofficial/1.7.2": {
+      "cksum": "f6b3b9e15e1c1265cd20d384939e0efba48b8d4e4a935b6cd7d8eb0a840b25aa",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "95a9cb6dc891c07fae7cd7a3d2d3c59c74f5ddd23d2ccd6014c0f9f7753b937a"
+      },
+      "lock": "9846d7597580c44173c89e180d47f3aa3783b4c0e1d5110931adb247fcd02136",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "5af3ef08581a97b217f3430212a219119e8ab556f0ced2e2f896d5ed4f34bb70"
+      }
+    },
+    "gpui-unofficial/1.8.2": {
+      "cksum": "1801a9eeca0082bc29ed747d079ee7423c0224f0bb39872a549af5bd074d85ba",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "95a9cb6dc891c07fae7cd7a3d2d3c59c74f5ddd23d2ccd6014c0f9f7753b937a"
+      },
+      "lock": "5a8a818cd1f3217b1264952707fc3af024603e96c7240ac1fc150c296af5c8a9",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "5af3ef08581a97b217f3430212a219119e8ab556f0ced2e2f896d5ed4f34bb70"
+      }
+    },
+    "gpui-unofficial/1.9.0": {
+      "cksum": "80f9d555ecf24bf6a1538f62602aeb992abd0f78b3ed83622a6302d92840332c",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "95a9cb6dc891c07fae7cd7a3d2d3c59c74f5ddd23d2ccd6014c0f9f7753b937a"
+      },
+      "lock": "9a96c799a67642839e3c86c5e3b3fa145c0c9b92d1ac026b19931a4389dd0821",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "d685f249454ee3f8d8c40b75efc536c7702b20d20313e0bf8faa2dd51b6f028b"
+      }
+    },
+    "gpui/0.1.0": {
+      "cksum": "aa09f677375595915cb0039f88218ed46987d6ff572bbc506469a67f44a897af",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "14d431ec32009b8a329a56e5c164744cdd4f93e330eb5cdf5a65e3f731ab2137"
+      },
+      "lock": "647ffba6acde3e505917d01b1b45740ebfd1babc555246f134a0f95a5f3a9069",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "6e5abb8c85bd9b4a6a54ca46613f71f3ccca8c02a68d55a2f404df9aa6438d09"
+      }
+    },
+    "gpui/0.1.0-test": {
+      "cksum": "bc0839e462573370ac1d68c1568f313e373abff8770f7a856d15407c60c56487",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "170ee7f502ccf3c16abbf47838fc9e08394be6e85c4d9b9d5526c6ff4f7efd6b"
+      },
+      "lock": "213de1682b662c1c977ff97fb68baceefd1999acb719b198d590f5685c61d87b",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "791571696f3497854d8bf0d0fe44f91aa1e60df16b278872c0dbc9cf2c9cbbed"
+      }
+    },
+    "gpui/0.2.0": {
+      "cksum": "c8a209a56079b7af7d158e410aaad8666edf5ad55450803eaace98a4eef383f7",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "170ee7f502ccf3c16abbf47838fc9e08394be6e85c4d9b9d5526c6ff4f7efd6b"
+      },
+      "lock": "c256c128a5dc3c9a680157462251fad5b11192a3ed78cdd65870f09bbf6ddc0c",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "791571696f3497854d8bf0d0fe44f91aa1e60df16b278872c0dbc9cf2c9cbbed"
+      }
+    },
+    "gpui/0.2.0-test.4": {
+      "cksum": "b99247310307e6780e7104e9fddc39446251426f9ae7122f5ecc68c66a1ea98a",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "170ee7f502ccf3c16abbf47838fc9e08394be6e85c4d9b9d5526c6ff4f7efd6b"
+      },
+      "lock": "b7f75f159850eda9bcb7c3e31057b55aa39de880f73ee77ce6e93313ddea9a2f",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "791571696f3497854d8bf0d0fe44f91aa1e60df16b278872c0dbc9cf2c9cbbed"
+      }
+    },
+    "gpui/0.2.1": {
+      "cksum": "4d6cc8eeb8b75347d602fb1919e2c42f26c43c2a75d71b46200a8c24e8ba4c4c",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "170ee7f502ccf3c16abbf47838fc9e08394be6e85c4d9b9d5526c6ff4f7efd6b"
+      },
+      "lock": "cf1a9b126a67f44338318af9045f49971249c98f9e3c0c2452be4c7d5cba09f6",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "791571696f3497854d8bf0d0fe44f91aa1e60df16b278872c0dbc9cf2c9cbbed"
+      }
+    },
+    "gpui/0.2.1-test3": {
+      "cksum": "551e9574e20eb1a1eb69a43ce9a358a0adf98f1f943e42233e291a0ed8469c5f",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "170ee7f502ccf3c16abbf47838fc9e08394be6e85c4d9b9d5526c6ff4f7efd6b"
+      },
+      "lock": "307795ac64e613da38a5004fc99392559a05a4e02af0182dc49bccddd68a0d33",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "791571696f3497854d8bf0d0fe44f91aa1e60df16b278872c0dbc9cf2c9cbbed"
+      }
+    },
+    "gpui/0.2.2": {
+      "cksum": "979b45cfa6ec723b6f42330915a1b3769b930d02b2d505f9697f8ca602bee707",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "170ee7f502ccf3c16abbf47838fc9e08394be6e85c4d9b9d5526c6ff4f7efd6b"
+      },
+      "lock": "3e88eb034627319009ab3c7b31958b263097b0d2fbed2f2fd86dfc079bfd0a5c",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "f3659cf8df1dc8c218b9554787402fd93aead76f5df107ca9c4e7790baa0d412"
+      }
+    },
+    "kael/0.3.0": {
+      "cksum": "ad0a3a78bf815439ef5a908a2e08edcbaf4b18add4ec4c57c068627e7dc729fd",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "e02983766700fc751a6cc024a59eabbcb4bfe7bc41a8e2cab32c14db6063d215"
+      },
+      "lock": "21980f53411ab36bb6ebf743928fc576ac1c862f5a53707d701c9dd1607f3e5d",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "b5a0b9f501d1efd46d703639569df0f945b00d00950eeed2b898a3a3678f5716"
+      }
+    },
+    "kael/0.3.1": {
+      "cksum": "66f3600063d2958d9a4bc95914a3847c4dfed8437b0f869c32757fa4c8bbb914",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "e02983766700fc751a6cc024a59eabbcb4bfe7bc41a8e2cab32c14db6063d215"
+      },
+      "lock": "50dc5f45416353e172ce385abc67a1cb26c27c5e2527ec0868f61686aa1f2339",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "9f1154f815ed4b073376416bc8d5af19f66aff5ade0c3134392b39726cbb58a1"
+      }
+    },
+    "kael/0.4.0": {
+      "cksum": "98904f1516e63bb67ea0fa95528592c48076f3f4987236a0a435014e17238253",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "19874f3c0904e44c183f4cea2d4f83015b585ecbca3c9fc9f4bb2948312faac4"
+      },
+      "lock": "673bf68e13f88d8cfc1a2d1d57c65998025d86ff877a1338bb88960997b03f07",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "f45cfb3069497139078b08bed6c46800045853ddae1291c3f1bc67d9415e22d2"
+      }
+    },
+    "kael/0.4.1": {
+      "cksum": "ce3beba52a6eaf0dbc66315ab7f559117437a521fb41d6f54dc614a258e2b748",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "19874f3c0904e44c183f4cea2d4f83015b585ecbca3c9fc9f4bb2948312faac4"
+      },
+      "lock": "f9eae2fb34fbe149ce4d7a89120a7d67aa23a3e953618d00ed1f845f6d0508d9",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "f45cfb3069497139078b08bed6c46800045853ddae1291c3f1bc67d9415e22d2"
+      }
+    }
+  },
+  "environment": {
+    "rustc": "1.98.1",
+    "rustdoc": "rustdoc 1.98.1 (48a229cea 2026-09-01)",
+    "tool": "da6a512cab43729cafc043a776688c4f4751a5045d23e834007e4f3f684ef9e0"
+  },
+  "schema": "gocar.attestations.v1"
+}

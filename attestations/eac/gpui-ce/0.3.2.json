@@ -1,0 +1,52 @@
+{
+  "schema": "gocar.eac.v1",
+  "crate_name": "gpui-ce",
+  "producer": {
+    "mechanism": "cargo-check",
+    "toolchain": "1.98.1"
+  },
+  "toolchain": {
+    "verified": [
+      "1.98.1"
+    ],
+    "incompatible": []
+  },
+  "features": {
+    "exhaustive": [],
+    "symbolic": [],
+    "untested": [
+      [],
+      [
+        "default"
+      ],
+      [
+        "inspector"
+      ],
+      [
+        "leak-detection"
+      ],
+      [
+        "macos-blade"
+      ],
+      [
+        "runtime_shaders"
+      ],
+      [
+        "screen-capture"
+      ],
+      [
+        "test-support"
+      ],
+      [
+        "wayland"
+      ],
+      [
+        "windows-manifest"
+      ],
+      [
+        "x11"
+      ]
+    ],
+    "mutually_exclusive": []
+  }
+}

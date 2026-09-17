@@ -1,0 +1,56 @@
+{
+  "schema": "gocar.eac.v1",
+  "crate_name": "gpui-box",
+  "producer": {
+    "mechanism": "cargo-check",
+    "toolchain": "1.98.1"
+  },
+  "toolchain": {
+    "verified": [
+      "1.98.1"
+    ],
+    "incompatible": [],
+    "declared": "1.97"
+  },
+  "features": {
+    "exhaustive": [],
+    "symbolic": [],
+    "untested": [
+      [],
+      [
+        "bench"
+      ],
+      [
+        "default"
+      ],
+      [
+        "input-latency-histogram"
+      ],
+      [
+        "inspector"
+      ],
+      [
+        "leak-detection"
+      ],
+      [
+        "profiler"
+      ],
+      [
+        "screen-capture"
+      ],
+      [
+        "test-support"
+      ],
+      [
+        "wayland"
+      ],
+      [
+        "windows-manifest"
+      ],
+      [
+        "x11"
+      ]
+    ],
+    "mutually_exclusive": []
+  }
+}

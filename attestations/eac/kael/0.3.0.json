@@ -1,0 +1,107 @@
+{
+  "schema": "gocar.eac.v1",
+  "crate_name": "kael",
+  "producer": {
+    "mechanism": "cargo-check",
+    "toolchain": "1.98.1"
+  },
+  "toolchain": {
+    "verified": [
+      "1.98.1"
+    ],
+    "incompatible": [],
+    "declared": "1.97.1"
+  },
+  "features": {
+    "exhaustive": [],
+    "symbolic": [],
+    "untested": [
+      [],
+      [
+        "agent-tools"
+      ],
+      [
+        "audio"
+      ],
+      [
+        "auto-update"
+      ],
+      [
+        "default"
+      ],
+      [
+        "diagnostics"
+      ],
+      [
+        "document"
+      ],
+      [
+        "http-client"
+      ],
+      [
+        "icons"
+      ],
+      [
+        "image-avif"
+      ],
+      [
+        "image-exr"
+      ],
+      [
+        "inspector"
+      ],
+      [
+        "leak-detection"
+      ],
+      [
+        "lottie"
+      ],
+      [
+        "macos-blade"
+      ],
+      [
+        "media"
+      ],
+      [
+        "notifications-full"
+      ],
+      [
+        "pdf"
+      ],
+      [
+        "platform-foundation"
+      ],
+      [
+        "runtime_shaders"
+      ],
+      [
+        "screen-capture"
+      ],
+      [
+        "share"
+      ],
+      [
+        "storage"
+      ],
+      [
+        "test-support"
+      ],
+      [
+        "test-support-linux-windowing"
+      ],
+      [
+        "wayland"
+      ],
+      [
+        "webview"
+      ],
+      [
+        "windows-manifest"
+      ],
+      [
+        "x11"
+      ]
+    ],
+    "mutually_exclusive": []
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "schema": "gocar.eac.v1",
+  "crate_name": "kael",
+  "producer": {
+    "mechanism": "cargo-check",
+    "toolchain": "1.98.1"
+  },
+  "toolchain": {
+    "verified": [
+      "1.98.1"
+    ],
+    "incompatible": [],
+    "declared": "1.97.1"
+  },
+  "features": {
+    "exhaustive": [],
+    "symbolic": [],
+    "untested": [
+      [],
+      [
+        "agent-tools"
+      ],
+      [
+        "audio"
+      ],
+      [
+        "auto-update"
+      ],
+      [
+        "browser"
+      ],
+      [
+        "browser-full"
+      ],
+      [
+        "default"
+      ],
+      [
+        "devtools"
+      ],
+      [
+        "diagnostics"
+      ],
+      [
+        "document"
+      ],
+      [
+        "font-kit"
+      ],
+      [
+        "game-input"
+      ],
+      [
+        "http-client"
+      ],
+      [
+        "icons"
+      ],
+      [
+        "image-avif"
+      ],
+      [
+        "image-exr"
+      ],
+      [
+        "inspector"
+      ],
+      [
+        "leak-detection"
+      ],
+      [
+        "linux-platform"
+      ],
+      [
+        "linux-wayland-protocols"
+      ],
+      [
+        "linux-x11-protocols"
+      ],
+      [
+        "lottie"
+      ],
+      [
+        "macos-blade"
+      ],
+      [
+        "media"
+      ],
+      [
+        "notifications-full"
+      ],
+      [
+        "office"
+      ],
+      [
+        "pdf"
+      ],
+      [
+        "platform-foundation"
+      ],
+      [
+        "portable-services"
+      ],
+      [
+        "runtime_shaders"
+      ],
+      [
+        "screen-capture"
+      ],
+      [
+        "share"
+      ],
+      [
+        "storage"
+      ],
+      [
+        "test-support"
+      ],
+      [
+        "test-support-linux-windowing"
+      ],
+      [
+        "wayland"
+      ],
+      [
+        "webview"
+      ],
+      [
+        "webview-gtk4"
+      ],
+      [
+        "webview-legacy-gtk3"
+      ],
+      [
+        "webview-wayland-gtk4"
+      ],
+      [
+        "windows-manifest"
+      ],
+      [
+        "x11"
+      ]
+    ],
+    "mutually_exclusive": []
+  }
+}

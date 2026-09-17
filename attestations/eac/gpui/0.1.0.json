@@ -1,0 +1,22 @@
+{
+  "schema": "gocar.eac.v1",
+  "crate_name": "gpui",
+  "producer": {
+    "mechanism": "cargo-check",
+    "toolchain": "1.98.1"
+  },
+  "toolchain": {
+    "verified": [
+      "1.98.1"
+    ],
+    "incompatible": []
+  },
+  "features": {
+    "exhaustive": [],
+    "symbolic": [],
+    "untested": [
+      []
+    ],
+    "mutually_exclusive": []
+  }
+}
