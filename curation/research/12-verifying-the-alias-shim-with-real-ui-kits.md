@@ -10,7 +10,7 @@ is a method signature, not a package name.
 
 ## What was not known before
 
-[Doc 11](11-alias-shim-for-kits.md) designed the alias shim — a same-name
+[Doc 11](11-using-third-party-ui-kits-with-alternative-gpui-forks.md) designed the alias shim — a same-name
 re-export crate plus `[patch]` that routes a kit's fork binding onto another
 release of the same *measured* generation — and verified it as far as
 resolution and lock shape on the real `gpui-kit` 0.6.0. Its own status line
@@ -171,7 +171,7 @@ refuses to shim a type member.
   (`d143b846…`).
 - **Environment:** rustc 1.95.0, 12 cores, Linux, 2026-09-07. Probe projects,
   vendored manifests and captured outputs were temporary.
-- **Related reading:** [11 — using third-party UI kits with alternative
-  forks](11-alias-shim-for-kits.md) for the recipe this study compiled, and
-  [13 — two kits, one measured generation](13-two-kits-one-generation-field-note.md)
+- **Related reading:** [11 — Using third-party UI kits with alternative GPUI
+  forks](11-using-third-party-ui-kits-with-alternative-gpui-forks.md) for the recipe this study compiled, and
+  [13 — Two UI kits running on one underlying engine](13-two-ui-kits-running-on-one-underlying-engine.md)
   for the short version.

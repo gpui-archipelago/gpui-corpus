@@ -30,10 +30,10 @@ in both directions of the twin generation `546fcb11…`:
 
 | Kit | Binds | Target | Outcome |
 | --- | --- | --- | --- |
-| `gpui-kit` 0.6.0 (its whole stack) | `gpui-pre` `^0.3.1` | `gpui-unofficial` 1.19.0-pre | built, exit 0 ([doc 12](12-alias-shim-compiled-both-real-kits.md): 3m05s) |
+| `gpui-kit` 0.6.0 (its whole stack) | `gpui-pre` `^0.3.1` | `gpui-unofficial` 1.19.0-pre | built, exit 0 ([doc 12](12-verifying-the-alias-shim-with-real-ui-kits.md): 3m05s) |
 | `gpuikit` 0.9.0, untouched | `gpui-unofficial` `^1.14.2` | `gpui-pre` 0.3.3 | blocked at resolution — the caret excludes a prerelease |
-| `gpuikit` 0.9.0, requirements steered | `gpui-unofficial` `=1.19.0-pre` | `gpui-pre` 0.3.3 | failed to compile — one re-signature ([doc 12](12-alias-shim-compiled-both-real-kits.md)) |
-| `gpuikit` 0.9.0, one line patched | `gpui-unofficial` `=1.19.0-pre` | `gpui-pre` 0.3.3 | built, exit 0 ([doc 12](12-alias-shim-compiled-both-real-kits.md): 1m37s) |
+| `gpuikit` 0.9.0, requirements steered | `gpui-unofficial` `=1.19.0-pre` | `gpui-pre` 0.3.3 | failed to compile — one re-signature ([doc 12](12-verifying-the-alias-shim-with-real-ui-kits.md)) |
+| `gpuikit` 0.9.0, one line patched | `gpui-unofficial` `=1.19.0-pre` | `gpui-pre` 0.3.3 | built, exit 0 ([doc 12](12-verifying-the-alias-shim-with-real-ui-kits.md): 1m37s) |
 
 The `gpui-kit` stack compiled against `gpui-unofficial` with `cargo tree -i
 gpui-unofficial` showing the release **once**, reachable only through the shim.
@@ -178,9 +178,10 @@ through every crate.
   Butler), against `gpui-unofficial` 1.19.0-pre and `gpui-pre` 0.3.3.
 - **Twin generation:** `546fcb11…`, shared by `gpui-pre` 0.3.x and
   `gpui-unofficial` 1.19.0-pre.
-- **Compile evidence:** [doc 12](12-alias-shim-compiled-both-real-kits.md)'s
+- **Compile evidence:** [doc 12](12-verifying-the-alias-shim-with-real-ui-kits.md)'s
   runs — rustc 1.95.0, 12 cores, Linux, 2026-09-07. The aliased projects were
   temporary and are not part of the shipped dataset.
-- **Related reading:** [10 — auditing third-party UI kits](10-kit-and-toolchain-floors.md)
+- **Related reading:** [10 — Auditing third-party UI kits and Rust compiler
+  requirements](10-auditing-third-party-ui-kits-and-rust-compiler-requirements.md)
   for what the workspace audit does with the clash, and
-  [12](12-alias-shim-compiled-both-real-kits.md) for the compile half in full.
+  [12](12-verifying-the-alias-shim-with-real-ui-kits.md) for the compile half in full.

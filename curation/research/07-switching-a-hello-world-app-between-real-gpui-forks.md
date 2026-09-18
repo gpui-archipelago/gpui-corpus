@@ -133,6 +133,7 @@ single engine: it compiles, `verify-env` is clean, `check-workspace` exits 0.
 - **Environment:** rustc 1.95.0 and 1.97.1 on Linux, 2026-09-06, extended to
   all six providers 2026-09-07. Probe projects were temporary and are not
   part of the shipped dataset.
-- **Related reading:** [08 — is the used-API report meaningful on real GPUI
-  code?](08-used-api-report-on-real-code.md) and [10 — a real kit through the
-  workspace audit, and declared toolchain floors](10-kit-and-toolchain-floors.md).
+- **Related reading:** [08 — Checking real application code with the compatibility
+  report](08-checking-real-application-code-with-the-compatibility-report.md) and
+  [10 — Auditing third-party UI kits and Rust compiler
+  requirements](10-auditing-third-party-ui-kits-and-rust-compiler-requirements.md).

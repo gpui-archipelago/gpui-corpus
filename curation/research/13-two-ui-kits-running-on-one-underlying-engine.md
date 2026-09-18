@@ -100,7 +100,7 @@ Three honest asterisks, because this is a measured claim rather than magic:
   re-export shim can absorb it.
 - **The audits will still refuse the aliased workspace.** They key on package
   names, and an alias deliberately breaks name↔identity — see
-  [doc 11](11-alias-shim-for-kits.md) for what the refusal says and why it is
+  [doc 11](11-using-third-party-ui-kits-with-alternative-gpui-forks.md) for what the refusal says and why it is
   correct about the model while wrong about the graph.
 
 ## What this does not establish
@@ -126,5 +126,5 @@ Three honest asterisks, because this is a measured claim rather than magic:
 - **Environment:** rustc 1.95.0, 12 cores, Linux, 2026-09-07. The probe
   projects were temporary.
 - **Related reading:** this note is the summary — the recipe is
-  [doc 11](11-alias-shim-for-kits.md) and the full compile study, with its
-  controls, is [doc 12](12-alias-shim-compiled-both-real-kits.md).
+  [doc 11](11-using-third-party-ui-kits-with-alternative-gpui-forks.md) and the full compile study, with its
+  controls, is [doc 12](12-verifying-the-alias-shim-with-real-ui-kits.md).

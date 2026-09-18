@@ -34,7 +34,7 @@ The workspace: a root app (`kit-app`) bound to `gpui-unofficial` 1.18.1 with
 its companion — the era-correct binding unit — and a plain member library
 (`widget-lib`) whose only dependency is `gpui-kit` 0.6.0. The kit itself is a
 layer on a fork: its manifest renames `gpui` to `gpui-pre` `^0.3.1`, and it
-needs `gpui-pre-platform` `^0.3.1` as a hard dependency — [doc 07](07-real-fork-compile-case-study.md)'s
+needs `gpui-pre-platform` `^0.3.1` as a hard dependency — [doc 07](07-switching-a-hello-world-app-between-real-gpui-forks.md)'s
 binding unit, in the wild.
 
 Dependency resolution put both engines in one lock: `gpui-unofficial` 1.18.1
@@ -137,8 +137,8 @@ string rather than the padded parse.
   culprit needs a reverse-edge walk, which is scoped elsewhere.
 - **The kit was audited, not compiled.** This probe runs the lock and the
   audit; whether the kit's stack actually builds against another engine is
-  [doc 11](11-alias-shim-for-kits.md) and
-  [doc 12](12-alias-shim-compiled-both-real-kits.md)'s subject.
+  [doc 11](11-using-third-party-ui-kits-with-alternative-gpui-forks.md) and
+  [doc 12](12-verifying-the-alias-shim-with-real-ui-kits.md)'s subject.
 - Attested-floor handling (pruning to a verified floor rather than a declared
   one) is out of scope here.
 - One kit, one workspace, one app: other kit shapes and other graph layouts
@@ -152,7 +152,8 @@ string rather than the padded parse.
   `546fcb11…` (the kit's) — structurally different.
 - **Environment:** rustc 1.95.0 active with 1.97.1 installed, Linux,
   2026-09-07. Probe projects and their captured outputs were temporary.
-- **Related reading:** [07 — switching a hello world between real
-  forks](07-real-fork-compile-case-study.md) for the binding unit the kit
-  needs, and [11 — running a kit that binds another fork](11-alias-shim-for-kits.md)
+- **Related reading:** [07 — Switching a Hello World app between real GPUI
+  forks](07-switching-a-hello-world-app-between-real-gpui-forks.md) for the binding unit the kit
+  needs, and [11 — Using third-party UI kits with alternative GPUI
+  forks](11-using-third-party-ui-kits-with-alternative-gpui-forks.md)
   for what to do about it.

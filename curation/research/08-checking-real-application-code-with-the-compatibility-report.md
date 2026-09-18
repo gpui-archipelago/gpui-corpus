@@ -124,8 +124,8 @@ The 30 unscanned sites are unchanged across baselines: 1 glob import
 - **Environment:** rustc 1.97.1 on Linux, 2026-09-06, re-measured 2026-09-07
   after the corpus walker was fixed. The probe projects were temporary and are
   not part of the shipped dataset.
-- **Related reading:** [07 — switching a hello world between real
-  forks](07-real-fork-compile-case-study.md) for the baseline setup across
-  forks, and [09 — does migrate carry a real app across the
-  1.17.2 break?](09-migrate-and-facade-on-real-code.md) for the compiler side
+- **Related reading:** [07 — Switching a Hello World app between real GPUI
+  forks](07-switching-a-hello-world-app-between-real-gpui-forks.md) for the baseline setup across
+  forks, and [09 — Testing automated migration and compatibility shims on real
+  code](09-testing-automated-migration-and-compatibility-shims-on-real-code.md) for the compiler side
   of that same break.

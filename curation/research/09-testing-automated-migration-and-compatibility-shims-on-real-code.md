@@ -22,7 +22,7 @@ rewrite to 1.18.1 — and where do hands have to take over?
 ## What was run
 
 On 2026-09-06, one project under rustc 1.97.1 on Linux: a real app bound to
-`gpui-unofficial` 1.16.1 (the probe from [doc 08](08-used-api-report-on-real-code.md),
+`gpui-unofficial` 1.16.1 (the probe from [doc 08](08-checking-real-application-code-with-the-compatibility-report.md),
 whose instrumentation calls the frame-trace toggles), plus **one deliberately
 rule-shaped module**. That second module exists because no real app calls
 `record_frame_timing`: the fork records its own frames internally, and the
@@ -117,8 +117,8 @@ outright instead of applied.
 - **Environment:** rustc 1.97.1 on Linux, 2026-09-06. The probe projects and
   their step-by-step evidence were temporary and are not part of the shipped
   dataset.
-- **Related reading:** [08 — checking real application code with the
-  compatibility report](08-used-api-report-on-real-code.md) for what the scan
-  can and cannot see, and [10 — a real kit through the workspace audit, and
-  declared toolchain floors](10-kit-and-toolchain-floors.md) for the audit
+- **Related reading:** [08 — Checking real application code with the compatibility
+  report](08-checking-real-application-code-with-the-compatibility-report.md) for what the scan can and
+  cannot see, and [10 — Auditing third-party UI kits and Rust compiler
+  requirements](10-auditing-third-party-ui-kits-and-rust-compiler-requirements.md) for the audit
   side.

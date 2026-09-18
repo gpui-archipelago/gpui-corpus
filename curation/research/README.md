@@ -25,7 +25,8 @@ establish / provenance), no ticket ids, and no pointers to documents that are
 not published here.** Every number and quote was checked back against the
 original. The tool repo's copies are still the originals — and are now *older*
 than these — so a plain resync from there would overwrite this work. Carry
-edits in both directions rather than copying one way:
+edits in both directions rather than copying one way (the `NN-` prefix is what
+the globs key on, so the filenames below may differ):
 
 ```bash
 # cargo-gocar checkout: docs/04-user-docs/  →  this directory
@@ -33,6 +34,15 @@ for n in 07 08 09 10 11 12 13; do
   diff -u "docs/04-user-docs/${n}-"*.md "curation/research/${n}-"*.md
 done
 ```
+
+**The filenames diverged too (2026-09-18).** The studies were retitled for
+their readers, so each published file is now named after its title
+(`08-checking-real-application-code-with-the-compatibility-report.md`, not
+`08-used-api-report-on-real-code.md`) — the name a reader sees is the name the
+URL carries. `cargo-gocar` keeps its own filenames, which is what the curated
+`evidence` fields still record. The fork map links a published doc at its
+published path rather than at the `evidence` string, so a study's pre-retitle
+filename (or its tool-repo name) never becomes a link on the site.
 
 ## Caveat
 
