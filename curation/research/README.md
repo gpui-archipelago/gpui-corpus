@@ -13,25 +13,33 @@ live with the curated data instead.
 
 ## Provenance
 
-These are verbatim copies of `cargo-gocar`'s
-`docs/04-user-docs/<same file name>`, which remains the authoring source. The
-`evidence` fields in the curated JSON keep the tool-repo path
-(`docs/04-user-docs/07-…md`) — that path names *which* study the probe came
-from; this directory is where it is published.
+These began as verbatim copies of `cargo-gocar`'s
+`docs/04-user-docs/<same file name>`, and the `evidence` fields in the curated
+JSON keep the tool-repo path (`docs/04-user-docs/07-…md`) — that path names
+*which* study the probe came from; this directory is where it is published.
 
-To resync after a doc edit in `cargo-gocar`:
+**These published copies have since been rewritten for readability
+(2026-09-18): one voice, a common section order (what this establishes / what
+was not known / what was run / what it means for you / what it does not
+establish / provenance), no ticket ids, and no pointers to documents that are
+not published here.** Every number and quote was checked back against the
+original. The tool repo's copies are still the originals — and are now *older*
+than these — so a plain resync from there would overwrite this work. Carry
+edits in both directions rather than copying one way:
 
 ```bash
+# cargo-gocar checkout: docs/04-user-docs/  →  this directory
 for n in 07 08 09 10 11 12 13; do
-  cp "docs/04-user-docs/${n}-"*.md ../gpui-corpus/curation/research/
+  diff -u "docs/04-user-docs/${n}-"*.md "curation/research/${n}-"*.md
 done
 ```
 
-(a `cargo-gocar` checkout: `docs/04-user-docs/` → a `gpui-corpus` checkout:
-`curation/research/`).
-
 ## Caveat
 
-A few cross-references inside these docs point at documents that are not
-published here (other `docs/04-user-docs/` files, task files). Those links
-resolve only in the authoring repo.
+None left: every cross-reference in these files now points at a document that
+is published here, and the fork map's suite enforces that (a relative link to
+an unpublished doc degrades to plain text in the reader, so it is asserted
+against instead — see `web/forkmap-spa/tests/markdown.test.ts`). The study
+docs' openings are additionally diff-checked against the map's committed
+excerpts, so an edit here that moves an opening shows up as a test failure
+rather than a stale teaser.

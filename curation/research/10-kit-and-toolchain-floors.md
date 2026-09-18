@@ -1,80 +1,55 @@
-# 10 — Study: a real kit on the workspace audit + toolchain floors under real rustc versions (T-22)
+# 10 — Auditing third-party UI kits and Rust compiler requirements
 
-**Status:** completed study, 2026-09-07 (T-22, MVP blocker sweep). Verdicts:
-**fine** — UC-08's kit semantics execute on the real `gpui-kit` 0.6.0 exactly
-as modeled (`check-workspace` refuses the kit's fork, naming it and both
-measured generations; `verify-env` flags the transitive fork as a
-two-fork violation, exit 1), and declared toolchain floors behave predictably
-under a too-old toolchain (cargo itself refuses the build with a precise
-"requires rustc" error; gocar's advisory warn now fires for *every* real
-declaration shape — one shape-dependent gap was found and fixed in-task).
+## What this establishes
 
-## Question
+The workspace audit catches a real third-party kit dragging a second GPUI
+engine into the lock, names both forks with their measured generations, and
+refuses it. Compiler floors are the other half: the tool's own warning is
+advisory, cargo is the gate that actually refuses the build — and the study
+found, and fixed, one declaration shape where the warning stayed silent.
 
-Two MVP promises had only ever been reasoned about, never run against real
-ecosystem shapes:
+## What was not known before
 
-1. **A real kit crate** (UC-02 G4 / UC-08): a workspace whose app binds one
-   fork while a kit dependency transitively pins another. The model says
-   `cargo gocar check-workspace` refuses it, naming the kit's fork and its
-   measured generation — but "a kit is not a provider row; its fork shows as a
-   transitive clash" had never been executed.
-2. **Declared toolchain floors** (UC-02 G3): on real bindings whose declared
-   `rust-version` exceeds the active toolchain (gpui-box declares `1.97`;
-   kael `1.97.1`), what do `plan`/`resolve`/`lock`/`verify-env`/`cargo build`
-   each *actually* do — warn, refuse, or fail at compile time?
+Two promises had only been reasoned about, never run against real ecosystem
+shapes.
 
-## Environment (this run)
+1. **A real kit crate.** A workspace whose app binds one fork while a kit
+   dependency transitively pins another. The model said `check-workspace`
+   refuses it, naming the kit's fork — but "a kit is not a provider row; its
+   fork shows as a transitive clash" had never been executed.
+2. **Declared compiler floors.** On bindings whose declared `rust-version`
+   exceeds the installed toolchain (`gpui-box` declares `1.97`, `kael`
+   `1.97.1`), what do resolve, lock, the environment check and `cargo build`
+   each actually do — warn, refuse, or fail at compile time?
 
-- rustc 1.95.0 stable (active) + 1.97.1 installed (rustup). gpui-box 0.1.1
-  declares `rust-version = "1.97"`; kael 0.4.1 declares `"1.97.1"` (dataset
-  rows, registry verbatim).
-- `CARGO_HOME = target/cargo-home` (persistent cache, 949 crates);
-  probe projects under `target/t22/` (gitignored, per study convention).
-- The floor probes are copies of T-20's gocar-managed `box-head`/`kael-head`
-  probe projects (package names inherited; the `rust-toolchain.toml` pin was
-  removed from the gpui-box copy so the default rustc 1.95.0 applies).
+## What was run
 
-## Probe 1 — a real kit (`gpui-kit` 0.6.0) on the workspace audit
+On 2026-09-07, rustc 1.95.0 active with 1.97.1 installed alongside it, on
+Linux. An offline cargo cache held the crates; the kit lock needed the
+registry for the kit family's index records.
 
-### The real kit's manifest (sparse-index record, 0.6.0)
+### Probe 1 — a real kit on the workspace audit
 
-The record confirms UC-02 G4's description *and* adds the T-17 companion
-fact:
+The workspace: a root app (`kit-app`) bound to `gpui-unofficial` 1.18.1 with
+its companion — the era-correct binding unit — and a plain member library
+(`widget-lib`) whose only dependency is `gpui-kit` 0.6.0. The kit itself is a
+layer on a fork: its manifest renames `gpui` to `gpui-pre` `^0.3.1`, and it
+needs `gpui-pre-platform` `^0.3.1` as a hard dependency — [doc 07](07-real-fork-compile-case-study.md)'s
+binding unit, in the wild.
 
-- `gpui` → `package: gpui-pre`, req `^0.3.1` (the rename that makes the kit a
-  layer on top of a fork);
-- **`gpui_platform` → `package: gpui-pre-platform`, req `^0.3.1`, features
-  `["font-kit","x11","wayland","runtime_shaders"]` — a hard (non-optional)
-  dependency**: the kit needs the T-17 platform-companion model to even
-  build. Per the task note, the *audit* probe (lock + check-workspace) needs
-  no full compile, so the build is deferred; the companion fact is recorded.
-- plus non-wasm `reqwest_client` (renamed `gpui-pre-reqwest-client`), and
-  default features pulling `gpui-component` 0.6.0 + `gpui-kit-assets` 0.6.0
-  (+ `gpui-base` 0.6.0).
+Dependency resolution put both engines in one lock: `gpui-unofficial` 1.18.1
+(the app's) and `gpui-pre` 0.3.3 (the kit's), each with its companion.
 
-### The workspace under test
+| Command | Exit | What it did |
+| --- | --- | --- |
+| `lock` | 0 | resolved 903 packages, wrote the proof ledger |
+| `check-workspace` | 1 | refused: a second engine would compile |
+| `verify-env` | 1 | one violation (`gpui-pre` 0.3.3), one verified (the bound fork) |
 
-`target/t22/kit/`:
-
-- root package `kit-app` — gocar-managed, `gpui = { package =
-  "gpui-unofficial", version = "=1.18.1" }` + the `gpui-platform-gpui-unofficial`
-  1.18.1 companion (era-correct binding unit);
-- member `widget-lib` — a plain cargo lib whose only dependency is
-  `gpui-kit = "=0.6.0"` (default features). The kit's fork binding is
-  transitive from this member's view.
-
-`cargo gocar lock` (network leg: the `gpui-kit` family index records;
-everything else cached) resolved 903 packages and exited 0. The lock holds
-two dataset fork packages: `gpui-unofficial` 1.18.1 (the app's engine) and
-`gpui-pre` 0.3.3 (the kit's), each with its companion.
-
-### `cargo gocar check-workspace` — refuses, naming fork + generations
-
-Exit **1**. Rows (verbatim):
+The workspace audit's refusal, verbatim:
 
 ```
-[WORKSPACE CHECK] contract gpui — one engine per binary (T-15, UC-08)
+[WORKSPACE CHECK] contract gpui — one engine per binary
 workspace root: .
 app choice: kit-app
 lockfile: Cargo.lock (905 registry package(s), 2 fork package(s))
@@ -93,152 +68,91 @@ summary: 1 binding · 1 match(es) · 1 clash(es) · 0 unverifiable
 error: check-workspace: 1 clash(es) — a second engine would compile; see the ✗ rows above
 ```
 
-The member with no direct binding is an informational row; the kit's fork
-comes from the lock view exactly as modeled, and the refusal names the fork
-package, version, and both measured generations (`546fcb11…` vs `d143b846…`
-— structurally different).
+`verify-env` flags the same fork as the violation, with the single-engine rule
+as its reason: a managed lock holding two fork packages is not a one-engine
+lock, and both rows verifying individually does not make it one. The kit and
+the companion crates are untracked there — they are not provider rows, so only
+the fork package trips the rule.
 
-### `cargo gocar verify-env` — the transitive kit fork is a violation
+### Probe 2 — declared floors under real rustc versions
 
-Exit **1**; counts `{untracked: 901, verified: 1, violation: 1, warning: 0}`.
-Rows for the fork packages:
+Each probe project (managed, exact pins) was run through resolve, plan, lock,
+the environment check, and `cargo build --locked`, first under rustc 1.95.0 and
+then under 1.97.1.
 
-- `gpui-pre 0.3.3` → ✗ violation. Its notes carry the T-17 single-engine
-  rule, which names this exact situation: *"second dataset fork in one lock:
-  gpui-pre 0.3.3 beside the bound 'gpui-unofficial' — a single-engine graph
-  holds exactly one gpui fork package, and both rows verifying individually
-  does not make this a one-engine lock. This is the stale-companion state a
-  pre-T-17 switch produced (add rewrote only the gpui line) **or a transitive
-  kit binding**; the bound fork gpui-unofficial 1.18.1 is in this lock. Fix:
-  `cargo gocar lock` after `add` …, or align the kit — `cargo gocar
-  check-workspace` names the bindings"*
-- `gpui-unofficial 1.18.1` → ✓ verified (checksum + attestation).
-- `gpui-kit` / `gpui-pre-platform` / `gpui-platform-gpui-unofficial` →
-  untracked (no shadow-index record — companions and kits are not provider
-  rows; only the fork package trips the rule).
+| Package | Declares | Advisory warning under 1.95.0 | `cargo build --locked` |
+| --- | --- | --- | --- |
+| `gpui-box` 0.1.1 | `1.97` (two components) | yes, after the fix below | refused, exit 101 |
+| `kael` 0.4.1 | `1.97.1` (three components) | yes | refused, exit 101 |
+| `gpui-unofficial` 1.18.1 | nothing | none — correctly | built, exit 0 |
 
-**The case study's "two-row-green hole" does not reappear here.** The pre-T-17
-hole was two fork rows each verifying individually with nothing knowing a
-graph must hold one engine; T-17's rule reads the managed manifest's
-provider and flips any second dataset fork row to ✗. On this real kit
-workspace the kit's fork is exactly such a row — `verify-env` fails the
-two-engine lock, `check-workspace` refuses it, both name the fork.
+Under 1.97.1 both floors build clean: no warning, environment check verified.
 
-### Kit verdict + the one gap named (not a blocker)
-
-**Verdict: fine.** UC-08's detect-and-refuse semantics and UC-02 G4's
-"no dataset shape change" decision hold against the real `gpui-kit` 0.6.0;
-the refusal names the fork and both generations; companion/kit crates are
-correctly outside the dataset's fork rows.
-
-One naming gap, minor and phase-5-shaped: the clash row names the **fork**
-(`gpui-pre 0.3.3`) and its generation — the evidence that answers *why* it is
-there — but not the **kit** that dragged it in (`gpui-kit 0.6.0`, via
-`widget-lib`). `parse_lock` keeps only package name/version/checksum/source,
-so the audit cannot walk the lock's dependency edges from the fork package
-up to the member. Culprit naming needs a reverse-edge walk over `Cargo.lock`
-dependency lists — the same whole-graph machinery phase 5's rebind needs —
-so it is named here, not implemented.
-
-## Probe 2 — declared toolchain floors under real rustc versions
-
-Per probe project (gocar-managed, exact pins, no toolchain override): run
-`resolve`/`plan`/`lock`/`verify-env` and `cargo build --locked`, first under
-the active rustc 1.95.0, then under 1.97.1.
-
-### gpui-box 0.1.1 (declares `1.97`) — rustc 1.95.0
-
-| Tool | Behavior | Exit |
-| --- | --- | --- |
-| `resolve` / `plan` | resolve normally; **no floor warning** (see the finding below) | 0 |
-| `lock` | pins + proof; cargo `generate-lockfile` resolves and notes every box crate *"(requires Rust 1.97)"* (rust-version fallback: exact pins leave no compatible alternative, so cargo locks them anyway) | 0 |
-| `verify-env` | `✓ verified gpui-box 0.1.1` — **no ⚠ floor signal** (same root cause) | 0 |
-| `verify-env --strict` | fails on the 699 untracked noise only | 1 |
-| `cargo build --locked` | **refuses before compiling**: `error: rustc 1.95.0 is not supported by the following packages: gpui-box@0.1.1 requires rustc 1.97 …` (+ every box companion crate), *"Either upgrade rustc or select compatible dependency versions with `cargo update … --precise`"* | 101 |
-
-Under rustc 1.97.1: no warning; `cargo build --locked` **exit 0** (1m46s);
-`verify-env` `✓ verified` (only 699 untracked rows; `--strict` exit 1 on
-those, never on the floor).
-
-### kael 0.4.1 (declares `1.97.1`) — rustc 1.95.0
-
-| Tool | Behavior | Exit |
-| --- | --- | --- |
-| `resolve` / `plan` / `lock` | resolve normally and **warn**: `warning: kael 0.4.1 declares rust-version 1.97.1 > active rustc 1.95.0 (declared, not attested); build may fail until the toolchain is upgraded or an EAC floor is attested` | 0 |
-| `verify-env` | `⚠ warning kael 0.4.1` row (0 verified, 703 warnings incl. untracked) | 0 |
-| `verify-env --strict` | fails (703 incl. the floor ⚠) | 1 |
-| `cargo build --locked` | refuses before compiling: `kael@0.4.1 … requires rustc 1.97.1` (+ kael_util, kael_util_macros, …) | 101 |
-
-Under rustc 1.97.1: no warning; `verify-env` `✓ verified`.
-
-### Floor finding — one shape-dependent gap in gocar's own warn, fixed in-task
-
-`verify-env` and `resolve`'s advisory compare the *declared* floor against the
-active compiler, but the comparison parsed the declared value with
-`toolchain::parse_rustc_version`, which mirrors rustc's own version lines and
-requires a full `X.Y.Z` semver triplet. **gpui-box's real declaration is the
-two-component `"1.97"`** (cargo reads it as a `1.97.0` floor) — the parse
-failed, the warn was skipped, and `verify-env` audited the gpui-box row ✓
-green under a rustc 1.95.0 that cargo refuses to build the crate with. kael's
-parseable `1.97.1` warned correctly, so the advisory was silently
-*declaration-shape-dependent* — the one place the documented "declared
-floors shown and warned" (UC-02 G3 `partial`) did not hold.
-
-Fix (landed in this task, T-17-style — a confirmed gap scoped inside the
-sweep task that found it): `gocar-core::toolchain::parse_declared_rust_version`
-normalizes partial floors by padding missing components with `.0` (`"1.97"`
-⇔ `1.97.0`, cargo's caret reading) and rejects garbage; `resolve`'s
-`warn_on_rust_version_gap` and `verify_env::assess` now use it, and the
-warning prints the crate's *raw* declared string (`1.97`), not the padded
-parse. Re-run on the gpui-box probe under rustc 1.95.0:
+Cargo's refusal is the enforceable one, and it arrives before anything is
+compiled:
 
 ```
-warning: gpui-box 0.1.1 declares rust-version 1.97 > active rustc 1.95.0 (declared, not attested); build may fail until the toolchain is upgraded or an EAC floor is attested
-  ⚠ warning    gpui-box 0.1.1      # verify-env row now; summary: 0 verified, 700 warning(s) incl. untracked, 0 violation(s)
+error: rustc 1.95.0 is not supported by the following packages:
+  gpui-box@0.1.1 requires rustc 1.97
+  … every box companion crate
+Either upgrade rustc or select compatible dependency versions with
+`cargo update … --precise`
 ```
 
-Tests: `toolchain::tests::parses_declared_rust_version_partial_floors` (padding,
-non-widening, garbage rejection) and
-`verify_env::tests::two_component_declared_floor_is_a_warning` (dataset-backed:
-`rust_version "1.97"` → ⚠ under 1.95.0, ✓ under 1.97.1).
+**The gap this study found.** The advisory compared the declared floor against
+the active compiler, but parsed the declaration as a full `X.Y.Z` triplet.
+`gpui-box`'s real declaration is the two-component `1.97` (which cargo reads as
+a `1.97.0` floor), so the parse failed, the warning was skipped, and the
+environment check audited that row **green under a rustc that cargo refuses to
+build the crate with**. `kael`'s `1.97.1` parsed, so the advisory was
+silently *declaration-shape-dependent*. The fix landed with the study:
+partial floors are padded with `.0` (so `1.97` is read as `1.97.0`, matching
+cargo) and garbage is rejected; both the resolve-time warning and the
+environment check use it, and the warning prints the crate's raw declared
+string rather than the padded parse.
 
-### Floor verdict
+## What it means for you
 
-**Verdict: fine.** Cargo itself is the real gate and it is consistent and
-precise: resolution tolerates a too-new declared floor under exact pins
-(noting each *"requires Rust N"*), and `cargo build --locked` refuses with an
-exit-101 error naming every offending package and the compatible-upgrade
-command — before compiling anything. Gocar's own handling is advisory by
-design (declared ≠ attested; EAC pruning is Phase 3/4) and now warns on every
-real declaration shape: two-component (`gpui-box`), three-component
-(`kael`), and none (`gpui-unofficial` 1.18.1 — no warning, correctly). The
-only pre-fix defect was the parse gap above. EAC-era floor *pruning*
-remains explicitly out of scope (Phase 3/4 work), per the task note.
+- **A kit's fork is caught where it matters.** If a library you depend on pulls
+  in a different engine, the workspace audit refuses the workspace, so two
+  engines cannot be compiled into one binary — and it shows you the packages
+  and both measured generations rather than making you diff a lockfile.
+- **The rule is one fork package per lock, not one version.** Two rows
+  verifying individually is not enough; if the lock holds two fork packages,
+  it is refused.
+- **Floor warnings are advice; cargo is the gate.** The tool tells you a
+  declared floor exceeds your rustc (and it now warns on every declaration
+  shape — two components, three, or none). Cargo is what stops the build, with
+  an exit-101 error naming every offending package and the `--precise` way out.
+- **Keeping the toolchain current is the cheap fix.** `gpui-box` and `kael`
+  want 1.97 or newer; on 1.95 nothing compiles them, and the toolchain check is
+  advisory about it by design — a floor is *declared*, not attested.
 
-## Reproducing
+## What this does not establish
 
-Probe projects (manifests, locks, `.gocar` proofs, captured outputs) live
-under `target/t22/` — `kit/` (root `kit-app` + member `widget-lib`),
-`floor-box/`, `floor-kael/` — gitignored and rebuildable. The kit lock needs
-network for the `gpui-kit` family index records (`index.crates.io`); the
-floor probes are fully offline with `CARGO_HOME=target/cargo-home`.
+- **The audit names the fork, not the culprit.** The clash row says
+  `gpui-pre 0.3.3`; it does not say `gpui-kit 0.6.0` pulled it in through
+  `widget-lib`. The lock parse keeps a package's name, version, checksum and
+  source, so it cannot walk dependency edges back up to the member. Naming the
+  culprit needs a reverse-edge walk, which is scoped elsewhere.
+- **The kit was audited, not compiled.** This probe runs the lock and the
+  audit; whether the kit's stack actually builds against another engine is
+  [doc 11](11-alias-shim-for-kits.md) and
+  [doc 12](12-alias-shim-compiled-both-real-kits.md)'s subject.
+- Attested-floor handling (pruning to a verified floor rather than a declared
+  one) is out of scope here.
+- One kit, one workspace, one app: other kit shapes and other graph layouts
+  were not exercised. Linux only.
 
-## Claims this study refines
+## Provenance
 
-- **UC-02 G3 (`partial`) → confirmed with evidence.** Declared floors are
-  shown (`providers`, `resolve`'s `rust-ver` line) and warned on — the
-  gpui-box two-component gap found here is fixed in-task — while cargo's
-  own build-time refusal is the enforceable gate; attested-floor pruning
-  stays Phase 3/4 EAC work.
-- **UC-02 G4 / UC-08 kit semantics (`design`/`partial`) → executed.**
-  `gpui-kit` 0.6.0 resolves as modeled (renamed `gpui-pre` ^0.3.1, hard
-  `gpui-pre-platform` companion dep), `check-workspace` refuses the fork
-  (exit 1, both generations named), `verify-env` flags the transitive fork
-  as a two-fork violation (exit 1) — the case-study two-row-green hole does
-  not reappear. The kit needs the T-17 companion model to even build
-  (recorded; compile deferred per task note). Named delta: clash rows could
-  name the kit that pulled the fork in via a lock-edge walk (phase-5 scope).
-- **STATUS/ROADMAP sweep state:** T-22's verdict rows moved to
-  tasks/archive/README (the 2026-09-07 close); T-21 (temporal-stability
-  loop) closed the sweep the same day — verdicts + named deltas in
-  [doc 14](../04-user-docs/14-temporal-stability-loop.md).
+- **Packages:** `gpui-kit` 0.6.0, `gpui-pre` 0.3.3, `gpui-unofficial` 1.18.1,
+  `gpui-box` 0.1.1, `kael` 0.4.1 — all real crates.io artifacts.
+- **Generations in the clash:** `d143b846…` (the app's engine) versus
+  `546fcb11…` (the kit's) — structurally different.
+- **Environment:** rustc 1.95.0 active with 1.97.1 installed, Linux,
+  2026-09-07. Probe projects and their captured outputs were temporary.
+- **Related reading:** [07 — switching a hello world between real
+  forks](07-real-fork-compile-case-study.md) for the binding unit the kit
+  needs, and [11 — running a kit that binds another fork](11-alias-shim-for-kits.md)
+  for what to do about it.
