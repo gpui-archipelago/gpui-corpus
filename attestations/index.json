@@ -46,7 +46,7 @@
         "sha256": "3d82ff2e42cc483c7645cb4cd2ade3fb9220922848afd321dfa919eb7211a200"
       },
       "floor": null,
-      "lock": "7c5d53db958586cb1ca1982277af3ecca71b51d93f490537ba1811f0c1993815",
+      "lock": "a2e119ad49696bc61c87938d4dcd6a6db30fb6f08497c28f193a7ad4c3a7a5c9",
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "f41adadb3b53cd3f7579788a6659725600e724c5ffeffcd0477326d625def28c"
@@ -59,7 +59,7 @@
         "sha256": "3d82ff2e42cc483c7645cb4cd2ade3fb9220922848afd321dfa919eb7211a200"
       },
       "floor": null,
-      "lock": "411561fbbf674992a7b18281ef92fa60ec7484dbe14d0a223e6f4e492c57a508",
+      "lock": "545b9f775bbd1fa01422ef493f9ba9413edf2c523fc77dd1e6dadcb1e0c38e83",
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "f41adadb3b53cd3f7579788a6659725600e724c5ffeffcd0477326d625def28c"
@@ -141,6 +141,19 @@
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "1ea2a3b3bbb403f6017614d2422ad74e8e8e852b1c223796604078f23df9d4a3"
+      }
+    },
+    "gpui-pre/0.3.6": {
+      "cksum": "a0437c0b83e636a92bd1a39fa1d05fb632ae671289537497b35871ffbe231b84",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "649d9141e92b0e2cf20aff9d9785c2cd245d92f70d0d416c85bbc6a510dc0ea2"
+      },
+      "floor": null,
+      "lock": "8d58eefefd32f907b06b8def9bbc40288b1d9684755689268fb1a14d8cad0a97",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "1c3d0cba8ec6e70e45b50afa7e99270b27a0e5310b054661b6f6bd1e7f4ede90"
       }
     },
     "gpui-unofficial/0.230.1": {
@@ -813,7 +826,7 @@
         "sha256": "170ee7f502ccf3c16abbf47838fc9e08394be6e85c4d9b9d5526c6ff4f7efd6b"
       },
       "floor": null,
-      "lock": "7cbc2cb0a5b1494b17eef03f4e0d9b79702b789f0423a05bd18b7aac255e8c77",
+      "lock": "4888fe1bab0c4ca1d050df8dc5a07a23e34c43c6c534c242d73701c5ceb85071",
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "791571696f3497854d8bf0d0fe44f91aa1e60df16b278872c0dbc9cf2c9cbbed"
@@ -826,7 +839,7 @@
         "sha256": "170ee7f502ccf3c16abbf47838fc9e08394be6e85c4d9b9d5526c6ff4f7efd6b"
       },
       "floor": null,
-      "lock": "6e54c348b5dedbbadc9b5a0a1d1cf8055328b630d9f4ab81165ae6955618243a",
+      "lock": "1ec59573f6a0ed562872fcbb8a95097b5089e542b3facc9602d85179da6ae5d2",
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "791571696f3497854d8bf0d0fe44f91aa1e60df16b278872c0dbc9cf2c9cbbed"
@@ -839,7 +852,7 @@
         "sha256": "170ee7f502ccf3c16abbf47838fc9e08394be6e85c4d9b9d5526c6ff4f7efd6b"
       },
       "floor": null,
-      "lock": "12b0ae375f362086bed69d03c662f2e66771b28d5cb761d92c7dcae650587d26",
+      "lock": "45d09aba36f2457c615d9ef7d288a8e50bedbfd09562855fa253b83135436d16",
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "791571696f3497854d8bf0d0fe44f91aa1e60df16b278872c0dbc9cf2c9cbbed"
@@ -852,7 +865,7 @@
         "sha256": "170ee7f502ccf3c16abbf47838fc9e08394be6e85c4d9b9d5526c6ff4f7efd6b"
       },
       "floor": null,
-      "lock": "f45929cdd14e73679ccbb0714b9cea989e40da4c3fc7ea09fcfc510c470820aa",
+      "lock": "225ad9be0d8ee9466b4a521bdabb06652d3581fdde08a2b9d59ab8fa4cde407f",
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "791571696f3497854d8bf0d0fe44f91aa1e60df16b278872c0dbc9cf2c9cbbed"
@@ -865,7 +878,7 @@
         "sha256": "170ee7f502ccf3c16abbf47838fc9e08394be6e85c4d9b9d5526c6ff4f7efd6b"
       },
       "floor": null,
-      "lock": "da4ede0aaa81e737320fdbf3f52b453927700d6cd611f6f9c50d34ca0fce4599",
+      "lock": "6710aab46a04563d695269f014150b1be6ffa6eab47301eb7012a0d0d62ed6dc",
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "791571696f3497854d8bf0d0fe44f91aa1e60df16b278872c0dbc9cf2c9cbbed"
@@ -878,7 +891,7 @@
         "sha256": "170ee7f502ccf3c16abbf47838fc9e08394be6e85c4d9b9d5526c6ff4f7efd6b"
       },
       "floor": null,
-      "lock": "10c0e713729806ce46a7691a74b3f9d1201c42f85a04a228eb22b3c3ad70714c",
+      "lock": "32bbf473385e91965e52d93515e9033335a716ff263cf036960dc9290bebe46f",
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "f3659cf8df1dc8c218b9554787402fd93aead76f5df107ca9c4e7790baa0d412"
@@ -891,7 +904,7 @@
         "sha256": "5b1c9d1cf2590c12ecf07d8033b0bd75d3b42d29143dd940eeb28ab3c8368735"
       },
       "floor": "1.97.1",
-      "lock": "636ae5b850521a8eaf24ca2d36141e399bc4acbb16b8a82af58cc298d2916111",
+      "lock": "57fd3e846bafd3dfd43d772d9c0d73b4057c06c7f1b138de9936f8fc54d5b032",
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "b5a0b9f501d1efd46d703639569df0f945b00d00950eeed2b898a3a3678f5716"
@@ -904,7 +917,7 @@
         "sha256": "5b1c9d1cf2590c12ecf07d8033b0bd75d3b42d29143dd940eeb28ab3c8368735"
       },
       "floor": "1.97.1",
-      "lock": "c2949993461124bb31fb5fd97d4b417ba06f611687c5031d6b91e45396e10ad5",
+      "lock": "0bbb34023504efc3b9633807a6595cff133e160f71ab83b450172ac02b9a9a7c",
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "9f1154f815ed4b073376416bc8d5af19f66aff5ade0c3134392b39726cbb58a1"
@@ -917,7 +930,7 @@
         "sha256": "26cf4f1aa343e1d3510e690d2ff7fae0490effad0e52a157bdff263a6831bce2"
       },
       "floor": "1.97.1",
-      "lock": "b22defbbd30f1c70ab1e6275bc9e8f5e761fb8dd165723e488ebd6eedc8d29c8",
+      "lock": "96c37f17d3b6a6944f2d701aea86f6afcb24706bfce339e4a2dffa655230d77c",
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "f45cfb3069497139078b08bed6c46800045853ddae1291c3f1bc67d9415e22d2"
@@ -930,7 +943,7 @@
         "sha256": "26cf4f1aa343e1d3510e690d2ff7fae0490effad0e52a157bdff263a6831bce2"
       },
       "floor": "1.97.1",
-      "lock": "4d8d1f57e20d0c49c14c27fb1ab8ca8d05dbb296f04b2b766428b30a8ff45f8c",
+      "lock": "3eba1ce3a7bf60939c821950cbca2b743f93b15fe10bfd99fc26e8d206d174e2",
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "f45cfb3069497139078b08bed6c46800045853ddae1291c3f1bc67d9415e22d2"
