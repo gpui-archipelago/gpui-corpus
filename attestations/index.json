@@ -163,7 +163,7 @@
         "sha256": "649d9141e92b0e2cf20aff9d9785c2cd245d92f70d0d416c85bbc6a510dc0ea2"
       },
       "floor": null,
-      "lock": "e8ef85dc5aa79a9e629ea2986095538f08268cb978bfab4b17e0d3e1daf7b47c",
+      "lock": "2c9fc46ddc2885c461b59d7b6fc30cc84928cdc584b791a6f58bd7c2f79566d6",
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "1c3d0cba8ec6e70e45b50afa7e99270b27a0e5310b054661b6f6bd1e7f4ede90"
