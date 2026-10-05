@@ -169,6 +169,19 @@
         "sha256": "1c3d0cba8ec6e70e45b50afa7e99270b27a0e5310b054661b6f6bd1e7f4ede90"
       }
     },
+    "gpui-pre/0.3.8": {
+      "cksum": "d7f0bc3ebba070f8981b3f8e905a12f47d27794a30d029e59cdb9edf7a4b3360",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "649d9141e92b0e2cf20aff9d9785c2cd245d92f70d0d416c85bbc6a510dc0ea2"
+      },
+      "floor": null,
+      "lock": "21eb401548f5768c9c026a9e9646ead11de064e60ceffe4a746e6a707e206566",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "b2bc89067ac34464c20165923d5a2ecf21f01f3d209d90cdfa015cb4caa1848d"
+      }
+    },
     "gpui-unofficial/0.230.1": {
       "cksum": "e428147b84059a447a59fbc1b4f9ed5c9dfbc168552fdf6bbd3ed090d42f2fef",
       "eac": {
@@ -969,7 +982,7 @@
         "sha256": "5b1c9d1cf2590c12ecf07d8033b0bd75d3b42d29143dd940eeb28ab3c8368735"
       },
       "floor": "1.97.1",
-      "lock": "8b3a4ec828eca2c9adc32d3a9e7aac892af4936a7d1f9c79f23e589d71e4ae6d",
+      "lock": "514c87b7521af77fbe0fcfea7f1b7223c9efb97899782f8e6a00777b851508fd",
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "b5a0b9f501d1efd46d703639569df0f945b00d00950eeed2b898a3a3678f5716"
@@ -982,7 +995,7 @@
         "sha256": "5b1c9d1cf2590c12ecf07d8033b0bd75d3b42d29143dd940eeb28ab3c8368735"
       },
       "floor": "1.97.1",
-      "lock": "12240935832c9f29b721d08d578e27696b614b32465f77035119242507f111a8",
+      "lock": "992e77e034f9aceba94252c6d72cf1e86f93ad74db886a6ecc3ed2516cdd7578",
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "9f1154f815ed4b073376416bc8d5af19f66aff5ade0c3134392b39726cbb58a1"
@@ -995,7 +1008,7 @@
         "sha256": "26cf4f1aa343e1d3510e690d2ff7fae0490effad0e52a157bdff263a6831bce2"
       },
       "floor": "1.97.1",
-      "lock": "e5c723299448efdee66719727e384f57328142cda78f0166e8c67216ef81b2c2",
+      "lock": "cc2cda8b394b29bffd212061685b81157f4a1a4782a515793a147f93382d65a7",
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "f45cfb3069497139078b08bed6c46800045853ddae1291c3f1bc67d9415e22d2"
@@ -1008,7 +1021,7 @@
         "sha256": "26cf4f1aa343e1d3510e690d2ff7fae0490effad0e52a157bdff263a6831bce2"
       },
       "floor": "1.97.1",
-      "lock": "5ee4ad8578bc4b888701216a99343aa3bd603471c5039486c5047e28eecba605",
+      "lock": "955c719e45b4c0bb740478c0cafa141b7355e7b1f05d2de36af83f96f0f1ea79",
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "f45cfb3069497139078b08bed6c46800045853ddae1291c3f1bc67d9415e22d2"
