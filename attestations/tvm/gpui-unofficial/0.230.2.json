@@ -1,0 +1,3718 @@
+{
+  "schema": "gocar.tvm.v1",
+  "crate_name": "gpui_unofficial",
+  "producer": {
+    "mechanism": "rustdoc-json",
+    "rustdoc": "rustdoc 1.98.1 (48a229cea 2026-09-01)",
+    "bootstrap": true
+  },
+  "types": {
+    "gpui_unofficial::GpuSpecs": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::Reservation": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": [
+        "Send",
+        "Sync",
+        "Unpin"
+      ]
+    },
+    "gpui_unofficial::action::ActionBuildError": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::action::no_action::NoAction": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::action::no_action::Unbind": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::app::AnyDrag": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::app::AnyTooltip": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::app::App": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::app::Application": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::app::GpuiBorrow": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": [
+        "Unpin"
+      ]
+    },
+    "gpui_unofficial::app::KeystrokeEvent": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::app::QuitMode": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::app::SystemWindowTabController": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::app::async_context::AsyncApp": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::app::async_context::AsyncWindowContext": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::app::context::Context": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": [
+        "Unpin"
+      ]
+    },
+    "gpui_unofficial::app::entity_map::AnyEntity": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::app::entity_map::AnyWeakEntity": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::app::entity_map::Entity": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": [
+        "Send",
+        "Sync",
+        "Unpin"
+      ]
+    },
+    "gpui_unofficial::app::entity_map::EntityId": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::app::entity_map::WeakEntity": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": [
+        "Send",
+        "Sync",
+        "Unpin"
+      ]
+    },
+    "gpui_unofficial::asset_cache::AssetLogger": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": [
+        "Unpin"
+      ]
+    },
+    "gpui_unofficial::asset_cache::Resource": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::assets::ImageId": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::assets::RenderImage": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::assets::RenderImageParams": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::color::Background": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::color::ColorSpace": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::color::Hsla": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::color::LinearColorStop": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::color::Rgba": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::colors::Colors": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::colors::DefaultAppearance": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::colors::GlobalColors": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::element::AnyElement": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::element::Drawable": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": [
+        "RefUnwindSafe",
+        "Unpin",
+        "UnwindSafe"
+      ]
+    },
+    "gpui_unofficial::element::Empty": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::element::GlobalElementId": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::anchored::Anchored": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::anchored::AnchoredFitMode": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::anchored::AnchoredPositionMode": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::anchored::AnchoredState": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::animation::Animation": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::animation::AnimationElement": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": [
+        "Unpin"
+      ]
+    },
+    "gpui_unofficial::elements::canvas::Canvas": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": [
+        "Unpin"
+      ]
+    },
+    "gpui_unofficial::elements::deferred::Deferred": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::div::Div": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::div::DivFrameState": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::div::DivInspectorState": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::div::DragMoveEvent": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": [
+        "Unpin"
+      ]
+    },
+    "gpui_unofficial::elements::div::ElementClickedState": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::div::ElementHoverState": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::div::GroupStyle": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::div::InteractiveElementState": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::div::Interactivity": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::div::ScrollAnchor": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::div::ScrollHandle": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::div::Stateful": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": [
+        "RefUnwindSafe",
+        "Send",
+        "Sync",
+        "Unpin",
+        "UnwindSafe"
+      ]
+    },
+    "gpui_unofficial::elements::image_cache::AnyImageCache": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::image_cache::ImageCacheElement": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::image_cache::ImageCacheItem": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::image_cache::RetainAllImageCache": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::image_cache::RetainAllImageCacheProvider": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::img::ImageAssetLoader": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::img::ImageCacheError": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::img::ImageSource": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::img::ImageStyle": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::img::Img": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::img::ImgLayoutState": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::list::List": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::list::ListAlignment": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::list::ListHorizontalSizingBehavior": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::list::ListMeasuringBehavior": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::list::ListOffset": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::list::ListPrepaintState": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::list::ListScrollEvent": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::list::ListSizingBehavior": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::list::ListState": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::surface::Surface": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::surface::SurfaceSource": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::svg::Svg": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::svg::Transformation": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::text::InteractiveText": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::text::StyledText": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::text::TextLayout": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::uniform_list::DeferredScrollToItem": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::uniform_list::ItemSize": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::uniform_list::ScrollStrategy": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::uniform_list::UniformList": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::uniform_list::UniformListFrameState": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::uniform_list::UniformListScrollHandle": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::elements::uniform_list::UniformListScrollState": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::executor::BackgroundExecutor": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::executor::ForegroundExecutor": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::executor::Scope": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": [
+        "Send",
+        "Unpin"
+      ]
+    },
+    "gpui_unofficial::executor::Task": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": [
+        "RefUnwindSafe",
+        "Send",
+        "Sync",
+        "Unpin",
+        "UnwindSafe"
+      ]
+    },
+    "gpui_unofficial::geometry::AbsoluteLength": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::geometry::Axis": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::geometry::Bounds": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": [
+        "RefUnwindSafe",
+        "Send",
+        "Sync",
+        "Unpin",
+        "UnwindSafe"
+      ]
+    },
+    "gpui_unofficial::geometry::BoundsRefinement": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": [
+        "RefUnwindSafe",
+        "Send",
+        "Sync",
+        "Unpin",
+        "UnwindSafe"
+      ]
+    },
+    "gpui_unofficial::geometry::Corner": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::geometry::Corners": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": [
+        "RefUnwindSafe",
+        "Send",
+        "Sync",
+        "Unpin",
+        "UnwindSafe"
+      ]
+    },
+    "gpui_unofficial::geometry::CornersRefinement": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": [
+        "RefUnwindSafe",
+        "Send",
+        "Sync",
+        "Unpin",
+        "UnwindSafe"
+      ]
+    },
+    "gpui_unofficial::geometry::DefiniteLength": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::geometry::DevicePixels": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::geometry::Edges": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": [
+        "RefUnwindSafe",
+        "Send",
+        "Sync",
+        "Unpin",
+        "UnwindSafe"
+      ]
+    },
+    "gpui_unofficial::geometry::EdgesRefinement": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": [
+        "RefUnwindSafe",
+        "Send",
+        "Sync",
+        "Unpin",
+        "UnwindSafe"
+      ]
+    },
+    "gpui_unofficial::geometry::GridLocation": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::geometry::GridPlacement": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::geometry::Length": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::geometry::Percentage": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::geometry::Pixels": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::geometry::Point": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": [
+        "RefUnwindSafe",
+        "Send",
+        "Sync",
+        "Unpin",
+        "UnwindSafe"
+      ]
+    },
+    "gpui_unofficial::geometry::PointRefinement": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": [
+        "RefUnwindSafe",
+        "Send",
+        "Sync",
+        "Unpin",
+        "UnwindSafe"
+      ]
+    },
+    "gpui_unofficial::geometry::Radians": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::geometry::Rems": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::geometry::ScaledPixels": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::geometry::Size": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": [
+        "RefUnwindSafe",
+        "Send",
+        "Sync",
+        "Unpin",
+        "UnwindSafe"
+      ]
+    },
+    "gpui_unofficial::geometry::SizeRefinement": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": [
+        "RefUnwindSafe",
+        "Send",
+        "Sync",
+        "Unpin",
+        "UnwindSafe"
+      ]
+    },
+    "gpui_unofficial::input::ElementInputHandler": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": [
+        "Send",
+        "Sync",
+        "Unpin"
+      ]
+    },
+    "gpui_unofficial::inspector::InspectorElementId": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::inspector::conditional::Inspector": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::inspector::conditional::InspectorElementPath": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::inspector::inspector_reflection::FunctionReflection": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": [
+        "RefUnwindSafe",
+        "Send",
+        "Sync",
+        "Unpin",
+        "UnwindSafe"
+      ]
+    },
+    "gpui_unofficial::interactive::ClickEvent": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::interactive::ExternalPaths": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::interactive::FileDropEvent": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::interactive::KeyDownEvent": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::interactive::KeyUpEvent": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::interactive::KeyboardButton": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::interactive::KeyboardClickEvent": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::interactive::ModifiersChangedEvent": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::interactive::MouseButton": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::interactive::MouseClickEvent": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::interactive::MouseDownEvent": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::interactive::MouseExitEvent": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::interactive::MouseMoveEvent": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::interactive::MousePressureEvent": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::interactive::MouseUpEvent": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::interactive::NavigationDirection": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::interactive::PinchEvent": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::interactive::PlatformInput": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::interactive::PressureStage": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::interactive::ScrollDelta": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::interactive::ScrollWheelEvent": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::interactive::TouchPhase": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::keymap::BindingIndex": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::keymap::Keymap": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::keymap::KeymapVersion": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::keymap::binding::KeyBinding": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::keymap::binding::KeyBindingMetaIndex": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::keymap::context::ContextEntry": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::keymap::context::KeyBindingContextPredicate": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::keymap::context::KeyContext": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::path_builder::PathBuilder": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::path_builder::PathStyle": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::AtlasKey": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::AtlasTextureId": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::AtlasTextureKind": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::AtlasTile": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::ClipboardEntry": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::ClipboardItem": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::ClipboardString": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::CursorStyle": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::Decorations": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::DisplayId": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::Image": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::ImageFormat": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::ImageFormatIter": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::NoopTextSystem": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::PathPromptOptions": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::PlatformInputHandler": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::PromptButton": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::PromptLevel": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::RequestFrameOptions": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::ResizeEdge": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::ScreenCaptureFrame": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::SourceMetadata": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::TextRenderingMode": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::ThermalState": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::TileId": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::Tiling": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::TitlebarOptions": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::UTF16Selection": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::WindowAppearance": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::WindowBackgroundAppearance": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::WindowBounds": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::WindowButton": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::WindowButtonLayout": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::WindowControls": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::WindowDecorations": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::WindowKind": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::WindowOptions": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::WindowParams": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::app_menu::Menu": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::app_menu::MenuItem": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::app_menu::OsAction": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::app_menu::OsMenu": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::app_menu::OwnedMenu": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::app_menu::OwnedMenuItem": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::app_menu::OwnedOsMenu": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::app_menu::SystemMenuType": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::keyboard::DummyKeyboardMapper": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::keystroke::Capslock": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::keystroke::InvalidKeystrokeError": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::keystroke::KeybindingKeystroke": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::keystroke::Keystroke": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::keystroke::Modifiers": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::layer_shell::Anchor": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::layer_shell::KeyboardInteractivity": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::layer_shell::Layer": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::layer_shell::LayerShellNotSupportedError": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::platform::layer_shell::LayerShellOptions": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::profiler::SerializedLocation": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::profiler::SerializedTaskTiming": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::profiler::SerializedThreadTaskTimings": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::scene::BorderStyle": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::scene::MonochromeSprite": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::scene::PaintSurface": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::scene::Path": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": [
+        "RefUnwindSafe",
+        "Send",
+        "Sync",
+        "Unpin",
+        "UnwindSafe"
+      ]
+    },
+    "gpui_unofficial::scene::PathId": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::scene::PathVertex": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": [
+        "RefUnwindSafe",
+        "Send",
+        "Sync",
+        "Unpin",
+        "UnwindSafe"
+      ]
+    },
+    "gpui_unofficial::scene::PolychromeSprite": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::scene::Primitive": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::scene::PrimitiveBatch": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::scene::Quad": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::scene::Scene": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::scene::Shadow": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::scene::SubpixelSprite": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::scene::TransformationMatrix": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::scene::Underline": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::shared_string::SharedString": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::shared_uri::SharedUri": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::AlignContent": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::AlignItems": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::BoxShadow": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::DebugBelow": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::Display": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::Fill": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::FlexDirection": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::FlexWrap": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::GridTemplate": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::GridTemplateRefinement": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::HighlightStyle": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::ObjectFit": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::Overflow": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::Position": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::StrikethroughStyle": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::StrikethroughStyleRefinement": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::Style": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::StyleRefinement": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::TemplateColumnMinSize": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::TextAlign": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::TextOverflow": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::TextStyle": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::TextStyleRefinement": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::UnderlineStyle": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::UnderlineStyleRefinement": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::Visibility": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::style::WhiteSpace": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::subscription::Subscription": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::svg_renderer::RenderSvgParams": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::svg_renderer::SvgRenderer": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::svg_renderer::SvgSize": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::tab_stop::sum_tree_impl::TabStopOrderNodeSummary": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "unknown",
+        "Send": "unknown",
+        "Sync": "unknown",
+        "Unpin": "unknown",
+        "UnwindSafe": "unknown"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::taffy::AvailableSpace": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::taffy::LayoutId": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::Font": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::FontFamilyId": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::FontId": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::FontMetrics": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::FontStyle": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::FontWeight": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::GlyphId": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::LineWrapperHandle": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::RenderGlyphParams": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::TextRun": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::TextSystem": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::WindowTextSystem": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::font_fallbacks::FontFallbacks": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::font_features::FontFeatures": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::line::DecorationRun": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::line::GlyphRasterData": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::line::ShapedLine": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::line::WrappedLine": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::line_layout::FontRun": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::line_layout::LineLayout": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::line_layout::ShapedGlyph": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::line_layout::ShapedRun": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::line_layout::WrapBoundary": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::line_layout::WrappedLineLayout": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::line_wrapper::Boundary": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::line_wrapper::LineFragment": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": [
+        "RefUnwindSafe",
+        "Send",
+        "Sync",
+        "Unpin",
+        "UnwindSafe"
+      ]
+    },
+    "gpui_unofficial::text_system::line_wrapper::LineWrapper": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::text_system::line_wrapper::TruncateFrom": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::util::Timeout": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::util::WithTimeout": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "unknown",
+        "Send": "unknown",
+        "Sync": "unknown",
+        "Unpin": "unknown",
+        "UnwindSafe": "unknown"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::view::AnyView": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::view::AnyWeakView": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::view::EmptyView": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::window::AnyWindowHandle": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::window::ArenaClearNeeded": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::window::ContentMask": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": [
+        "RefUnwindSafe",
+        "Send",
+        "Sync",
+        "Unpin",
+        "UnwindSafe"
+      ]
+    },
+    "gpui_unofficial::window::DismissEvent": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::window::DispatchEventResult": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::window::DispatchPhase": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::window::ElementId": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::window::FocusHandle": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::window::FocusId": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::window::FocusOutEvent": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::window::Hitbox": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::window::HitboxBehavior": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::window::HitboxId": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::window::PaintQuad": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::window::TooltipId": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::window::WeakFocusHandle": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::window::Window": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::window::WindowControlArea": {
+      "kind": "enum",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::window::WindowHandle": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": [
+        "RefUnwindSafe",
+        "Send",
+        "Sync",
+        "Unpin",
+        "UnwindSafe"
+      ]
+    },
+    "gpui_unofficial::window::WindowId": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::window::prompts::FallbackPromptRenderer": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::window::prompts::PromptHandle": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::window::prompts::PromptResponse": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "yes",
+        "Send": "yes",
+        "Sync": "yes",
+        "Unpin": "yes",
+        "UnwindSafe": "yes"
+      },
+      "conditional": []
+    },
+    "gpui_unofficial::window::prompts::RenderablePromptHandle": {
+      "kind": "struct",
+      "traits": {
+        "RefUnwindSafe": "no",
+        "Send": "no",
+        "Sync": "no",
+        "Unpin": "yes",
+        "UnwindSafe": "no"
+      },
+      "conditional": []
+    }
+  }
+}
