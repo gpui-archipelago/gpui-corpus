@@ -65,6 +65,26 @@
       "sources": [
         { "kind": "crates-io", "index_path": "gp/ui/gpui-box" }
       ]
+    },
+    {
+      "id": "gpui-fast",
+      "package": "gpui-fast",
+      "lib_name": "gpui",
+      "repository": "https://github.com/longbridge/gpui-fast",
+      "note": "Longbridge performance fork: gpui extracted as a standalone workspace with rendering/layout reuse optimizations; publishes the drop-in gpui library under the gpui-fast package",
+      "sources": [
+        { "kind": "crates-io", "index_path": "gp/ui/gpui-fast" }
+      ]
+    },
+    {
+      "id": "bite-gpui",
+      "package": "bite-gpui",
+      "lib_name": "gpui",
+      "repository": "https://github.com/bite-gpui/bite-gpui",
+      "note": "facade repack of upstream zed gpui into bite-gpui plus bite-gp-* layer crates; publishes the drop-in gpui library",
+      "sources": [
+        { "kind": "crates-io", "index_path": "bi/te/bite-gpui" }
+      ]
     }
   ]
 }
