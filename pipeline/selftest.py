@@ -161,6 +161,15 @@ class CratesIoAdapter(unittest.TestCase):
             self.assertEqual((new, reused), (0, 2))
             self.assertEqual(again["releases"][0]["artifact"], record["releases"][0]["artifact"])
 
+    def test_excluded_versions_are_never_sourced(self):
+        with tempfile.TemporaryDirectory() as td:
+            out = Path(td)
+            provider = {**self.PROVIDER, "exclude": ["1.0.1"]}
+            record, _, _, _ = fc.sync_crates_io(provider, self.SOURCE, {}, out,
+                                                only=set(), dry_run=False)
+            self.assertEqual([r["id"] for r in record["releases"]], ["1.0.0"])
+            self.assertFalse((out / "sources/crates-io/gpui-box/1.0.1.tar.gz").exists())
+
     def test_dry_run_writes_nothing(self):
         with tempfile.TemporaryDirectory() as td:
             out = Path(td)
@@ -189,6 +198,14 @@ class Roles(unittest.TestCase):
             {"id": "gpui-platform-gpui-unofficial", "package": "gpui-platform-gpui-unofficial",
              "role": "companion", "for": "gpui-unofficial", "sources": [{"kind": "crates-io"}]},
         ]})  # does not raise
+
+    def test_validate_config_rejects_a_malformed_exclude(self):
+        config = {"contract": {"id": "gpui"}, "providers": [
+            {"id": "x", "package": "x", "sources": [{"kind": "crates-io"}],
+             "exclude": "0.0.0-reserved"},
+        ]}
+        with self.assertRaises(RuntimeError):
+            fc.validate_config(config)
 
     def test_validate_config_rejects_bad_entries(self):
         io_ = [{"kind": "crates-io"}]

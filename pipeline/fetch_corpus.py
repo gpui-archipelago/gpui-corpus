@@ -220,11 +220,15 @@ def sync_crates_io(
     index_path = source.get("index_path") or _sparse_path(package)
     rows = sparse_rows(index_path)
     crate_meta, api_versions = api_meta(package)
+    excluded = set(provider.get("exclude") or [])
 
     releases: list[dict] = []
     new = reused = 0
     for row in rows:
         vers = row["vers"]
+        if vers in excluded:
+            print(f"  crates-io {package}@{vers}: excluded")
+            continue
         meta = registry_meta(row, api_versions.get(vers, {}))
         before = prior.get((provider["id"], "crates-io", vers))
         fresh = bool(before) and before.get("meta", {}).get("cksum") == meta.get("cksum") and before.get("artifact")
@@ -317,6 +321,11 @@ def validate_config(config: dict) -> None:
             raise RuntimeError(f"provider '{entry['id']}': missing `package`")
         if not entry.get("sources"):
             raise RuntimeError(f"provider '{entry['id']}': no sources declared")
+        exclude = entry.get("exclude")
+        if exclude is not None and (
+            not isinstance(exclude, list) or any(not isinstance(vers, str) for vers in exclude)
+        ):
+            raise RuntimeError(f"provider '{entry['id']}': `exclude` must be a list of version strings")
 
 
 def sync_provider(

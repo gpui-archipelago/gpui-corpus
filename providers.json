@@ -82,6 +82,7 @@
       "lib_name": "gpui",
       "repository": "https://github.com/bite-gpui/bite-gpui",
       "note": "facade repack of upstream zed gpui into bite-gpui plus bite-gp-* layer crates; publishes the drop-in gpui library",
+      "exclude": ["0.0.0-reserved"],
       "sources": [
         { "kind": "crates-io", "index_path": "bi/te/bite-gpui" }
       ]
