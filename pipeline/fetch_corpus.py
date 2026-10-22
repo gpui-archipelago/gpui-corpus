@@ -356,6 +356,30 @@ def sync_provider(
     return provider, new, reused
 
 
+def carry_forward_provider(entry: dict, prior: dict | None) -> dict | None:
+    """An unselected provider's prior record, wearing the current config metadata.
+
+    A `--provider` run is an incremental sync, not a new index: dropping the
+    providers it did not touch would silently truncate the corpus (and the
+    measured dataset built from it). The prior source records — including the
+    release blobs — are kept verbatim; only the human-edited config fields are
+    refreshed.
+    """
+    if prior is None:
+        return None
+    return {
+        "id": entry["id"],
+        "package": entry["package"],
+        "lib_name": entry.get("lib_name") or lib_name(entry["package"]),
+        "role": entry.get("role", "fork"),
+        "for": entry.get("for"),
+        "repository": prior.get("repository") or entry.get("repository"),
+        "description": prior.get("description"),
+        "note": entry.get("note"),
+        "sources": prior.get("sources", []),
+    }
+
+
 def build_index(config: dict, providers: list[dict]) -> dict:
     return {
         "schema": CORPUS_SCHEMA,
@@ -383,10 +407,10 @@ def main() -> int:
         print(f"error: invalid config: {exc}", file=sys.stderr)
         return 1
     entries = config["providers"]
+    selected: set[str] | None = None
     if args.provider:
-        wanted = set(args.provider)
-        entries = [e for e in entries if e["id"] in wanted]
-        unknown = wanted - {e["id"] for e in entries}
+        selected = set(args.provider)
+        unknown = selected - {e["id"] for e in entries}
         if unknown:
             print(f"error: unknown provider id(s): {', '.join(sorted(unknown))}", file=sys.stderr)
             return 1
@@ -400,11 +424,18 @@ def main() -> int:
         only.add((package, vers))
 
     out: Path = args.out
-    prior = prior_releases(load_index(out))
+    prior_index = load_index(out)
+    prior = prior_releases(prior_index)
+    prior_by_id = {p["id"]: p for p in (prior_index or {}).get("providers", [])}
 
     providers: list[dict] = []
     total_new = total_reused = 0
     for entry in entries:
+        if selected is not None and entry["id"] not in selected:
+            carried = carry_forward_provider(entry, prior_by_id.get(entry["id"]))
+            if carried is not None:
+                providers.append(carried)
+            continue
         print(f"{entry['id']} ({entry['package']})")
         try:
             provider, new, reused = sync_provider(entry, prior, out, only=only, dry_run=args.dry_run)

@@ -59,6 +59,39 @@ class Determinism(unittest.TestCase):
             fc.crate_source_entries(crate_bytes("demo", "1.0.0", with_manifest=False))
 
 
+class FilteredProviderRuns(unittest.TestCase):
+    PRIOR = {
+        "id": "gpui-box",
+        "package": "gpui-box",
+        "lib_name": "gpui",
+        "role": "fork",
+        "for": None,
+        "repository": "https://example/gpui-box",
+        "description": "prior description",
+        "note": "old note",
+        "sources": [{"kind": "crates-io", "releases": [{"id": "0.1.0"}]}],
+    }
+
+    def test_an_unselected_provider_is_carried_forward_with_its_sources(self):
+        entry = {
+            "id": "gpui-box",
+            "package": "gpui-box",
+            "note": "new note",
+            "sources": [{"kind": "crates-io", "index_path": "gp/ui/gpui-box"}],
+        }
+        carried = fc.carry_forward_provider(entry, self.PRIOR)
+        self.assertIsNotNone(carried)
+        self.assertEqual(carried["sources"], self.PRIOR["sources"])
+        self.assertEqual(carried["note"], "new note")
+        self.assertEqual(carried["repository"], "https://example/gpui-box")
+        self.assertEqual(carried["description"], "prior description")
+
+    def test_a_provider_with_no_prior_record_is_absent_not_invented(self):
+        self.assertIsNone(
+            fc.carry_forward_provider({"id": "new", "package": "new"}, None)
+        )
+
+
 class SparsePaths(unittest.TestCase):
     def test_the_documented_scheme(self):
         self.assertEqual(fc._sparse_path("a"), "1/a")
