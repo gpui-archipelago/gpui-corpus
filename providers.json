@@ -83,8 +83,108 @@
       "repository": "https://github.com/bite-gpui/bite-gpui",
       "note": "facade repack of upstream zed gpui into bite-gpui plus bite-gp-* layer crates; publishes the drop-in gpui library",
       "exclude": ["0.0.0-reserved"],
+      "surface_source": {
+        "kind": "reexports",
+        "from": ["bite-gp-authoring", "bite-gp-runtime"]
+      },
       "sources": [
         { "kind": "crates-io", "index_path": "bi/te/bite-gpui" }
+      ]
+    },
+    {
+      "id": "bite-gp-authoring",
+      "package": "bite-gp-authoring",
+      "lib_name": "gpui_authoring",
+      "role": "dependency",
+      "for": "bite-gpui",
+      "repository": "https://github.com/bite-gpui/bite-gpui",
+      "note": "bite-gpui layer crate: authoring tier (App, Window, elements) re-exported by the facade",
+      "sources": [
+        { "kind": "crates-io", "index_path": "bi/te/bite-gp-authoring" }
+      ]
+    },
+    {
+      "id": "bite-gp-runtime",
+      "package": "bite-gp-runtime",
+      "lib_name": "gpui_runtime",
+      "role": "dependency",
+      "for": "bite-gpui",
+      "repository": "https://github.com/bite-gpui/bite-gpui",
+      "note": "bite-gpui layer crate: process harness (Application) re-exported by the facade",
+      "sources": [
+        { "kind": "crates-io", "index_path": "bi/te/bite-gp-runtime" }
+      ]
+    },
+    {
+      "id": "bite-gp-engine",
+      "package": "bite-gp-engine",
+      "lib_name": "gpui_engine",
+      "role": "dependency",
+      "for": "bite-gpui",
+      "repository": "https://github.com/bite-gpui/bite-gpui",
+      "note": "bite-gpui layer crate: engine contracts (layout, text, scene, render) re-exported through the authoring tier",
+      "sources": [
+        { "kind": "crates-io", "index_path": "bi/te/bite-gp-engine" }
+      ]
+    },
+    {
+      "id": "bite-gp-engine-default",
+      "package": "bite-gp-engine-default",
+      "lib_name": "gpui_engine_default",
+      "role": "dependency",
+      "for": "bite-gpui",
+      "repository": "https://github.com/bite-gpui/bite-gpui",
+      "note": "bite-gpui layer crate: default engine implementations re-exported through the authoring tier",
+      "sources": [
+        { "kind": "crates-io", "index_path": "bi/te/bite-gp-engine-default" }
+      ]
+    },
+    {
+      "id": "bite-gp-platform",
+      "package": "bite-gp-platform",
+      "lib_name": "gpui_platform",
+      "role": "dependency",
+      "for": "bite-gpui",
+      "repository": "https://github.com/bite-gpui/bite-gpui",
+      "note": "bite-gpui layer crate: platform SPI and window/display types re-exported through the authoring tier",
+      "sources": [
+        { "kind": "crates-io", "index_path": "bi/te/bite-gp-platform" }
+      ]
+    },
+    {
+      "id": "bite-gp-gpui-util",
+      "package": "bite-gp-gpui-util",
+      "lib_name": "gpui_util",
+      "role": "dependency",
+      "for": "bite-gpui",
+      "repository": "https://github.com/bite-gpui/bite-gpui",
+      "note": "bite-gpui layer crate: shared utility types re-exported through the authoring tier",
+      "sources": [
+        { "kind": "crates-io", "index_path": "bi/te/bite-gp-gpui-util" }
+      ]
+    },
+    {
+      "id": "bite-gp-refineable",
+      "package": "bite-gp-refineable",
+      "lib_name": "refineable",
+      "role": "dependency",
+      "for": "bite-gpui",
+      "repository": "https://github.com/bite-gpui/bite-gpui",
+      "note": "bite-gpui layer crate: the Refineable trait re-exported through the authoring tier",
+      "sources": [
+        { "kind": "crates-io", "index_path": "bi/te/bite-gp-refineable" }
+      ]
+    },
+    {
+      "id": "bite-gp-types",
+      "package": "bite-gp-types",
+      "lib_name": "gpui_types",
+      "role": "dependency",
+      "for": "bite-gpui",
+      "repository": "https://github.com/bite-gpui/bite-gpui",
+      "note": "bite-gpui layer crate: platform-agnostic geometry, color, input and style types re-exported through the platform SPI",
+      "sources": [
+        { "kind": "crates-io", "index_path": "bi/te/bite-gp-types" }
       ]
     }
   ]

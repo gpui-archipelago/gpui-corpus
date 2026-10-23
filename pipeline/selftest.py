@@ -17,6 +17,7 @@ from pathlib import Path
 from unittest import mock
 
 import attestations as at
+import facade as fd
 import fetch_corpus as fc
 import measure as mz
 
@@ -220,6 +221,38 @@ class Roles(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, needle):
                 fc.validate_config({"providers": providers})
 
+    def _surface_config(self, **overrides):
+        dep = {
+            "id": "dep", "package": "dep", "role": "dependency", "for": "facade",
+            "sources": [{"kind": "crates-io"}],
+        }
+        facade = {
+            "id": "facade", "package": "facade",
+            "surface_source": {"kind": "reexports", "from": ["dep"]},
+            "sources": [{"kind": "crates-io"}],
+        }
+        dep.update(overrides.pop("dep", {}))
+        facade.update(overrides.pop("facade", {}))
+        return {"providers": [facade, dep]}
+
+    def test_validate_config_accepts_a_facade_and_its_layer_crate(self):
+        fc.validate_config(self._surface_config())
+
+    def test_validate_config_rejects_bad_surface_sources(self):
+        cases = [
+            (self._surface_config(facade={"surface_source": {"kind": "wat", "from": ["dep"]}}),
+             "unknown `surface_source.kind`"),
+            (self._surface_config(facade={"surface_source": {"kind": "reexports", "from": []}}),
+             "non-empty list"),
+            (self._surface_config(facade={"surface_source": {"kind": "reexports", "from": ["ghost"]}}),
+             "unknown provider 'ghost'"),
+            (self._surface_config(dep={"role": "fork"}), "must have role 'dependency'"),
+            (self._surface_config(dep={"for": "other"}), "must declare `for: 'facade'`"),
+        ]
+        for config, needle in cases:
+            with self.assertRaisesRegex(RuntimeError, needle):
+                fc.validate_config(config)
+
 
 class CompanionSourcing(unittest.TestCase):
     """A companion is sourced exactly like a fork — no companion-specific code."""
@@ -352,6 +385,213 @@ class MeasureStage(unittest.TestCase):
             with tarfile.open(fileobj=io.BytesIO(buf.getvalue()), mode="r:") as tar:
                 with self.assertRaises(RuntimeError):
                     mz.extract_member(tar, tar.getmembers()[0], Path(td) / "dest")
+
+
+class FacadeComposition(unittest.TestCase):
+    """A facade's surface is a projection of its measured layer crates."""
+
+    @staticmethod
+    def item(key, digest="d", **extra):
+        base = {"key": key, "digest": digest, "cfg": []}
+        base.update(extra)
+        return base
+
+    def surfaces(self):
+        return {
+            ("facade", "1.0.0"): [
+                self.item("fn:own"),
+                self.item("use:pub use gpui_authoring :: * ;", "u-authoring"),
+                self.item("use:pub use gpui_runtime :: * ;", "u-runtime"),
+            ],
+            ("authoring", "1.0.0"): [
+                self.item("struct:App"),
+                self.item("fn:Window::blur", "blur", src={"file": "window.rs", "start": 1, "end": 2}),
+                self.item("use:pub use gpui_engine :: * ;", "u-engine"),
+                self.item("use:pub use gpui_util :: arc_cow :: ArcCow ;", "u-util"),
+            ],
+            ("runtime", "1.0.0"): [self.item("struct:Application")],
+            ("engine", "1.0.0"): [self.item("fn:layout::layout", "layout")],
+            ("util", "1.0.0"): [self.item("enum:arc_cow::ArcCow", "arccow")],
+        }
+
+    GRAPH = {
+        "gpui_authoring": "authoring",
+        "gpui_runtime": "runtime",
+        "gpui_engine": "engine",
+        "gpui_util": "util",
+    }
+
+    def project(self, surface=None, *, surfaces=None, graph=None, direct=None, deps=None):
+        surfaces = surfaces or self.surfaces()
+        return fd.project_surface(
+            surface if surface is not None else surfaces[("facade", "1.0.0")],
+            package="facade",
+            vers="1.0.0",
+            surfaces=surfaces,
+            graph=graph or self.GRAPH,
+            dependencies=deps,
+            direct=direct or ["authoring", "runtime"],
+        )
+
+    def test_parse_use_handles_globs_paths_lists_aliases_and_gates(self):
+        prefix, gates, leaves = fd.parse_use(
+            '# [doc = "mentions pub use in text"] # [cfg (feature = "platform")] pub use foo :: * ;'
+        )
+        self.assertEqual(prefix, ())
+        self.assertEqual(gates, ['cfg (feature = "platform")'])
+        self.assertEqual(leaves, [fd.Reexport(("foo",), True, None, None)])
+        self.assertEqual(
+            fd.parse_use("pub use gpui_util :: arc_cow :: ArcCow ;")[2],
+            [fd.Reexport(("gpui_util", "arc_cow"), False, "ArcCow", None)],
+        )
+        self.assertEqual(
+            fd.parse_use("pub use __consume_all_tokens as debug_span ;")[2],
+            [fd.Reexport((), False, "__consume_all_tokens", "debug_span")],
+        )
+        self.assertEqual(
+            fd.parse_use("pub use http :: { self , Method , request :: Builder } ;")[2],
+            [
+                fd.Reexport(("http",), False, "self", None),
+                fd.Reexport(("http",), False, "Method", None),
+                fd.Reexport(("http", "request"), False, "Builder", None),
+            ],
+        )
+        self.assertEqual(
+            fd.parse_use("prelude::pub use crate :: { AppContext as _ , Context } ;")[:2],
+            (("prelude",), []),
+        )
+
+    def test_glob_reexports_compose_transitively_and_drop_source_locations(self):
+        projection = self.project()
+        keys = {item["key"] for item in projection.surface}
+        self.assertTrue(
+            {
+                "fn:own",
+                "struct:App",
+                "fn:Window::blur",
+                "struct:Application",
+                "fn:layout::layout",
+                "enum:arc_cow::ArcCow",
+            }
+            <= keys
+        )
+        self.assertEqual(projection.added, 5)
+        self.assertEqual(
+            projection.sources,
+            [
+                {"package": "authoring", "vers": "1.0.0", "mode": "glob"},
+                {"package": "runtime", "vers": "1.0.0", "mode": "glob"},
+            ],
+        )
+        blur = next(item for item in projection.surface if item["key"] == "fn:Window::blur")
+        self.assertNotIn("src", blur, "a layer declaration has no facade source coordinate")
+        # The facade's own re-export lines stay part of its measured surface.
+        self.assertIn("use:pub use gpui_authoring :: * ;", keys)
+
+    def test_named_reexports_filter_the_source_and_report_it(self):
+        surfaces = self.surfaces()
+        surfaces[("facade", "1.0.0")] = [
+            self.item("use:pub use gpui_authoring :: { App } ;", "u"),
+        ]
+        projection = self.project(surfaces=surfaces, direct=["authoring"])
+        keys = {item["key"] for item in projection.surface}
+        self.assertIn("struct:App", keys)
+        self.assertNotIn("fn:Window::blur", keys)
+        self.assertEqual(projection.sources[0]["mode"], "filtered")
+
+    def test_cfg_gates_join_the_reexport_and_item_gates(self):
+        surfaces = self.surfaces()
+        surfaces[("authoring", "1.0.0")][2] = self.item(
+            'use:# [cfg (feature = "platform")] pub use gpui_engine :: * ;', "u-engine"
+        )
+        surfaces[("engine", "1.0.0")] = [
+            self.item("fn:layout::layout", "layout", cfg=['cfg (target_os = "linux")'])
+        ]
+        projection = self.project(surfaces=surfaces)
+        layout = next(item for item in projection.surface if item["key"] == "fn:layout::layout")
+        self.assertEqual(
+            layout["cfg"],
+            ['cfg (feature = "platform")', 'cfg (target_os = "linux")'],
+        )
+
+    def test_a_missing_source_version_is_reported_and_adds_nothing(self):
+        surfaces = self.surfaces()
+        del surfaces[("authoring", "1.0.0")]
+        projection = self.project(surfaces=surfaces, direct=["authoring", "runtime"])
+        self.assertEqual(projection.added, 1, "only the measured runtime layer contributes")
+        self.assertIn(
+            {"package": "authoring", "vers": "1.0.0", "mode": "missing"},
+            projection.sources,
+        )
+        self.assertIn("authoring@1.0.0 (not measured)", projection.unresolved)
+
+    def test_an_unmeasured_external_reexport_is_named_not_invented(self):
+        surfaces = self.surfaces()
+        surfaces[("authoring", "1.0.0")].append(
+            self.item("use:pub use gpui_shared_string :: * ;", "u-ss")
+        )
+        projection = self.project(
+            surfaces=surfaces,
+            deps={("authoring", "1.0.0"): {"gpui_shared_string"}},
+        )
+        self.assertIn("gpui_shared_string (external crate)", projection.unresolved)
+        self.assertNotIn("gpui_shared_string", {item["key"] for item in projection.surface})
+
+    def test_projection_is_deterministic_and_deduplicates_exact_items(self):
+        surface = self.surfaces()[("facade", "1.0.0")] + [
+            self.item("use:pub use gpui_runtime :: * ;", "u-runtime-2")
+        ]
+        first = self.project(surface=surface)
+        second = self.project(surface=list(reversed(surface)))
+        self.assertEqual(first.surface, second.surface)
+
+    def test_composed_api_hash_is_order_independent_and_moves_with_an_item(self):
+        a = [self.item("fn:a", "1"), self.item("fn:b", "2")]
+        b = [self.item("fn:b", "2"), self.item("fn:a", "1")]
+        self.assertEqual(mz.composed_api_hash(a), mz.composed_api_hash(b))
+        changed = [self.item("fn:a", "9"), self.item("fn:b", "2")]
+        self.assertNotEqual(mz.composed_api_hash(a), mz.composed_api_hash(changed))
+        with_cfg = [self.item("fn:a", "1", cfg=['cfg (feature = "x")']), self.item("fn:b", "2")]
+        self.assertNotEqual(mz.composed_api_hash(a), mz.composed_api_hash(with_cfg))
+
+    def test_compose_facades_attaches_provenance_and_rehashes_the_surface(self):
+        dataset = {"providers": [{
+            "id": "facade", "package": "facade",
+            "surface_source": {"kind": "reexports", "from": ["authoring"]},
+        }]}
+        merged = {"providers": [{
+            "id": "facade", "package": "facade", "api_epoch": "epoch",
+            "versions": [{
+                "vers": "1.0.0", "api_hash": "measured-own-hash",
+                "surface": [self.item("use:pub use gpui_authoring :: * ;", "u")],
+            }],
+        }]}
+        index = {"providers": [
+            dataset["providers"][0],
+            {"id": "authoring", "package": "authoring", "lib_name": "gpui_authoring",
+             "role": "dependency", "for": "facade",
+             "sources": [{"kind": "crates-io", "releases": [
+                 {"id": "1.0.0", "meta": {"deps": []}},
+             ]}]},
+        ]}
+        analysis = {"rows": [
+            {"package": "authoring", "vers": "1.0.0", "surface": [self.item("struct:App")]},
+        ]}
+        self.assertEqual(mz.compose_facades(dataset, merged, index, analysis), 1)
+        record = merged["providers"][0]["versions"][0]
+        self.assertNotEqual(record["api_hash"], "measured-own-hash")
+        self.assertEqual(
+            record["api_hash"],
+            mz.composed_api_hash(record["surface"]),
+            "the published surface's hash must describe the composed surface",
+        )
+        self.assertEqual(merged["providers"][0]["surface_source"]["kind"], "reexports")
+        self.assertEqual(record["composed_surface"]["items_added"], 1)
+        self.assertEqual(
+            record["composed_surface"]["sources"],
+            [{"package": "authoring", "vers": "1.0.0", "mode": "glob"}],
+        )
+        self.assertIn("struct:App", {item["key"] for item in record["surface"]})
 
 
 class CompilePasses(unittest.TestCase):

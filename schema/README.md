@@ -114,6 +114,68 @@ existing provider, a `package`, and at least one source. Binding-specific
 curation (a companion's `pin` — mirror/fixed — and its `features`) belongs in
 [`curation/`](../curation/README.md), not in this derived index.
 
+## Facades (`surface_source`)
+
+A *facade* is a published crate that is a thin `pub use` layer over several
+independently published crates (the `bite-gpui` shape). The crate's own
+measured surface is then just its re-export lines plus the handful of items it
+declares locally; the layer crates' items never appear, because the walker
+stops at an external-crate re-export by design (T-25).
+
+A facade declares the projection in its provider entry:
+
+```jsonc
+{
+  "id": "bite-gpui",
+  "surface_source": {
+    "kind": "reexports",
+    "from": ["bite-gp-authoring", "bite-gp-runtime"]
+  },
+  …
+}
+```
+
+Each `from` entry must be a provider with `role: "dependency"` and
+`for: "<the facade id>"`. Those layer crates are sourced and measured like any
+other corpus entity but **never become dataset providers**: the measured
+dataset stays fork-only, and the facade's release row carries the composed
+surface instead. A transitive layer (a crate a direct layer re-exports) is
+measured too; the graph is discovered from the measured `use:` entries, so
+the dependency list only needs to declare the crates.
+
+The composition (`pipeline/facade.py`) is pure measured-data projection:
+
+- a root glob (`pub use dep::*`) contributes the layer's whole measured
+  surface; a named/module re-export contributes exactly the named subset (and
+  the release's `composed_surface.sources[].mode` records `glob` vs
+  `filtered`; a declared source reached through another layer is
+  `transitive`, a measured one the facade never names is `unreferenced`,
+  and one with no measured release is `missing`);
+- re-export chains through measured layers are followed (authoring → engine /
+  platform → types), with cfg gates from every hop joined onto the item;
+- the facade's own `use:` lines stay in its surface as opaque entries, and a
+  target that is not a measured corpus entity stays opaque — recorded in
+  `composed_surface.unresolved` (e.g. `gpui_shared_string (external crate)`),
+  never inferred;
+- projected items drop `src`: the declaration lives in the layer crate, so a
+  facade docs.rs permalink would be wrong.
+
+`composed_surface` is per release (`{kind, sources, items_added,
+unresolved}`). The row's `api_hash` is re-derived over the composed surface
+(a SHA-256 projection digest over sorted `key`/`digest`/`cfg` — gocar's
+canonical H_API is a BLAKE3 over item texts the analysis doc does not
+persist), so hash equality still means surface equality within the facade;
+it is deliberately not comparable with another provider's H_API. `versem`
+remains the vector `gocar-index` computed for the facade crate's own lineage
+(the map does not render it). A row without `composed_surface` is an ordinary
+measured surface.
+
+A layer crate is only measurable if its published lib has a `src/` tree
+(`gocar-index` discovers `<crate>/<version>/Cargo.toml + src/`).
+`bite-gp-shared-string` publishes its lib at the tarball root
+(`gpui_shared_string.rs`), so it stays an unresolved external re-export — the
+same known holdout recorded in the cargo-gocar studies.
+
 ## Source kinds
 
 Every kind has a `spec` (how to enumerate) and a per-release `meta` (what was

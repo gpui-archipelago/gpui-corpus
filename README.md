@@ -123,9 +123,28 @@ separate, deliberate act.
 
 A companion's dependency edges already ride each release's `meta.deps`; a
 dependency whose *code* also needs measuring gets its own entry with
-`role: "dependency"`. (The measured `gocar.contract.v0` dataset is
-fork-oriented, so the measurement stage currently measures forks only — see
-`schema/README.md`.)
+`role: "dependency"`.
+
+### Facades (a crate that only re-exports its layers)
+
+A facade (the `bite-gpui` shape) declares the projection on its provider:
+
+```jsonc
+{ "id": "bite-gpui",
+  "surface_source": { "kind": "reexports",
+                      "from": ["bite-gp-authoring", "bite-gp-runtime"] },
+  "sources": [ { "kind": "crates-io" } ] }
+```
+
+Each `from` entry must have `role: "dependency"` and `for` the facade's id. The
+measure stage extracts those layer crates' sources, measures them with
+`gocar-index` like any other entity, and composes their measured surfaces into
+the facade's release rows from the facade's own canonical `use:` entries
+(`pipeline/facade.py`). The layer crates never become dataset providers — the
+measured dataset stays fork-only — and a re-export target outside the measured
+corpus stays explicitly unresolved. The semantics, the glob-vs-filtered
+report, and the per-release `composed_surface` provenance are documented in
+[`schema/README.md`](schema/README.md#facades-surface_source).
 
 ## Stage 2 — measure the corpus (implemented)
 
@@ -151,7 +170,9 @@ adapts shapes (it holds no fork-specific knowledge):
    attestation still holds is not measured again,
 4. `gocar-index analyze <corpus> --tvm <dir> --eac <dir> --out analysis.json`,
 5. `gocar-index merge <dataset.json> <analysis.json> merged.json`,
-6. xz-9 the merged dataset to `measured/gpui-contract.json.xz`.
+6. compose each facade's measured layers into its release surfaces (the
+   dataset stays fork-only; the layer crates are only analysis inputs),
+7. xz-9 the merged dataset to `measured/gpui-contract.json.xz`.
 
 ```console
 cargo install gocar-index --version 0.5.0   # the measurement tool (crates.io)

@@ -11,8 +11,9 @@ The measurement itself is the published `gocar-index` binary:
 
     1. materialize a null-attestation `gocar.contract.v0` dataset from the
        corpus index (registry truth only — no fork-specific knowledge),
-    2. extract each release's source blob into the corpus layout the analyzer
-       expects (`<corpus>/<package>/<version>/Cargo.toml` + `src/`),
+    2. extract each **measured** entity's source blob into the corpus layout
+       the analyzer expects (`<corpus>/<package>/<version>/Cargo.toml` + `src/`)
+       — forks, plus the layer crates of a declared facade,
     3. `gocar-index tvm` + `gocar-index eac` over each release's **full
        published crate** (the compiler passes need the whole tarball; the
        pruned `sources/` blobs cannot build — `include_str!` files, README,
@@ -20,7 +21,9 @@ The measurement itself is the published `gocar-index` binary:
        `null` + a printed reason, never a synthesized matrix,
     4. `gocar-index analyze <corpus> --tvm <dir> --eac <dir> --out analysis.json`,
     5. `gocar-index merge <dataset.json> <analysis.json> merged.json`,
-    6. compress the merged dataset (xz preset 9) to `<out>/gpui-contract.json.xz`.
+    6. compose each facade's measured layer surfaces into its release rows
+       (the dataset stays fork-only; the layers are analysis inputs),
+    7. compress the merged dataset (xz preset 9) to `<out>/gpui-contract.json.xz`.
 
 Step 3 is the expensive one — each pass builds a release's whole dependency
 graph. All releases therefore share **one cargo target dir**
@@ -55,6 +58,14 @@ Pass `--no-compile-passes` to skip steps 3–4's compiler passes and measure
 only the syn-level interface (offline, using the pruned blobs — the pre-T-27
 behavior). The `attestations/` tree is left alone in that mode: with no passes
 run, no doc is measured or verified.
+
+A provider declaring `surface_source` is a **facade**: its own crate is only a
+`pub use` layer, so its measured surface is composed from the measured
+surfaces of the layer crates the re-exports name (`pipeline/facade.py`). The
+composition follows globs and named re-exports, joins cfg gates, keeps
+unmeasured targets explicitly unresolved, and records per-release provenance
+in `composed_surface`; the row's own `api_hash` still describes the facade
+crate itself. See `schema/README.md#facades-surface_source`.
 
 This is the **monolithic** layout (task T-49 tracks switching to a split
 `measured/index.json.gz` + immutable `measured/surfaces/…` layout, which the
@@ -91,6 +102,7 @@ import tempfile
 from datetime import datetime
 from pathlib import Path
 
+import facade
 from attestations import (
     PASSES,
     Cache,
@@ -181,7 +193,7 @@ def dataset_from_index(index: dict) -> tuple[dict, list[str]]:
                     "feature_names": list(meta.get("feature_names", [])),
                     "deps": list(meta.get("deps", [])),
                 })
-        providers.append({
+        provider = {
             "id": entity["id"],
             "package": entity["package"],
             "lib_name": entity.get("lib_name") or entity["package"].replace("-", "_"),
@@ -191,7 +203,10 @@ def dataset_from_index(index: dict) -> tuple[dict, list[str]]:
             "api_epoch": None,
             "note": entity.get("note"),
             "versions": versions,
-        })
+        }
+        if entity.get("surface_source"):
+            provider["surface_source"] = entity["surface_source"]
+        providers.append(provider)
     dataset = {
         "schema": DATASET_SCHEMA,
         "synced_at": corpus_synced_at(index),
@@ -217,11 +232,34 @@ def extract_member(tar: tarfile.TarFile, member: tarfile.TarInfo, dest: Path) ->
     target.write_bytes(handle.read())
 
 
+def facade_ids(index: dict) -> set[str]:
+    """Providers whose surface is composed from measured layer crates."""
+    return {
+        entity["id"]
+        for entity in index.get("providers", [])
+        if entity.get("surface_source")
+    }
+
+
+def measured_entity(entity: dict, facades: set[str]) -> bool:
+    """Whether this corpus entity's source is extracted for measurement.
+
+    Forks are measured for the dataset. A dependency is measured only when it
+    serves a facade that composes its surface; unrelated dependencies stay
+    unmeasured (and out of the derived dataset).
+    """
+    role = entity.get("role", "fork")
+    if role == "fork":
+        return True
+    return role == "dependency" and entity.get("for") in facades
+
+
 def extract_corpus(data_root: Path, index: dict, corpus_dir: Path) -> int:
-    """Extract every fork release's source blob; returns the blob count."""
+    """Extract every measured entity's source blob; returns the blob count."""
+    facades = facade_ids(index)
     extracted = 0
     for entity in index.get("providers", []):
-        if entity.get("role", "fork") != "fork":
+        if not measured_entity(entity, facades):
             continue
         for source in entity.get("sources", []):
             for release in source.get("releases", []):
@@ -390,6 +428,144 @@ def compile_passes(
 
 
 # --------------------------------------------------------------------------
+# facade composition: measured layer surfaces -> the facade's surface
+# --------------------------------------------------------------------------
+def analysis_surfaces(analysis: dict) -> dict[tuple[str, str], list[dict]]:
+    """Every analyzed release's measured surface, keyed (package, version)."""
+    return {
+        (row["package"], row["vers"]): row.get("surface") or []
+        for row in analysis.get("rows", [])
+    }
+
+
+def facade_graph(index: dict, facade_id: str) -> dict[str, str]:
+    """The facade's measured layer crates: extern lib name -> package."""
+    graph: dict[str, str] = {}
+    for entity in index.get("providers", []):
+        if entity.get("for") != facade_id:
+            continue
+        if entity.get("role", "fork") != "dependency":
+            continue
+        lib = entity.get("lib_name") or entity["package"].replace("-", "_")
+        graph[lib] = entity["package"]
+    return graph
+
+
+def dependency_aliases(index: dict) -> dict[tuple[str, str], set[str]]:
+    """Each release's normal-dependency extern names (for opaque-leaf reports)."""
+    aliases: dict[tuple[str, str], set[str]] = {}
+    for entity in index.get("providers", []):
+        for source in entity.get("sources", []):
+            for release in source.get("releases", []):
+                deps = (release.get("meta") or {}).get("deps") or []
+                aliases[(entity["package"], release["id"])] = {
+                    dep["name"] for dep in deps if dep.get("kind", "normal") == "normal"
+                }
+    return aliases
+
+
+def composed_api_hash(surface: list[dict]) -> str:
+    """A deterministic digest of a composed surface.
+
+    `gocar-index`'s H_API is a BLAKE3 over canonical item *texts* the analysis
+    doc does not persist, so a composed surface cannot be re-hashed with the
+    canonical algorithm here. This projection digest is over the identity
+    space the dataset actually carries — sorted ``key``/``digest``/``cfg`` —
+    and is used only for equality (lineage/auto-selection), never claimed as
+    the canonical H_API. Within a facade it is exact: equal surfaces hash
+    equal, a changed item moves it. Cross-provider equality is deliberately
+    impossible (different algorithm), which is the conservative direction.
+    """
+    ordered = sorted(
+        surface,
+        key=lambda item: (
+            item.get("key", ""),
+            item.get("digest", ""),
+            item.get("cfg", []),
+        ),
+    )
+    payload = "\u0000".join(
+        f"{item.get('key', '')}\u0000{item.get('digest', '')}\u0000{'|'.join(item.get('cfg', []))}"
+        for item in ordered
+    )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def compose_facades(dataset: dict, merged: dict, index: dict, analysis: dict) -> int:
+    """Replace each facade release's own surface with its composed surface.
+
+    Runs on the merged dataset, which the pinned `gocar-index` writes without
+    the `surface_source`/`composed_surface` provenance (it does not know those
+    fields), so the declaration is re-attached here from the materialized
+    dataset. The composed release gets a projection `api_hash` over the
+    composed surface (`composed_api_hash`), so hash equality keeps meaning
+    surface equality; `composed_surface` carries the per-layer provenance.
+    The measured `versem` vector is left as `gocar-index` computed it for the
+    facade crate's own lineage — the map never renders it, and the CLI treats
+    the composed surface as the measured one.
+    """
+    declarations = {
+        provider["id"]: provider["surface_source"]
+        for provider in dataset.get("providers", [])
+        if provider.get("surface_source")
+    }
+    if not declarations:
+        return 0
+    surfaces = analysis_surfaces(analysis)
+    aliases = dependency_aliases(index)
+    composed = 0
+    for provider in merged.get("providers", []):
+        source = declarations.get(provider["id"])
+        if source is None:
+            continue
+        provider["surface_source"] = source
+        graph = facade_graph(index, provider["id"])
+        for record in provider.get("versions", []):
+            surface = record.get("surface")
+            if surface is None:  # never measured: no own surface to compose onto
+                continue
+            projection = facade.project_surface(
+                surface,
+                package=provider["package"],
+                vers=record["vers"],
+                surfaces=surfaces,
+                graph=graph,
+                dependencies=aliases,
+                direct=source["from"],
+            )
+            if projection.added == 0:
+                continue
+            record["surface"] = projection.surface
+            # The published surface is now the composed one, so its API hash
+            # must describe that surface. The canonical H_API is unrecoverable
+            # here (the analysis does not persist canonical texts); the
+            # projection digest is exact within the facade and conservative
+            # across providers (see `composed_api_hash`).
+            record["api_hash"] = composed_api_hash(projection.surface)
+            record["composed_surface"] = {
+                "kind": source["kind"],
+                "sources": projection.sources,
+                "items_added": projection.added,
+                "unresolved": projection.unresolved,
+            }
+            composed += 1
+            described = ", ".join(
+                f"{entry['package']}@{entry['vers']} ({entry['mode']})"
+                for entry in projection.sources
+            )
+            print(
+                f"  facade {provider['id']} {record['vers']}: "
+                f"{len(surface)} own + {projection.added} composed item(s) "
+                f"from {described}"
+            )
+            for boundary in projection.unresolved:
+                print(f"    outside the measured item model: {boundary}")
+    if composed:
+        print(f"composed {composed} facade release surface(s)")
+    return composed
+
+
+# --------------------------------------------------------------------------
 # attestation reuse: keep the docs whose inputs have not moved
 # --------------------------------------------------------------------------
 def release_cksums(index: dict) -> dict[tuple[str, str], str | None]:
@@ -529,7 +705,7 @@ def measure(
     versions = sum(len(p["versions"]) for p in dataset["providers"])
     print(f"materialized {versions} version(s) across {len(dataset['providers'])} fork(s)")
     if skipped:
-        print(f"skipped non-fork entities: {', '.join(skipped)}")
+        print(f"non-fork entities outside the dataset: {', '.join(skipped)}")
 
     work.mkdir(parents=True, exist_ok=True)
     corpus = work / "corpus"
@@ -559,6 +735,24 @@ def measure(
         analyze_argv += ["--tvm", str(tvm_dir), "--eac", str(eac_dir)]
     run(analyze_argv)
     run([gocar_index, "merge", str(dataset_path), str(analysis), str(merged)])
+
+    merged_text = merged.read_text(encoding="utf-8")
+    merged_data = json.loads(merged_text)
+    analysis_data = json.loads(analysis.read_text(encoding="utf-8"))
+    if compose_facades(dataset, merged_data, index, analysis_data):
+        # Keep the merge writer's layout and field order: re-serialize only
+        # when a facade actually composed (an unaffected corpus stays
+        # byte-identical), and only the composed objects change. The pinned
+        # `gocar-index` writes pretty JSON; a newer local build may be compact.
+        if merged_text.startswith("{\n"):
+            merged.write_text(
+                json.dumps(merged_data, indent=2, ensure_ascii=False), encoding="utf-8"
+            )
+        else:
+            merged.write_text(
+                json.dumps(merged_data, separators=(",", ":"), ensure_ascii=False),
+                encoding="utf-8",
+            )
 
     payload = xz9(merged.read_bytes())
     out_path = out / OUT_NAME

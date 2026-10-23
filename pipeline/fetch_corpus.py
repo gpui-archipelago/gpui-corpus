@@ -326,6 +326,44 @@ def validate_config(config: dict) -> None:
             not isinstance(exclude, list) or any(not isinstance(vers, str) for vers in exclude)
         ):
             raise RuntimeError(f"provider '{entry['id']}': `exclude` must be a list of version strings")
+        surface_source = entry.get("surface_source")
+        if surface_source is not None:
+            if not isinstance(surface_source, dict):
+                raise RuntimeError(f"provider '{entry['id']}': `surface_source` must be an object")
+            if surface_source.get("kind") != "reexports":
+                raise RuntimeError(
+                    f"provider '{entry['id']}': unknown `surface_source.kind` "
+                    f"'{surface_source.get('kind')}' (known: reexports)"
+                )
+            sources = surface_source.get("from")
+            if not isinstance(sources, list) or not sources:
+                raise RuntimeError(
+                    f"provider '{entry['id']}': `surface_source.from` must be a non-empty list"
+                )
+            if any(not isinstance(source, str) for source in sources):
+                raise RuntimeError(
+                    f"provider '{entry['id']}': `surface_source.from` entries must be provider ids"
+                )
+            if len(sources) != len(set(sources)):
+                raise RuntimeError(f"provider '{entry['id']}': duplicate `surface_source.from` entry")
+            by_id = {candidate["id"]: candidate for candidate in entries}
+            for source_id in sources:
+                source = by_id.get(source_id)
+                if source is None:
+                    raise RuntimeError(
+                        f"provider '{entry['id']}': `surface_source.from` names unknown provider '{source_id}'"
+                    )
+                if source.get("role", "fork") != "dependency":
+                    raise RuntimeError(
+                        f"provider '{entry['id']}': `surface_source.from` entry '{source_id}' "
+                        "must have role 'dependency'"
+                    )
+                if source.get("for") != entry["id"]:
+                    raise RuntimeError(
+                        f"provider '{entry['id']}': `surface_source.from` entry '{source_id}' "
+                        f"must declare `for: '{entry['id']}'`"
+                    )
+
 
 
 def sync_provider(
@@ -362,6 +400,8 @@ def sync_provider(
         "note": entry.get("note"),
         "sources": sources,
     }
+    if entry.get("surface_source"):
+        provider["surface_source"] = entry["surface_source"]
     return provider, new, reused
 
 
@@ -376,7 +416,7 @@ def carry_forward_provider(entry: dict, prior: dict | None) -> dict | None:
     """
     if prior is None:
         return None
-    return {
+    carried = {
         "id": entry["id"],
         "package": entry["package"],
         "lib_name": entry.get("lib_name") or lib_name(entry["package"]),
@@ -387,6 +427,9 @@ def carry_forward_provider(entry: dict, prior: dict | None) -> dict | None:
         "note": entry.get("note"),
         "sources": prior.get("sources", []),
     }
+    if entry.get("surface_source"):
+        carried["surface_source"] = entry["surface_source"]
+    return carried
 
 
 def build_index(config: dict, providers: list[dict]) -> dict:
