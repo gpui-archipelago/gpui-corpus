@@ -111,10 +111,36 @@
         "sha256": "e83f46838348f27505556e86bd65ce5cccd8c3ebaf3f259c2dd574363975ce69"
       },
       "floor": null,
-      "lock": "7ea29da4e9a464e6d270f13105d028f53620b1d905ee4d837553d2a12436d68d",
+      "lock": "9132e3343f6874b2081970414d505a5102630b8e1f051dbd20276d47319396d1",
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "5c98a2c8e011c6db4ecc2ef4c39b756b7e1ec21cd8386b6d18d2e79b2b6830c5"
+      }
+    },
+    "gpui-fast/0.1.11": {
+      "cksum": "895ff4c92ead42ca7e7f70213373f122f1482194b56d481eed5c768c85cc793b",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "e83f46838348f27505556e86bd65ce5cccd8c3ebaf3f259c2dd574363975ce69"
+      },
+      "floor": null,
+      "lock": "e37245e2063085a54f1a28b622066e28aab1d7e4d83626a2bee79d7f0e621878",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "408d6cf2d2ae5c56752286917087ef9205d7c0b89a97170ea3b730a02f0b7215"
+      }
+    },
+    "gpui-fast/0.1.12": {
+      "cksum": "87b6d2f355531132e8f1ec357cb23901aba1d1b3e522260822ae199f02ec32da",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "e83f46838348f27505556e86bd65ce5cccd8c3ebaf3f259c2dd574363975ce69"
+      },
+      "floor": null,
+      "lock": "39784e46afaf0cfafe455a7dc5973a8ae88df1243c8dc37ed47324dfa193b0e0",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "408d6cf2d2ae5c56752286917087ef9205d7c0b89a97170ea3b730a02f0b7215"
       }
     },
     "gpui-fast/0.1.2": {
@@ -176,7 +202,7 @@
         "sha256": "464a88c1922be18514f95df8a59ff69adb17fede4a8af65b5d6b071e941828ab"
       },
       "floor": null,
-      "lock": "cfc1f5492a068745eb6069ec4984e4dc5ac0e4a2cb879023cea3bec20721fc0e",
+      "lock": "9621b174165e544737902ed1f92945418fd82b738b0ac4eb9d0fcc9b9bd0a106",
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "21f206ff91f05e7385af117056dbf77c733f4776519474864996b402c9fc53e6"
@@ -189,7 +215,7 @@
         "sha256": "464a88c1922be18514f95df8a59ff69adb17fede4a8af65b5d6b071e941828ab"
       },
       "floor": null,
-      "lock": "39aba820f78e0bad8c561eeb6fb091cd08c8ea633bc28059aa28bd1af88f9d49",
+      "lock": "2ce91499e33db150dab0e7afcec2ff64b97ff8fb7a90de5c511c5a53b5a1f308",
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "5c98a2c8e011c6db4ecc2ef4c39b756b7e1ec21cd8386b6d18d2e79b2b6830c5"
@@ -202,7 +228,7 @@
         "sha256": "464a88c1922be18514f95df8a59ff69adb17fede4a8af65b5d6b071e941828ab"
       },
       "floor": null,
-      "lock": "e75c1640d2fd8f9a09b575b0e65a53ea54d14281175fbdc6600b1c2a37c808fc",
+      "lock": "1e61e50f362bb15e04d0e33142201a7a6d7130679105cd1204860ceb7477791e",
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "5c98a2c8e011c6db4ecc2ef4c39b756b7e1ec21cd8386b6d18d2e79b2b6830c5"
@@ -215,7 +241,7 @@
         "sha256": "464a88c1922be18514f95df8a59ff69adb17fede4a8af65b5d6b071e941828ab"
       },
       "floor": null,
-      "lock": "4b14c8fe51f99335e072d43e8b31d54cfdae8ed7c1f54dd1791e824bc8c2754d",
+      "lock": "f74d61a057ffeb47d6b1a7813c75da818a235a0c4f49a893682e6950be56e492",
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "5c98a2c8e011c6db4ecc2ef4c39b756b7e1ec21cd8386b6d18d2e79b2b6830c5"
@@ -245,6 +271,19 @@
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "d56dffa9c8ffa9ed5eaf625aacd3d0ef6695dfa02faea0ab912715cbf95d43c8"
+      }
+    },
+    "gpui-pre/0.3.10": {
+      "cksum": "df4b5f8d0c278308df2f11e0bfe0212dd77d7848ce1bdc4b9d513334414396f6",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "bb069416670485d31e2e0d354ccec8b93f988b4b200413097085ecfe30af368a"
+      },
+      "floor": null,
+      "lock": "df0ec15b14bacef15ca89939f455e17d62099994463b453491829a5ce7e8fac8",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "12683bb9cb36648c680c90098bacd4cf4b9c9d5afd130ac7e1bcd945e1eb6f56"
       }
     },
     "gpui-pre/0.3.2": {
