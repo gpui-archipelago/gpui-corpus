@@ -1216,7 +1216,7 @@
         "sha256": "12338b030633015affdd2bef68f0262a9ef839773a0f28e902d908f60430ee1f"
       },
       "floor": null,
-      "lock": "c5064078a3037c90f8f7e0b459e52618873c60646380c9e7cd95b351f9c35272",
+      "lock": "2f0a3c5502cd03497a712ac0c62636ee138b6e0fed242476c5ace744dde951e6",
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "6e988d87222e45bbe0157f7528b41661e5a9aedf95df603e93af3e6205d63e47"
@@ -1242,7 +1242,7 @@
         "sha256": "12338b030633015affdd2bef68f0262a9ef839773a0f28e902d908f60430ee1f"
       },
       "floor": null,
-      "lock": "67e9d0f0b23120e2d5ae4f24025f961cf8be2753a6657981f9b0483127e2aaa0",
+      "lock": "f33cee71289b323af1f8f2fec72e6ac056a48fb4113007d6cc4ce14bc0e63617",
       "tvm": {
         "schema": "gocar.tvm.v1",
         "sha256": "8c02fb14956d2a702d59a7c074013dc90d5fa5794798e9a09a64d9ca87effbdf"
