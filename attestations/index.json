@@ -1404,6 +1404,19 @@
         "sha256": "db86a30d181f79bf6a1127fb906cdf63ab169ddd30bf163519360feabeecd49e"
       }
     },
+    "gpui-unofficial/1.30.2": {
+      "cksum": "8c8eef86aeef28265effefc014397be6c27f96ad8d9e881f092aef6c6c3b0a7a",
+      "eac": {
+        "schema": "gocar.eac.v1",
+        "sha256": "12338b030633015affdd2bef68f0262a9ef839773a0f28e902d908f60430ee1f"
+      },
+      "floor": null,
+      "lock": "0833aee9bd64c60f68c63ebde4f3127fade015aaa7313fba0f4f432d231925d0",
+      "tvm": {
+        "schema": "gocar.tvm.v1",
+        "sha256": "9d4faabdb5fc4b06abc4f35680c6cc87949035c380d61bffd7fd7eb84a504020"
+      }
+    },
     "gpui-unofficial/1.7.2": {
       "cksum": "f6b3b9e15e1c1265cd20d384939e0efba48b8d4e4a935b6cd7d8eb0a840b25aa",
       "eac": {
